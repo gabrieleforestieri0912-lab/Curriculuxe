@@ -1,4 +1,4 @@
-# Applimix
+# Curriculuxe
 
 Piattaforma AI-powered per creare, ottimizzare e monitorare curriculum professionali con analisi ATS, personalizzazione per job description e supporto completo alla candidatura.
 
@@ -201,7 +201,7 @@ Ogni cambio stato registra timestamp e note (storico consultabile via `GET /api/
 
 ### 11. Dashboard Operativa
 
-- Crediti AI rimanenti con acquisto (Stripe, 10 crediti — 9.99€)
+- Crediti AI rimanenti con acquisto (Stripe, 10 crediti — 9.99€) e piani in abbonamento (starter 50, pro 500, enterprise 2000 crediti/mese)
 - Score CV più alto
 - Conteggio CV creati e keyword trovate
 - Cronologia analisi recenti
@@ -225,11 +225,14 @@ Ogni cambio stato registra timestamp e note (storico consultabile via `GET /api/
 Configurabile in `.env.local`:
 
 ```bash
-# OpenAI (prioritario se impostato)
+# OpenAI (provider primario, richiede API key)
 OPENAI_API_KEY=sk-...
+# Modello adatto all'analisi/generazione CV (JSON output). Sovrascrivibile.
+OPENAI_MODEL=gpt-4o-mini
 
-# Ollama fallback (locale)
-# Richiede Llama 3 in esecuzione su http://127.0.0.1:11434
+# Ollama (fallback solo per test locali temporanei)
+OLLAMA_HOST=http://127.0.0.1:11434
+OLLAMA_MODEL=deepseek-r1:8b
 ```
 
 L'AI viene usata per:
@@ -245,9 +248,29 @@ Se l'AI non è disponibile o l'utente non ha crediti, il sistema usa analisi sta
 
 ## Pagamenti (Stripe)
 
-- Piano `credits10`: 10 crediti AI per 9.99€
+### Piani
+
+| Piano | Tipo | Prezzo | Crediti AI |
+|-------|------|--------|------------|
+| `free` | Gratuito | €0 | 5 crediti di prova alla registrazione |
+| `starter` | Abbonamento ricorrente | €4.99/mese (€3.99/anno) | 50 crediti/mese |
+| `pro` | Abbonamento ricorrente | €8.99/mese (€5.99/anno) | 500 crediti/mese |
+| `enterprise` | Abbonamento ricorrente | €28.99/mese (€18.99/anno) | 2000 crediti/mese |
+| `credits10` | Ricarica one-time | €9.99 | +10 crediti |
+
+### Sistema crediti
+
+- Ogni funzionalità AI (analisi CV, generazione CV, riscrittura bullet, summary, feedback colloqui) consuma **1 credito** per gli utenti autenticati, su **tutti** i piani.
+- Gli utenti `free` ricevono 5 crediti alla registrazione; una volta esauriti devono ricaricare o sottoscrivere un piano.
+- Ogni piano in abbonamento (`starter`/`pro`/`enterprise`) accredita i crediti mensili al checkout e a ogni rinnovo automatico della subscription Stripe (`invoice.paid`).
+- La disdetta della subscription (`customer.subscription.deleted`) riporta l'utente al piano free.
 - Checkout session → webhook → aggiornamento crediti su DB
 - Webhook protetto con signing secret (`STRIPE_WEBHOOK_SECRET`)
+
+### Configurazione Stripe
+
+- `STRIPE_SECRET_KEY`, `NEXT_PUBLIC_STRIPE_KEY`, `STRIPE_WEBHOOK_SECRET`
+- Gli abbonamenti (`starter`/`pro`/`enterprise`) usano `mode: "subscription"` e richiedono il webhook `invoice.paid` per i rinnovi.
 
 ---
 

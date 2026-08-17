@@ -13,28 +13,44 @@ export default function Pricing() {
   const { t } = useLanguage();
   const tPricing = t.pricing as Record<string, unknown>;
 
+  const tPlans = tPricing.plans as Array<Record<string, unknown>>;
+  const planAt = (i: number) => tPlans?.[i] || {};
+
   const plans = [
     {
       monthlyPrice: 0,
       yearlyPrice: 0,
-      name: ((tPricing.plans as Array<Record<string, unknown>>)?.[0]?.name as string) || "Free",
-      description: ((tPricing.plans as Array<Record<string, unknown>>)?.[0]?.desc as string) || "",
-      features: (tPricing.plans as Array<Record<string, unknown>>)?.[0]?.features || [],
-      missing: ((tPricing.plans as Array<Record<string, unknown>>)?.[2]?.features as string[])?.filter((f: string) => !((tPricing.plans as Array<Record<string, unknown>>)?.[0]?.features as string[])?.includes(f))?.slice(0, 3) || [],
-      buttonText: ((tPricing.plans as Array<Record<string, unknown>>)?.[0]?.cta as string) || "",
+      name: (planAt(0).name as string) || "Free",
+      description: (planAt(0).desc as string) || "",
+      features: planAt(0).features || [],
+      missing: ((planAt(3).features as string[]) || [])?.filter((f: string) => !((planAt(0).features as string[]) || [])?.includes(f))?.slice(0, 3) || [],
+      buttonText: (planAt(0).cta as string) || "",
       badge: null,
       savings: null,
       popular: false,
       planId: "free",
     },
     {
+      monthlyPrice: 4.99,
+      yearlyPrice: 3.99,
+      name: (planAt(1).name as string) || "Starter",
+      description: (planAt(1).desc as string) || "",
+      features: planAt(1).features || [],
+      missing: [],
+      buttonText: (planAt(1).cta as string) || "",
+      badge: null,
+      savings: `${tPricing.save as string} €12`,
+      popular: false,
+      planId: "starter",
+    },
+    {
       monthlyPrice: 8.99,
       yearlyPrice: 5.99,
-      name: ((tPricing.plans as Array<Record<string, unknown>>)?.[1]?.name as string) || "Pro",
-      description: ((tPricing.plans as Array<Record<string, unknown>>)?.[1]?.desc as string) || "",
-      features: (tPricing.plans as Array<Record<string, unknown>>)?.[1]?.features || [],
+      name: (planAt(2).name as string) || "Pro",
+      description: (planAt(2).desc as string) || "",
+      features: planAt(2).features || [],
       missing: [],
-      buttonText: ((tPricing.plans as Array<Record<string, unknown>>)?.[1]?.cta as string) || "",
+      buttonText: (planAt(2).cta as string) || "",
       badge: tPricing.popular as string,
       savings: `${tPricing.save as string} €36`,
       popular: true,
@@ -43,11 +59,11 @@ export default function Pricing() {
     {
       monthlyPrice: 28.99,
       yearlyPrice: 18.99,
-      name: ((tPricing.plans as Array<Record<string, unknown>>)?.[2]?.name as string) || "Enterprise",
-      description: ((tPricing.plans as Array<Record<string, unknown>>)?.[2]?.desc as string) || "",
-      features: (tPricing.plans as Array<Record<string, unknown>>)?.[2]?.features || [],
+      name: (planAt(3).name as string) || "Enterprise",
+      description: (planAt(3).desc as string) || "",
+      features: planAt(3).features || [],
       missing: [],
-      buttonText: ((tPricing.plans as Array<Record<string, unknown>>)?.[2]?.cta as string) || "",
+      buttonText: (planAt(3).cta as string) || "",
       badge: null,
       savings: `${tPricing.save as string} €120`,
       popular: false,
@@ -70,7 +86,7 @@ export default function Pricing() {
     const user = JSON.parse(userData!);
 
     if (plan === "Enterprise") {
-      window.location.href = "mailto:gabriele.forestieri0912@gmail.com?subject=Piano Enterprise Applimix";
+      window.location.href = "mailto:gabriele.forestieri0912@gmail.com?subject=Piano Enterprise Curriculuxe";
       return;
     }
 
@@ -81,6 +97,7 @@ export default function Pricing() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           plan: planId,
+          billingCycle,
           userId: user._id || user.id,
           userEmail: user.email,
         }),
@@ -103,7 +120,7 @@ export default function Pricing() {
       id="pricing"
       className="py-24 px-6 gradient-bg"
     >
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-7xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -145,7 +162,7 @@ export default function Pricing() {
           </div>
         </motion.div>
 
-        <div className="grid md:grid-cols-3 gap-8 items-stretch">
+        <div className="grid md:grid-cols-2 gap-8 items-stretch">
           {plans.map((plan, i) => {
             const raw =
               plan.monthlyPrice === 0

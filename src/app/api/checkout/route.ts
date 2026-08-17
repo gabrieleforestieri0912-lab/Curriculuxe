@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createCheckoutSession, PRICES } from "@/lib/stripe";
+import { createCheckoutSession, createSubscriptionCheckout, PRICES, YEARLY_PRICES } from "@/lib/stripe";
 import { verifyUserToken } from "@/lib/auth";
 
 export async function POST(request: NextRequest) {
   try {
-    const { plan } = await request.json() as { plan: string };
+    const { plan, billingCycle } = await request.json() as { plan: string; billingCycle?: string };
+    const cycle = billingCycle === "yearly" ? "yearly" : "monthly";
 
     if (!PRICES[plan]) {
       return NextResponse.json(
@@ -36,6 +37,20 @@ export async function POST(request: NextRequest) {
         { error: "Dati utente mancanti" },
         { status: 400 }
       );
+    }
+
+    // I piani in abbonamento (starter/pro/enterprise) usano checkout ricorrente.
+    if (plan === "starter" || plan === "pro" || plan === "enterprise") {
+      const amount = cycle === "yearly" ? YEARLY_PRICES[plan] : PRICES[plan];
+      const interval = cycle === "yearly" ? "year" : "month";
+      const session = await createSubscriptionCheckout(
+        amount,
+        userId as string,
+        userEmail as string,
+        plan,
+        interval
+      );
+      return NextResponse.json({ url: session.url });
     }
 
     const amount = PRICES[plan]!;

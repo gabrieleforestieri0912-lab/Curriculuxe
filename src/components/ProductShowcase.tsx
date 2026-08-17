@@ -234,7 +234,7 @@ export default function ProductShowcase() {
                   <li className={`transition-all duration-300 rounded p-0.5 ${activeHighlight === "redis" ? "bg-emerald-100/90 text-emerald-950 font-medium" : ""}`}>
                     Implementato un sistema di caching con <strong className="text-slate-900 font-sans">Redis</strong>, migliorando le performance del 40% e riducendo i costi di infrastruttura del 25%.
                   </li>
-                  <li>Coordinato la migrazione dal monolite all'architettura a microservizi, riducendo il downtime del 90%.</li>
+                  <li>Coordinato la migrazione dal monolite all&apos;architettura a microservizi, riducendo il downtime del 90%.</li>
                 </ul>
               </div>
 
@@ -259,7 +259,7 @@ export default function ProductShowcase() {
                 <ul className="list-disc pl-4 text-[11px] leading-relaxed text-slate-700 space-y-1 relative z-10">
                   <li>Realizzato siti web e applicazioni web per clienti enterprise utilizzando <strong className="text-slate-900 font-sans">React</strong> e <strong className="text-slate-900 font-sans">Node.js</strong>.</li>
                   <li className={`transition-all duration-300 rounded p-0.5 ${activeHighlight === "spring-weak" ? "bg-amber-100/90 text-amber-950 font-medium" : ""}`}>
-                    Sviluppata un'app Spring Boot con Docker su AWS EC2, servendo oltre 30 stakeholder. <span className="text-[9px] font-bold text-amber-600 block sm:inline font-sans ml-1">(Rilevato: Migliorabile)</span>
+                    Sviluppata un&apos;app Spring Boot con Docker su AWS EC2, servendo oltre 30 stakeholder. <span className="text-[9px] font-bold text-amber-600 block sm:inline font-sans ml-1">(Rilevato: Migliorabile)</span>
                   </li>
                 </ul>
               </div>

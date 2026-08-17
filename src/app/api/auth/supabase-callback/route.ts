@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { supabase } from "@/lib/supabase/client";
 import { signUserToken } from "@/lib/auth";
+import { SIGNUP_CREDITS } from "@/lib/credits";
 
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
@@ -45,7 +46,7 @@ export async function GET(request: Request) {
               email,
               name,
               picture,
-              credits: 0,
+              credits: SIGNUP_CREDITS,
               language: "it",
               provider: "google",
               google_id: id,

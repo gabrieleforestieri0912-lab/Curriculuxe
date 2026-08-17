@@ -50,6 +50,7 @@ function CreateCVContent() {
   const [prompt, setPrompt] = useState("");
   const [selectedTemplate, setSelectedTemplate] = useState("moderno");
   const [generating, setGenerating] = useState(false);
+  const [creditsError, setCreditsError] = useState(false);
 
   const [formData, setFormData] = useState(initialFormData);
   const [currentSection, setCurrentSection] = useState("personal");
@@ -138,6 +139,7 @@ function CreateCVContent() {
   const handleGenerateAI = async () => {
     if (!prompt.trim()) { setError(tGen.errorPrompt); return; }
     setError("");
+    setCreditsError(false);
     setGenerating(true);
     try {
       const res = await fetch("/api/cv/generate", {
@@ -150,7 +152,8 @@ function CreateCVContent() {
         router.push(`/dashboard/cv/${data.cvId}`);
       } else {
         const errData = await res.json();
-        setError(errData.error || tGen.errorServer);
+        setCreditsError(res.status === 402);
+        setError(errData.error || (res.status === 402 ? tGen.noCredits : tGen.errorServer));
       }
     } catch { setError(tGen.errorServer); }
     finally { setGenerating(false); }
@@ -295,7 +298,16 @@ function CreateCVContent() {
                 <textarea value={prompt} onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setPrompt(e.target.value)} placeholder={tGen.profilePlaceholder}
                   className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-indigo-500 h-32 resize-none"
                 />
-                {error && <p className="text-red-400 text-sm mt-2">{error}</p>}
+                {error && (
+                  <div className="text-red-400 text-sm mt-2">
+                    <p>{error}</p>
+                    {creditsError && (
+                      <Link href="/#pricing" className="inline-block mt-1 underline font-medium text-indigo-300 hover:text-indigo-200">
+                        {tGen.viewPricing}
+                      </Link>
+                    )}
+                  </div>
+                )}
               </motion.div>
 
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="glass-card rounded-2xl p-6 mb-8">
@@ -413,7 +425,7 @@ function CreateCVContent() {
                         <button onClick={addExperience} className="btn-secondary px-4 py-2 rounded-lg text-sm font-medium">+ Aggiungi</button>
                       </div>
                       {formData.experience.length === 0 && (
-                        <p className="text-zinc-500 text-center py-8">Nessuna esperienza. Clicca "+ Aggiungi" per iniziare.</p>
+                        <p className="text-zinc-500 text-center py-8">Nessuna esperienza. Clicca &quot;+ Aggiungi&quot; per iniziare.</p>
                       )}
                       <div className="space-y-4">
                         {formData.experience.map((exp, i) => (
@@ -441,7 +453,7 @@ function CreateCVContent() {
                         <button onClick={addEducation} className="btn-secondary px-4 py-2 rounded-lg text-sm font-medium">+ Aggiungi</button>
                       </div>
                       {formData.education.length === 0 && (
-                        <p className="text-zinc-500 text-center py-8">Nessuna formazione. Clicca "+ Aggiungi" per iniziare.</p>
+                        <p className="text-zinc-500 text-center py-8">Nessuna formazione. Clicca &quot;+ Aggiungi&quot; per iniziare.</p>
                       )}
                       <div className="space-y-4">
                         {formData.education.map((edu, i) => (

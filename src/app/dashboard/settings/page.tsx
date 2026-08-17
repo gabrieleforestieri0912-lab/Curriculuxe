@@ -32,8 +32,8 @@ export default function SettingsPage() {
       <nav className="fixed top-0 left-0 right-0 z-50 glass-card">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
-            <span aria-label="Applimix" className="h-7 w-7 bg-contain bg-center bg-no-repeat shrink-0" style={{ backgroundImage: "url(/applimix.png)" } as React.CSSProperties} />
-            <span className="text-lg font-bold text-white">Applimix</span>
+            <span aria-label="Curriculuxe" className="h-7 w-7 bg-contain bg-center bg-no-repeat shrink-0" style={{ backgroundImage: "url(/curriculuxe.png)" } as React.CSSProperties} />
+            <span className="text-lg font-bold text-white">Curriculuxe</span>
           </Link>
           <Link href="/dashboard" className="text-sm text-zinc-400 hover:text-white px-4 py-2">
             {tNav.backDashboard}

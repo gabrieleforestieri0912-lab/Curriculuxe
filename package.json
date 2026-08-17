@@ -1,12 +1,14 @@
 {
-  "name": "applimix",
+  "name": "curriculuxe",
   "version": "1.0.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@fortawesome/free-brands-svg-icons": "^7.2.0",
@@ -15,6 +17,7 @@
     "@supabase/supabase-js": "^2.108.0",
     "bcryptjs": "^3.0.3",
     "framer-motion": "^12.38.0",
+    "hls.js": "^1.7.0",
     "html2pdf.js": "^0.14.0",
     "lucide-react": "^1.16.0",
     "mammoth": "^1.12.0",
@@ -35,6 +38,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.2.2",
     "tailwindcss": "^4",
-    "typescript": "^6.0.3"
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.10"
   }
 }

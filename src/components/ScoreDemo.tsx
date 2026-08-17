@@ -5,6 +5,13 @@ import { useState, useEffect } from "react";
 import { Upload, Brain, BarChart3, Download, CheckCircle } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 
+const CRITERIA_PHASES = [
+  [58, 40, 45, 30, 50],
+  [72, 65, 60, 52, 68],
+  [80, 70, 78, 62, 74],
+  [85, 72, 90, 65, 80],
+];
+
 export default function ScoreDemo() {
   const { t } = useLanguage();
   const tScoreDemo = t.scoreDemo as Record<string, string>;
@@ -31,13 +38,6 @@ export default function ScoreDemo() {
       icon: "M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.241-.652 3.42 3.42 0 014.618 3.383 3.42 3.42 0 00-.652 1.241 3.42 3.42 0 01-3.383 3.618 3.42 3.42 0 01-1.241-.652 3.42 3.42 0 01-3.383-3.618 3.42 3.42 0 00.652-1.241 3.42 3.42 0 013.383-3.383z",
       desc: tScoreDemo.exportPhaseDesc as string,
     },
-  ];
-
-  const criteriaPhases = [
-    [58, 40, 45, 30, 50],
-    [72, 65, 60, 52, 68],
-    [80, 70, 78, 62, 74],
-    [85, 72, 90, 65, 80],
   ];
 
   const criteria = [
@@ -104,7 +104,7 @@ export default function ScoreDemo() {
   }, [phase]);
 
   useEffect(() => {
-    const targets = criteriaPhases[phase];
+    const targets = CRITERIA_PHASES[phase];
     const barInterval = setInterval(() => {
       setCriteriaScores((prev) =>
         prev.map((val, i) => (val < targets[i] ? Math.min(val + 1, targets[i]) : val))

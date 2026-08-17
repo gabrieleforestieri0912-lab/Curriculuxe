@@ -1,7 +1,9 @@
-import { NextResponse } from "next/server";
-import { getInterviewFeedback } from "@/lib/ollama";
+import { NextRequest, NextResponse } from "next/server";
+import { getInterviewFeedback } from "@/lib/ai";
+import { verifyUserToken } from "@/lib/auth";
+import { consumeCredit } from "@/lib/credits";
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
     const { question, answer, role } = await request.json() as {
       question: string;
@@ -14,6 +16,20 @@ export async function POST(request: Request) {
         { error: "Domanda, risposta e ruolo sono richiesti" },
         { status: 400 }
       );
+    }
+
+    // Il feedback colloquio consuma 1 credito per gli utenti autenticati.
+    const userCookie = request.cookies.get("user")?.value;
+    const user = userCookie ? verifyUserToken(userCookie) : null;
+
+    if (user) {
+      const credit = await consumeCredit(user.id as string);
+      if (!credit.ok) {
+        return NextResponse.json(
+          { error: "Crediti insufficienti. Sottoscrivi un piano o ricarica per usare l'AI." },
+          { status: 402 }
+        );
+      }
     }
 
     const feedback = await getInterviewFeedback(question, answer, role);

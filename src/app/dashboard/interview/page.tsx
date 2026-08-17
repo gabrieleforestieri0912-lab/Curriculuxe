@@ -50,6 +50,7 @@ export default function InterviewPage() {
   const [loading, setLoading] = useState(false);
   const [history, setHistory] = useState<Array<{ q: string; a: string }>>([]);
   const [showTips, setShowTips] = useState(false);
+  const [creditsError, setCreditsError] = useState(false);
 
   useEffect(() => {
     if (!localStorage.getItem("user")) {
@@ -67,12 +68,14 @@ export default function InterviewPage() {
     setFeedback(null);
     setHistory([]);
     setShowTips(false);
+    setCreditsError(false);
   };
 
   const submitAnswer = async () => {
     if (!answer.trim()) return;
     setLoading(true);
     setFeedback(null);
+    setCreditsError(false);
 
     try {
       const res = await fetch("/api/interview", {
@@ -94,6 +97,9 @@ export default function InterviewPage() {
         if (data.starSuggestion) feedbackText += `\uD83D\uDCCC Metodo STAR:\n${data.starSuggestion}\n\n`;
         if (data.improvedAnswer) feedbackText += `\u270D\uFE0F Versione migliorata:\n${data.improvedAnswer}`;
         setFeedback(feedbackText || "Good answer! Consider using the STAR method for more impact.");
+      } else if (res.status === 402) {
+        setCreditsError(true);
+        setFeedback(tInterview.noCredits);
       } else {
         setFeedback("Try structuring your answer with the STAR method: Situation, Task, Action, Result.");
       }
@@ -268,6 +274,14 @@ export default function InterviewPage() {
                     <h3 className="text-pink-300 font-semibold mb-2">{tInterview.feedback}</h3>
                     <div className="text-zinc-300 text-sm leading-relaxed whitespace-pre-line">{feedback}</div>
                   </motion.div>
+                )}
+
+                {creditsError && (
+                  <div className="mt-3 text-center">
+                    <Link href="/#pricing" className="underline font-medium text-pink-300 hover:text-pink-200 text-sm">
+                      {tInterview.viewPricing}
+                    </Link>
+                  </div>
                 )}
               </motion.div>
 

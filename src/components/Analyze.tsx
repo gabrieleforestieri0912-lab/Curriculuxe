@@ -83,10 +83,10 @@ export default function Analyze({ initialResult = null }: AnalyzeProps) {
   };
 
   useEffect(() => {
-    const savedJobDescription = sessionStorage.getItem("applimix:jobDescription");
+    const savedJobDescription = sessionStorage.getItem("curriculuxe:jobDescription");
     if (savedJobDescription) {
       setJobDescription(savedJobDescription);
-      sessionStorage.removeItem("applimix:jobDescription");
+      sessionStorage.removeItem("curriculuxe:jobDescription");
     }
   }, []);
 
@@ -198,8 +198,8 @@ export default function Analyze({ initialResult = null }: AnalyzeProps) {
       <nav className="fixed top-0 left-0 right-0 z-50 glass-card">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between gap-3">
           <Link href="/" className="flex items-center gap-2">
-            <span aria-label="Applimix" className="h-7 w-7 bg-contain bg-center bg-no-repeat shrink-0" style={{ backgroundImage: "url(/applimix.png)" } as React.CSSProperties} />
-            <span className="text-lg font-bold text-white">Applimix</span>
+            <span aria-label="Curriculuxe" className="h-7 w-7 bg-contain bg-center bg-no-repeat shrink-0" style={{ backgroundImage: "url(/curriculuxe.png)" } as React.CSSProperties} />
+            <span className="text-lg font-bold text-white">Curriculuxe</span>
           </Link>
           <div className="flex items-center gap-3">
             <Link href="/register" className="btn-primary text-sm text-white px-5 py-2.5 rounded-full font-medium">
@@ -372,7 +372,11 @@ export default function Analyze({ initialResult = null }: AnalyzeProps) {
                       </svg>
                       <div>
                         <strong>Analisi AI non disponibile o crediti esauriti.</strong><br />
-                        Stiamo mostrando un&apos;analisi di base. Per sbloccare l&apos;analisi intelligente acquista dei crediti o riprova pi&ugrave; tardi.
+                        Stiamo mostrando un&apos;analisi di base.{" "}
+                        <Link href="/#pricing" className="underline font-medium text-yellow-300 hover:text-yellow-200">
+                          Vedi i piani
+                        </Link>{" "}
+                        per sbloccare l&apos;analisi intelligente o riprova pi&ugrave; tardi.
                       </div>
                     </div>
                   )}

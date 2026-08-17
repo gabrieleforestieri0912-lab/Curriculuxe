@@ -2,7 +2,20 @@ import OpenAI from "openai";
 import type { InterviewFeedback, BulletRewrite, SummaryResult } from "@/lib/supabase/types";
 
 const OLLAMA_HOST = process.env.OLLAMA_HOST || "http://127.0.0.1:11434";
-const OLLAMA_MODEL = process.env.OLLAMA_MODEL || "llama3.2:latest";
+const OLLAMA_MODEL = process.env.OLLAMA_MODEL || "deepseek-r1:8b";
+
+const OPENAI_MODEL = process.env.OPENAI_MODEL || "gpt-4o-mini";
+
+async function callOpenAI(prompt: string): Promise<string | null> {
+  if (!process.env.OPENAI_API_KEY) return null;
+  const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+  const response = await openai.chat.completions.create({
+    model: OPENAI_MODEL,
+    response_format: { type: "json_object" },
+    messages: [{ role: "user", content: prompt }],
+  });
+  return response.choices[0].message.content;
+}
 
 async function callOllama(prompt: string): Promise<string | null> {
   const response = await fetch(`${OLLAMA_HOST}/api/generate`, {
@@ -22,18 +35,15 @@ async function callOllama(prompt: string): Promise<string | null> {
 
 async function callAI(prompt: string): Promise<string | null> {
   try {
+    const openaiResponse = await callOpenAI(prompt);
+    if (openaiResponse) return openaiResponse;
+  } catch (openaiError) {
+    console.warn("OpenAI non disponibile, fallback a Ollama:", openaiError);
+  }
+  try {
     return await callOllama(prompt);
   } catch (ollamaError) {
-    console.warn("Ollama non disponibile, fallback a OpenAI:", ollamaError);
-    if (process.env.OPENAI_API_KEY) {
-      const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-      const response = await openai.chat.completions.create({
-        model: "gpt-3.5-turbo-1106",
-        response_format: { type: "json_object" },
-        messages: [{ role: "user", content: prompt }],
-      });
-      return response.choices[0].message.content;
-    }
+    console.warn("Ollama non disponibile, nessun provider AI attivo:", ollamaError);
     return null;
   }
 }

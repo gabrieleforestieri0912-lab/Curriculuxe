@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState, useCallback, useEffect, ReactNode } from "react";
+import { createContext, useContext, useState, useCallback, ReactNode } from "react";
 import { getTranslations, defaultLanguage } from "@/lib/i18n";
 
 interface LanguageContextValue {
@@ -12,24 +12,25 @@ interface LanguageContextValue {
 
 const LanguageContext = createContext<LanguageContextValue | null>(null);
 
-export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [lang, setLang] = useState(defaultLanguage);
-  const [ready, setReady] = useState(false);
-
-  useEffect(() => {
+function getInitialLanguage(): string {
+  if (typeof window === "undefined") return defaultLanguage;
+  try {
     const userData = localStorage.getItem("user");
     if (userData) {
-      try {
-        const user = JSON.parse(userData);
-        if (user.language && ["it", "en"].includes(user.language)) {
-          setLang(user.language);
-        }
-      } catch (_e) {
-        // ignore
+      const user = JSON.parse(userData);
+      if (user.language && ["it", "en"].includes(user.language)) {
+        return user.language;
       }
     }
-    setReady(true);
-  }, []);
+  } catch (_e) {
+    // ignore
+  }
+  return defaultLanguage;
+}
+
+export function LanguageProvider({ children }: { children: ReactNode }) {
+  const [lang, setLang] = useState(getInitialLanguage);
+  const ready = true;
 
   const changeLanguage = useCallback((newLang: string) => {
     setLang(newLang);

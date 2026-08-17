@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy | Applimix",
-  description: "Informativa privacy di Applimix.",
+  title: "Privacy Policy | Curriculuxe",
+  description: "Informativa privacy di Curriculuxe.",
 };
 
 export default function PrivacyPage() {
@@ -15,7 +15,7 @@ export default function PrivacyPage() {
         </Link>
         <h1 className="text-4xl font-bold text-white mt-6 mb-4">Privacy Policy</h1>
         <p className="text-zinc-400 mb-8">
-          Ultimo aggiornamento: 3 maggio 2026. Questa pagina descrive come Applimix
+          Ultimo aggiornamento: 3 maggio 2026. Questa pagina descrive come Curriculuxe
           tratta i dati inseriti dagli utenti nella piattaforma.
         </p>
 
@@ -59,7 +59,7 @@ export default function PrivacyPage() {
           <section>
             <h2 className="text-xl font-semibold text-white mb-2">Contatti</h2>
             <p>
-              Per richieste privacy puoi contattare il team Applimix tramite i recapiti
+              Per richieste privacy puoi contattare il team Curriculuxe tramite i recapiti
               indicati nella piattaforma o nella documentazione commerciale.
             </p>
           </section>

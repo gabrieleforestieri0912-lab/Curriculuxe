@@ -92,7 +92,32 @@ export default function Dashboard() {
     }
   };
 
+  const handleSubscribeStarter = async () => {
+    try {
+      const res = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ plan: "starter", billingCycle: "monthly" })
+      });
+      const data = await res.json();
+      if (data.url) {
+        window.location.href = data.url;
+      }
+    } catch {
+      console.error("Failed to subscribe to Starter");
+    }
+  };
+
   if (loading) return <DashboardSkeleton />;
+
+  const userPlan = (user?.plan as string) || null;
+  const userCredits = (user?.credits as number) ?? 0;
+  const outOfCredits = userCredits === 0;
+  const planName =
+    userPlan === "starter" ? "Starter"
+    : userPlan === "pro" ? "Pro"
+    : userPlan === "enterprise" ? "Enterprise"
+    : "Free";
 
   return (
     <section className="gradient-bg-animated relative min-h-screen overflow-hidden">
@@ -100,8 +125,8 @@ export default function Dashboard() {
       <nav className="fixed top-0 left-0 right-0 z-50 glass-card">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
-            <span aria-label="Applimix" className="h-7 w-7 bg-contain bg-center bg-no-repeat shrink-0" style={{ backgroundImage: "url(/applimix.png)" } as React.CSSProperties} />
-            <span className="text-lg font-bold text-white">Applimix</span>
+            <span aria-label="Curriculuxe" className="h-7 w-7 bg-contain bg-center bg-no-repeat shrink-0" style={{ backgroundImage: "url(/curriculuxe.png)" } as React.CSSProperties} />
+            <span className="text-lg font-bold text-white">Curriculuxe</span>
           </Link>
           <div className="flex items-center gap-2">
             <button onClick={() => setSidebarOpen(!sidebarOpen)} className="lg:hidden p-2 rounded-xl bg-white/5 border border-white/8 text-zinc-400 hover:text-white transition-all">
@@ -256,14 +281,42 @@ export default function Dashboard() {
                   <div className="rounded-xl bg-purple-500/10 border border-purple-500/20 p-4">
                     <div className="flex items-center justify-between mb-3">
                       <p className="text-purple-300 text-sm font-medium">{tDash.aiCredits as string}</p>
-                      <span className="text-purple-300 text-lg font-bold">{(user?.credits as number) ?? 0}</span>
+                      <span className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-white/10 text-white">
+                        {tDash.planLabel as string} {planName}
+                      </span>
                     </div>
-                    <button 
-                      onClick={handleBuyCredits} 
-                      className="w-full bg-purple-600 hover:bg-purple-700 text-white text-xs py-2.5 rounded-lg font-semibold transition-colors shadow-[0_0_15px_rgba(147,51,234,0.3)] hover:shadow-[0_0_20px_rgba(147,51,234,0.5)]"
-                    >
-                      {tDash.reload as string} (10 {tDash.creditsDesc as string}) - 9.99€
-                    </button>
+
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="text-purple-300 text-lg font-bold">{userCredits}</span>
+                      <span className="text-purple-300/70 text-xs">{tDash.creditsDesc as string}</span>
+                    </div>
+
+                    {outOfCredits ? (
+                      <div className="space-y-2">
+                        <p className="text-amber-300 text-xs">
+                          {tDash.outOfCredits as string}. {tDash.starterSuggestion as string}.
+                        </p>
+                        <button
+                          onClick={handleSubscribeStarter}
+                          className="w-full bg-purple-600 hover:bg-purple-700 text-white text-xs py-2.5 rounded-lg font-semibold transition-colors shadow-[0_0_15px_rgba(147,51,234,0.3)] hover:shadow-[0_0_20px_rgba(147,51,234,0.5)]"
+                        >
+                          {tDash.subscribeStarter as string} - {tDash.starterPrice as string}
+                        </button>
+                        <button
+                          onClick={handleBuyCredits}
+                          className="w-full bg-white/10 hover:bg-white/15 text-white text-xs py-2.5 rounded-lg font-semibold transition-colors border border-white/10"
+                        >
+                          {tDash.reload as string} (10 {tDash.creditsDesc as string}) - 9.99€
+                        </button>
+                      </div>
+                    ) : (
+                      <button
+                        onClick={handleBuyCredits}
+                        className="w-full bg-purple-600 hover:bg-purple-700 text-white text-xs py-2.5 rounded-lg font-semibold transition-colors shadow-[0_0_15px_rgba(147,51,234,0.3)] hover:shadow-[0_0_20px_rgba(147,51,234,0.5)]"
+                      >
+                        {tDash.reload as string} (10 {tDash.creditsDesc as string}) - 9.99€
+                      </button>
+                    )}
                   </div>
                   <div>
                     <div className="flex items-center justify-between mb-2">

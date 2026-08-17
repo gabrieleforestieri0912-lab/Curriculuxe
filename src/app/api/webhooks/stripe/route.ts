@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { headers } from "next/headers";
-import { STRIPE } from "@/lib/stripe";
+import { STRIPE, CREDITS_PER_PLAN, CREDITS_PER_PACK } from "@/lib/stripe";
 import { supabase } from "@/lib/supabase/client";
 
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
@@ -28,15 +28,22 @@ export async function POST(request: Request) {
 
       if (userId) {
         const updateData: Record<string, unknown> = {
-          stripeCustomerId: session.customer,
+          stripe_customer_id: session.customer,
           [`paidPlan_${plan}`]: true,
           [`paidAt_${plan}`]: new Date(),
         };
 
-        if (plan === "pro") {
-          updateData.plan = "pro";
-        } else if (plan === "enterprise") {
-          updateData.plan = "enterprise";
+        if (plan === "pro" || plan === "enterprise" || plan === "starter") {
+          // Abbonamento ricorrente: imposta il piano e accredita i crediti iniziali.
+          updateData.plan = plan;
+          const { data: currentUser } = await supabase
+            .from("users")
+            .select("credits")
+            .eq("id", userId)
+            .single();
+
+          updateData.credits =
+            ((currentUser as Record<string, unknown>)?.credits as number || 0) + (CREDITS_PER_PLAN[plan] ?? 0);
         } else if (plan === "credits10") {
           const { data: currentUser } = await supabase
             .from("users")
@@ -44,7 +51,8 @@ export async function POST(request: Request) {
             .eq("id", userId)
             .single();
 
-          updateData.credits = ((currentUser as Record<string, unknown>)?.credits as number || 0) + 10;
+          updateData.credits =
+            ((currentUser as Record<string, unknown>)?.credits as number || 0) + (CREDITS_PER_PACK[plan] ?? 10);
         }
 
         await supabase
@@ -98,6 +106,47 @@ export async function POST(request: Request) {
           error: (paymentIntent.last_payment_error as Record<string, string>)?.message,
           createdAt: new Date(),
         });
+      break;
+    }
+
+    case "invoice.paid": {
+      // Rinnovo abbonamento: accredita i crediti mensili del piano.
+      const invoice = event.data.object as Record<string, unknown>;
+      // La prima fattura (subscription_create) è già gestita da checkout.session.completed.
+      if (invoice.billing_reason === "subscription_create") {
+        break;
+      }
+
+      const customer = invoice.customer as string | undefined;
+      const { data: subscriber } = await supabase
+        .from("users")
+        .select("id, plan, credits")
+        .eq("stripe_customer_id", customer)
+        .single();
+
+      if (subscriber) {
+        const plan = (subscriber as Record<string, unknown>).plan as string | undefined;
+        const monthlyCredits = CREDITS_PER_PLAN[plan as string] ?? 0;
+
+        if (monthlyCredits > 0) {
+          await supabase
+            .from("users")
+            .update({ credits: ((subscriber as Record<string, unknown>).credits as number || 0) + monthlyCredits })
+            .eq("id", (subscriber as Record<string, unknown>).id);
+        }
+      }
+      break;
+    }
+
+    case "customer.subscription.deleted": {
+      // Disdetta abbonamento: riporta l'utente al piano free.
+      const subscription = event.data.object as Record<string, unknown>;
+      const customer = subscription.customer as string | undefined;
+
+      await supabase
+        .from("users")
+        .update({ plan: null })
+        .eq("stripe_customer_id", customer);
       break;
     }
   }

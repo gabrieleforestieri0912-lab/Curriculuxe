@@ -14,11 +14,11 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Applimix - Crea il Curriculum Perfetto con l'AI",
+  title: "Curriculuxe - Crea il Curriculum Perfetto con l'AI",
   description:
-    "Crea, ottimizza e perfeziona il tuo curriculum con l'intelligenza artificiale. Applimix ti aiuta a distinguerti e conquistare il lavoro dei tuoi sogni.",
+    "Crea, ottimizza e perfeziona il tuo curriculum con l'intelligenza artificiale. Curriculuxe ti aiuta a distinguerti e conquistare il lavoro dei tuoi sogni.",
   icons: {
-    icon: "/applimix.png",
+    icon: "/curriculuxe.png",
   },
 };
 

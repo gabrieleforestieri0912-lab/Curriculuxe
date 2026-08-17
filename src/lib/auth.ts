@@ -1,10 +1,11 @@
 import { createHmac } from "crypto";
 import bcrypt from "bcryptjs";
 import { supabase } from "@/lib/supabase/client";
+import { SIGNUP_CREDITS } from "@/lib/credits";
 import type { User } from "@/lib/supabase/types";
 
 export function signUserToken(payload: Record<string, unknown>): string {
-  const secret = process.env.JWT_SECRET || "applimix-dev-secret-change-in-production";
+  const secret = process.env.JWT_SECRET || "curriculuxe-dev-secret-change-in-production";
   const data = JSON.stringify(payload);
   const signature = createHmac("sha256", secret).update(data).digest("hex");
   return `${Buffer.from(data).toString("base64")}.${signature}`;
@@ -15,7 +16,7 @@ export function verifyUserToken(token: string): Record<string, unknown> | null {
     const parts = token.split(".");
     if (parts.length !== 2) return null;
     const data = Buffer.from(parts[0], "base64").toString("utf-8");
-    const secret = process.env.JWT_SECRET || "applimix-dev-secret-change-in-production";
+    const secret = process.env.JWT_SECRET || "curriculuxe-dev-secret-change-in-production";
     const expectedSig = createHmac("sha256", secret).update(data).digest("hex");
     if (parts[1] !== expectedSig) return null;
     return JSON.parse(data);
@@ -43,7 +44,7 @@ export async function registerUser(email: string, password: string, name: string
       email,
       password: hashedPassword,
       name,
-      credits: 0,
+      credits: SIGNUP_CREDITS,
       language: "it",
       provider: "email",
     })
@@ -111,7 +112,7 @@ export async function findOrCreateGoogleUser(googleUser: {
       email: googleUser.email,
       name: googleUser.name,
       picture: googleUser.picture,
-      credits: 0,
+      credits: SIGNUP_CREDITS,
       language: "it",
       provider: "google",
       google_id: googleUser.googleId,

@@ -211,20 +211,13 @@ export default function Navbar() {
 
   return (
     <>
-      <nav
-        className="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
-        style={{
-          backgroundColor: "rgba(0, 0, 0, 0.7)",
-          backdropFilter: "blur(16px)",
-        } as React.CSSProperties}
-      >
-
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+      <nav className="fixed top-4 left-0 right-0 z-50 px-4 sm:px-6 transition-all duration-300">
+        <div className="max-w-6xl mx-auto rounded-full border border-white/10 bg-white/[0.04] backdrop-blur-xl shadow-lg shadow-black/30 px-5 sm:px-6 py-2.5 sm:py-3 flex items-center justify-between">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 group">
-            <span aria-label="Applimix" className="h-7 w-7 bg-contain bg-center bg-no-repeat shrink-0 transition-transform duration-300 group-hover:scale-105" style={{ backgroundImage: "url(/applimix.png)" } as React.CSSProperties} />
+            <span aria-label="Curriculuxe" className="h-7 w-7 bg-contain bg-center bg-no-repeat shrink-0 transition-transform duration-300 group-hover:scale-105" style={{ backgroundImage: "url(/curriculuxe.png)" } as React.CSSProperties} />
             <span className="text-xl font-bold text-white tracking-wide transition-all group-hover:text-fuchsia-400">
-              Applimix
+              Curriculuxe
             </span>
           </Link>
 
@@ -306,14 +299,15 @@ export default function Navbar() {
         </div>
 
         {/* Mobile menu drawer */}
-        <AnimatePresence>
-          {isMobileOpen && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              className="lg:hidden border-t border-white/5 bg-black/95 backdrop-blur-xl overflow-hidden"
-            >
+        <div className="max-w-6xl mx-auto mt-2 lg:hidden">
+          <AnimatePresence>
+            {isMobileOpen && (
+              <motion.div
+                initial={{ opacity: 0, y: -8, height: 0 }}
+                animate={{ opacity: 1, y: 0, height: "auto" }}
+                exit={{ opacity: 0, y: -8, height: 0 }}
+                className="rounded-3xl border border-white/10 bg-white/[0.04] backdrop-blur-xl shadow-lg shadow-black/30 overflow-hidden"
+              >
               <div className="px-6 py-6 space-y-4">
                 <div className="space-y-1">
                   {navLinks.map((link) => {
@@ -379,7 +373,8 @@ export default function Navbar() {
               </div>
             </motion.div>
           )}
-        </AnimatePresence>
+          </AnimatePresence>
+        </div>
       </nav>
 
       {typeof document !== "undefined" && createPortal(menuContent, document.body)}

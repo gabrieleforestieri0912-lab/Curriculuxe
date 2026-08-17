@@ -2,8 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import mammoth from "mammoth";
 import { analyzeResume, normalizeText } from "@/lib/cvAnalysis";
 import { generateCoverAssets, suggestSkills } from "@/lib/careerKit";
-import { analyzeCVWithAI } from "@/lib/ollama";
+import { analyzeCVWithAI } from "@/lib/ai";
 import { verifyUserToken } from "@/lib/auth";
+import { consumeCredit, getCreditsInfo } from "@/lib/credits";
 import { supabase } from "@/lib/supabase/client";
 
 export const runtime = "nodejs";
@@ -104,29 +105,14 @@ export async function POST(request: NextRequest) {
         userObj = null;
       }
       try {
-        const { data: dbUser } = await supabase
-          .from("users")
-          .select("credits")
-          .eq("id", userObj.id)
-          .single();
+        const creditInfo = await getCreditsInfo(userObj.id as string);
 
-        const credits = dbUser?.credits !== undefined ? dbUser.credits : 0;
-
-        if (credits > 0) {
+        // Tutti i piani sono a crediti: l'analisi AI richiede almeno 1 credito.
+        if (creditInfo.credits > 0) {
           analysis = await analyzeCVWithAI(cleanText, jobDescription);
           if (analysis) {
             isFallback = false;
-
-            const { data: currentUser } = await supabase
-              .from("users")
-              .select("credits")
-              .eq("id", userObj.id)
-              .single();
-
-            await supabase
-              .from("users")
-              .update({ credits: (currentUser?.credits || 0) - 1 })
-              .eq("id", userObj.id);
+            await consumeCredit(userObj.id as string);
           }
         }
       } catch (err) {

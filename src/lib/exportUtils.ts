@@ -21,7 +21,7 @@ export const generateTxtContent = (res: AnalysisResult): string => {
 export const exportToTxt = async (res: AnalysisResult, selectedTemplate: string, file: File | undefined, setIsExporting: (v: boolean) => void): Promise<void> => {
   setIsExporting(true);
   const template = getTemplateById(selectedTemplate);
-  const content = generateTxtContent(res) + `\n\n--- Template: ${template.name} | Applimix AI ---`;
+  const content = generateTxtContent(res) + `\n\n--- Template: ${template.name} | Curriculuxe AI ---`;
   const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
@@ -51,7 +51,7 @@ export const exportToDoc = async (res: AnalysisResult, selectedTemplate: string,
       <h3 style="color: ${template.textColor};">Revisione completa:</h3>
       <p>${res.review}</p>
       <p style="margin-top: 30px; font-size: 12px; color: ${template.secondaryText}; border-top: 1px solid ${template.secondaryText}; padding-top: 10px;">
-        Template: ${template.name} | Analisi generata da Applimix AI - ${new Date().toLocaleDateString("it-IT")}
+        Template: ${template.name} | Analisi generata da Curriculuxe AI - ${new Date().toLocaleDateString("it-IT")}
       </p>
     </body>
     </html>
@@ -93,7 +93,7 @@ export const exportToPdf = async (res: AnalysisResult, selectedTemplate: string,
         <p>${res.review}</p>
         
         <p style="margin-top: 40px; font-size: 12px; color: ${template.secondaryText}; border-top: 1px solid ${template.secondaryText}; padding-top: 10px;">
-          Template: ${template.name} | Analisi generata da Applimix AI - ${new Date().toLocaleDateString("it-IT")}
+          Template: ${template.name} | Analisi generata da Curriculuxe AI - ${new Date().toLocaleDateString("it-IT")}
         </p>
       </div>
     `;

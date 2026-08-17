@@ -12,7 +12,7 @@ async function sendFeedbackEmail(feedback: { userEmail: string; type: string; us
     await resend.emails.send({
       from: process.env.RESEND_FROM || "onboarding@resend.dev",
       to: SUPPORT_EMAIL,
-      subject: `[Applimix Feedback] ${feedback.type} - ${feedback.userName}`,
+      subject: `[Curriculuxe Feedback] ${feedback.type} - ${feedback.userName}`,
       html: `
         <h2>Nuovo Feedback</h2>
         <p><strong>Da:</strong> ${feedback.userName} (${feedback.userEmail})</p>

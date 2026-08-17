@@ -1,7 +1,9 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase/client";
 import { analyzeResume } from "@/lib/cvAnalysis";
-import { generateCVWithAI } from "@/lib/ollama";
+import { generateCVWithAI } from "@/lib/ai";
+import { verifyUserToken } from "@/lib/auth";
+import { consumeCredit } from "@/lib/credits";
 
 const mockCVData = {
   tech: {
@@ -68,7 +70,7 @@ function extractInfoFromPrompt(prompt: string) {
   return data;
 }
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
     const body = await request.json() as {
       userId?: string;
@@ -85,6 +87,22 @@ export async function POST(request: Request) {
     };
 
     const { userId, template, personalInfo, summary, experience, education, skills, languages, certifications, prompt, mode } = body;
+
+    // La generazione AI consuma 1 credito per gli utenti autenticati.
+    if (mode === "ai-generated") {
+      const userCookie = request.cookies.get("user")?.value;
+      const user = userCookie ? verifyUserToken(userCookie) : null;
+
+      if (user) {
+        const credit = await consumeCredit(user.id as string);
+        if (!credit.ok) {
+          return NextResponse.json(
+            { error: "Crediti insufficienti. Sottoscrivi un piano o ricarica per generare CV con l'AI." },
+            { status: 402 }
+          );
+        }
+      }
+    }
 
     let cvData: Record<string, unknown>;
 

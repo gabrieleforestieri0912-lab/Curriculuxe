@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Termini di Servizio | Applimix",
-  description: "Termini di utilizzo di Applimix.",
+  title: "Termini di Servizio | Curriculuxe",
+  description: "Termini di utilizzo di Curriculuxe.",
 };
 
 export default function TermsPage() {
@@ -15,7 +15,7 @@ export default function TermsPage() {
         </Link>
         <h1 className="text-4xl font-bold text-white mt-6 mb-4">Termini di Servizio</h1>
         <p className="text-zinc-400 mb-8">
-          Ultimo aggiornamento: 3 maggio 2026. Utilizzando Applimix accetti questi
+          Ultimo aggiornamento: 3 maggio 2026. Utilizzando Curriculuxe accetti questi
           termini e le regole d&apos;uso della piattaforma.
         </p>
 
@@ -23,7 +23,7 @@ export default function TermsPage() {
           <section>
             <h2 className="text-xl font-semibold text-white mb-2">Servizio</h2>
             <p>
-              Applimix fornisce strumenti per creare, analizzare e ottimizzare curriculum
+              Curriculuxe fornisce strumenti per creare, analizzare e ottimizzare curriculum
               e materiali di candidatura. I suggerimenti prodotti non garantiscono assunzioni,
               colloqui o risultati professionali specifici.
             </p>

@@ -31,6 +31,7 @@ export async function GET(request: NextRequest) {
       name: dbUser.name,
       picture: dbUser.picture,
       credits: dbUser.credits !== undefined ? dbUser.credits : 0,
+      plan: dbUser.plan || null,
       language: dbUser.language || "it"
     };
 
