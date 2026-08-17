@@ -182,7 +182,6 @@ export default function CVPage() {
       <nav className="fixed top-0 left-0 right-0 z-50 glass-card">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between gap-3">
           <Link href="/dashboard" className="flex items-center gap-2">
-            <span aria-label="Curriculuxe" className="h-7 w-7 bg-contain bg-center bg-no-repeat shrink-0" style={{ backgroundImage: "url(/curriculuxe.png)" } as React.CSSProperties} />
             <span className="hidden sm:inline text-lg font-bold text-white">Curriculuxe</span>
           </Link>
           <div className="flex items-center gap-3">

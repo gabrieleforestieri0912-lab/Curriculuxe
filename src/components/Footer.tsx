@@ -54,7 +54,6 @@ export default function Footer() {
             className="col-span-2 md:col-span-1"
           >
             <div className="flex items-center gap-2 mb-4">
-              <span aria-label="Curriculuxe" className="h-7 w-7 bg-contain bg-center bg-no-repeat shrink-0" style={{ backgroundImage: "url(/curriculuxe.png)" } as React.CSSProperties} />
               <span className="text-lg font-bold text-white tracking-wide">Curriculuxe</span>
             </div>
             <p className="text-zinc-500 text-sm leading-relaxed max-w-xs">

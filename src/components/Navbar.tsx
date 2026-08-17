@@ -215,7 +215,6 @@ export default function Navbar() {
         <div className="max-w-6xl mx-auto rounded-full border border-white/10 bg-white/[0.04] backdrop-blur-xl shadow-lg shadow-black/30 px-5 sm:px-6 py-2.5 sm:py-3 flex items-center justify-between">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 group">
-            <span aria-label="Curriculuxe" className="h-7 w-7 bg-contain bg-center bg-no-repeat shrink-0 transition-transform duration-300 group-hover:scale-105" style={{ backgroundImage: "url(/curriculuxe.png)" } as React.CSSProperties} />
             <span className="text-xl font-bold text-white tracking-wide transition-all group-hover:text-fuchsia-400">
               Curriculuxe
             </span>
