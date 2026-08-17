@@ -17,9 +17,6 @@ export const metadata: Metadata = {
   title: "Curriculuxe - Crea il Curriculum Perfetto con l'AI",
   description:
     "Crea, ottimizza e perfeziona il tuo curriculum con l'intelligenza artificiale. Curriculuxe ti aiuta a distinguerti e conquistare il lavoro dei tuoi sogni.",
-  icons: {
-    icon: "/curriculuxe.png",
-  },
 };
 
 export default function RootLayout({

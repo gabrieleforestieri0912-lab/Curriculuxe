@@ -20,10 +20,7 @@ export default function BackgroundVideo() {
       });
     };
 
-    if (video.canPlayType("application/vnd.apple.mpegurl")) {
-      video.src = VIDEO_SRC;
-      video.addEventListener("loadedmetadata", play, { once: true });
-    } else if (Hls.isSupported()) {
+    if (Hls.isSupported()) {
       hls = new Hls();
       hls.loadSource(VIDEO_SRC);
       hls.attachMedia(video);
@@ -36,6 +33,10 @@ export default function BackgroundVideo() {
           }
         }
       });
+    } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
+      // Fallback: riproduzione HLS nativa (Safari e browser con supporto integrato)
+      video.src = VIDEO_SRC;
+      video.addEventListener("loadedmetadata", play, { once: true });
     } else {
       video.src = VIDEO_SRC;
       video.addEventListener("loadedmetadata", play, { once: true });
