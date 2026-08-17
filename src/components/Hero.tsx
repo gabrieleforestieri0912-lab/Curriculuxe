@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import AnimatedCounter from "@/components/AnimatedCounter";
+import BackgroundVideo from "@/components/BackgroundVideo";
 import { useLanguage } from "@/context/LanguageContext";
 
 const scanSteps = [
@@ -25,7 +26,7 @@ export default function Hero() {
     event.preventDefault();
 
     if (jobText.trim()) {
-      sessionStorage.setItem("applimix:jobDescription", jobText.trim());
+      sessionStorage.setItem("curriculuxe:jobDescription", jobText.trim());
     }
 
     router.push("/analyze");
@@ -33,7 +34,7 @@ export default function Hero() {
 
   return (
     <section className="gradient-bg relative min-h-screen overflow-hidden pt-28 sm:pt-32 pb-16 sm:pb-20">
-      <div className="absolute inset-0 subtle-grid" />
+      <BackgroundVideo />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_8%,rgba(232,121,249,0.18),transparent_34%),linear-gradient(180deg,transparent,rgba(0,0,0,0.38))]" />
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 w-full">
@@ -93,7 +94,7 @@ export default function Hero() {
                 const file = event.target.files?.[0];
                 if (!file) return;
                 setSelectedFileName(file.name);
-                sessionStorage.setItem("applimix:selectedFileName", file.name);
+                sessionStorage.setItem("curriculuxe:selectedFileName", file.name);
                 router.push("/analyze");
               }}
             />
