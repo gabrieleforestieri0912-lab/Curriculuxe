@@ -1,22 +1,45 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useMemo, useState, useEffect } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
+import { Play } from "lucide-react";
 import AnimatedCounter from "@/components/AnimatedCounter";
 import DashboardSkeleton from "@/components/DashboardSkeleton";
+import DashboardTour from "@/components/DashboardTour";
+import type { TourStep } from "@/components/DashboardTour";
+import { getTranslations } from "@/lib/i18n";
 import { useLanguage } from "@/context/LanguageContext";
 
 export default function Dashboard() {
-  const router = useRouter();
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const tDash = t.dashboard as Record<string, string>;
-  const tNav = (t as Record<string, Record<string, string>>).nav as Record<string, string>;
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const tTour = (t.dashboard as Record<string, unknown>).tour as Record<string, unknown>;
+
+  // I passi del tour: contenuti da i18n, selettori sugli elementi da evidenziare.
+  const tourSteps = useMemo<TourStep[]>(() => {
+    const tTourForLang = (getTranslations(lang).dashboard as Record<string, unknown>).tour as Record<string, unknown>;
+    const steps = (tTourForLang?.steps as Array<Record<string, string>>) ?? [];
+    return [
+      { targets: ["[data-tour='sidebar']", "[data-tour='mobile-nav']"], title: steps[0]?.title ?? "", description: steps[0]?.description ?? "" },
+      { targets: ["[data-tour='generate-ai']"], title: steps[1]?.title ?? "", description: steps[1]?.description ?? "" },
+      { targets: ["[data-tour='quick-actions']"], title: steps[2]?.title ?? "", description: steps[2]?.description ?? "" },
+      { targets: ["[data-tour='analyze-bar']"], title: steps[3]?.title ?? "", description: steps[3]?.description ?? "" },
+      { targets: ["[data-tour='credits']"], title: steps[4]?.title ?? "", description: steps[4]?.description ?? "" },
+      { targets: ["[data-tour='recent']"], title: steps[5]?.title ?? "", description: steps[5]?.description ?? "" },
+    ];
+  }, [lang]);
+
+  const tourLabels = {
+    next: (tTour?.next as string) || "Avanti",
+    prev: (tTour?.prev as string) || "Indietro",
+    skip: (tTour?.skip as string) || "Salta",
+    finish: (tTour?.finish as string) || "Inizia",
+  };
 
   const quickActions = [
-    { href: "/analyze", title: tDash.loadCV as string, desc: tDash.loadCVDesc as string, tone: "emerald" },
+    { href: "/dashboard/discover", title: tDash.discover as string, desc: tDash.discoverDesc as string, tone: "emerald" },
+    { href: "/dashboard/analyze", title: tDash.loadCV as string, desc: tDash.loadCVDesc as string, tone: "emerald" },
     { href: "/dashboard/create?mode=ai", title: tDash.generateFromOffer as string, desc: tDash.generateFromOfferDesc as string, tone: "indigo" },
     { href: "/dashboard/create?mode=manual", title: tDash.createFromScratch as string, desc: tDash.createFromScratchDesc as string, tone: "fuchsia" },
     { href: "/dashboard/interview", title: tDash.interview as string, desc: tDash.interviewDesc as string, tone: "pink" },
@@ -25,9 +48,12 @@ export default function Dashboard() {
   const [user, setUser] = useState<Record<string, unknown> | null>(null);
   const [loading, setLoading] = useState(true);
   const [history, setHistory] = useState<Array<Record<string, unknown>>>([]);
+  const [tourOpen, setTourOpen] = useState(false);
 
   useEffect(() => {
-    const checkAuth = async () => {
+    // L'autenticazione è già garantita dal layout dashboard.
+    // Qui carichiamo solo i dati utente (crediti) per la UI.
+    const loadUser = async () => {
       const cachedData = localStorage.getItem("user");
       if (cachedData) {
         setUser(JSON.parse(cachedData));
@@ -43,9 +69,6 @@ export default function Dashboard() {
             setUser(data.user);
             window.dispatchEvent(new Event("user-updated"));
           }
-        } else if (!cachedData) {
-          localStorage.removeItem("user");
-          router.push("/login");
         }
       } catch {
         console.log("Auth check failed");
@@ -66,15 +89,26 @@ export default function Dashboard() {
       }
     };
 
-    checkAuth().then(() => {
+    loadUser().then(() => {
       fetchHistory();
     });
-  }, [router]);
+  }, []);
 
-  const handleLogout = () => {
-    localStorage.removeItem("user");
-    router.push("/login");
-  };
+  // Tour guidato: si apre una volta per sessione all'accesso alla dashboard.
+  useEffect(() => {
+    if (loading) return;
+    const t = window.setTimeout(() => {
+      try {
+        if (!sessionStorage.getItem("curriculuxe_tour_seen")) {
+          sessionStorage.setItem("curriculuxe_tour_seen", "1");
+          setTourOpen(true);
+        }
+      } catch {
+        // storage non disponibile: non aprire il tour
+      }
+    }, 600);
+    return () => window.clearTimeout(t);
+  }, [loading]);
 
   const handleBuyCredits = async () => {
     try {
@@ -120,47 +154,11 @@ export default function Dashboard() {
     : "Free";
 
   return (
-    <section className="gradient-bg-animated relative min-h-screen overflow-hidden">
+    <section className="relative min-h-screen overflow-hidden">
       <div className="absolute inset-0 subtle-grid opacity-35" />
-      <nav className="fixed top-0 left-0 right-0 z-50 glass-card">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <span className="text-lg font-bold text-white">Curriculuxe</span>
-          </Link>
-          <div className="flex items-center gap-2">
-            <button onClick={() => setSidebarOpen(!sidebarOpen)} className="lg:hidden p-2 rounded-xl bg-white/5 border border-white/8 text-zinc-400 hover:text-white transition-all">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                {sidebarOpen ? <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /> : <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />}
-              </svg>
-            </button>
-            <button onClick={handleLogout} className="text-sm text-zinc-400 hover:text-white px-4 py-2">
-              {tNav.logout as string}
-            </button>
-          </div>
-        </div>
-      </nav>
 
-      <div className="relative z-10 pt-28 pb-16 px-6">
-        <div className="max-w-7xl mx-auto workspace-shell gap-6">
-          <aside className={`glass-card rounded-2xl p-5 h-fit lg:sticky lg:top-28 ${sidebarOpen ? 'block' : 'hidden'} lg:block`}>
-            <p className="text-zinc-500 text-xs uppercase tracking-wider mb-4">{tDash.workspace as string}</p>
-            <div className="space-y-2">
-              {([
-                [tDash.overview as string, "/dashboard"],
-                [tDash.myCVs as string, "/dashboard/cvs"],
-                [tDash.analyze as string, "/analyze"],
-                [tDash.generate as string, "/dashboard/create?mode=ai"],
-                [tDash.interview as string, "/dashboard/interview"],
-                [tDash.jobSearch as string, "/dashboard/job-search"],
-                [tDash.feedback as string, "/dashboard/feedback"],
-              ] as const).map(([label, href]) => (
-                <Link key={href} href={href} onClick={() => setSidebarOpen(false)} className="block rounded-xl px-3 py-2 text-sm text-zinc-300 hover:bg-white/5 hover:text-white">
-                  {label}
-                </Link>
-              ))}
-            </div>
-          </aside>
-
+      <div className="relative z-10 pt-28 pb-16 px-4 sm:px-6">
+        <div className="max-w-7xl mx-auto">
           <main className="space-y-6">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -169,18 +167,29 @@ export default function Dashboard() {
               className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6"
             >
               <div>
-                <h1 className="text-4xl font-bold text-white mb-2">
+                <h1 className="text-3xl sm:text-4xl font-bold text-white mb-2">
                   {tDash.title as string} <span className="text-gradient">{tDash.titleHighlight as string}</span>
                 </h1>
                 <p className="text-zinc-400 text-lg">{tDash.welcome as string}, {(user?.name as string) || "utente"}</p>
               </div>
               <div className="flex flex-wrap gap-3">
-                <Link href="/dashboard/create?mode=ai" className="btn-primary px-6 py-3 rounded-full font-semibold glow-border flex items-center gap-2 whitespace-nowrap">
+                <Link
+                  data-tour="generate-ai"
+                  href="/dashboard/create?mode=ai"
+                  className="btn-primary px-6 py-3 rounded-full font-semibold glow-border flex items-center gap-2 whitespace-nowrap"
+                >
                   {tDash.generateAI as string}
                 </Link>
                 <Link href="/dashboard/create?mode=manual" className="btn-secondary px-6 py-3 rounded-full font-semibold flex items-center gap-2 whitespace-nowrap">
                   {tDash.manual as string}
                 </Link>
+                <button
+                  onClick={() => setTourOpen(true)}
+                  className="btn-secondary px-6 py-3 rounded-full font-semibold flex items-center gap-2 whitespace-nowrap"
+                >
+                  <Play className="w-4 h-4" />
+                  {tDash.replayTour as string}
+                </button>
               </div>
             </motion.div>
 
@@ -190,6 +199,7 @@ export default function Dashboard() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.1 }}
+                  data-tour="quick-actions"
                   className="grid md:grid-cols-3 gap-4"
                 >
                   {quickActions.map((action) => (
@@ -204,6 +214,7 @@ export default function Dashboard() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.18 }}
+                  data-tour="analyze-bar"
                   className="glass-card rounded-2xl p-6"
                 >
                   <div className="flex items-center justify-between mb-6">
@@ -214,8 +225,8 @@ export default function Dashboard() {
                     <div className="flex-1 rounded-xl bg-black/25 border border-white/10 px-4 py-3 text-zinc-500">
                       {tDash.jobCommandPlaceholder as string}
                     </div>
-                    <Link href="/analyze" className="btn-primary px-6 py-3 rounded-xl text-center font-semibold">
-                      {tDash.openAnalysis as string}
+                    <Link href="/dashboard/discover" className="btn-primary px-6 py-3 rounded-xl text-center font-semibold">
+                      {tDash.discover as string}
                     </Link>
                   </div>
                 </motion.div>
@@ -224,6 +235,7 @@ export default function Dashboard() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.24 }}
+                  data-tour="recent"
                   className="glass-card rounded-2xl p-6"
                 >
                   <h2 className="text-xl font-bold text-white mb-6">{tDash.recentAnalyses as string}</h2>
@@ -239,7 +251,7 @@ export default function Dashboard() {
                             <span className={`text-sm font-bold ${Number(item.score) >= 80 ? 'text-emerald-400' : Number(item.score) >= 60 ? 'text-yellow-400' : 'text-red-400'}`}>
                               {item.score as number}/100
                             </span>
-                            <Link href={`/analyze/${item._id as string}`} className="text-indigo-400 text-sm hover:underline">{tDash.see as string}</Link>
+                            <Link href={`/dashboard/analyze/${(item as Record<string, unknown>).id as string}`} className="text-indigo-400 text-sm hover:underline">{tDash.see as string}</Link>
                           </div>
                         </div>
                       ))}
@@ -273,6 +285,7 @@ export default function Dashboard() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
+                data-tour="credits"
                 className="glass-card rounded-2xl p-6 h-fit xl:sticky xl:top-28"
               >
                 <h2 className="text-lg font-semibold text-white mb-5">{tDash.progressPanel as string}</h2>
@@ -355,6 +368,13 @@ export default function Dashboard() {
           </main>
         </div>
       </div>
+
+      <DashboardTour
+        steps={tourSteps}
+        open={tourOpen}
+        labels={tourLabels}
+        onClose={() => setTourOpen(false)}
+      />
     </section>
   );
 }

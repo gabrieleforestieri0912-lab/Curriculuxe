@@ -248,13 +248,54 @@ export function analyzeResume({ text = "", cv = null, jobDescription = "", templ
   }
 
   const atsScore = Math.round((atsChecks.filter((check) => check.passed).length / atsChecks.length) * 100);
-  const contentScore = Math.min(100, Math.round((resumeText.length / 18) + (parsed.experience ? 20 : 0) + (parsed.skills ? 15 : 0)));
-  const scoreParts = [atsScore, contentScore, jobMatchScore].filter((score) => score !== null);
+
+  const bulletLines = normalizeText(text || parsed.experience || "")
+    .split(/\n|•|- /)
+    .map((line) => line.trim())
+    .filter((line) => line.length > 15);
+  const actionLines = bulletLines.filter((line) => ACTION_VERBS.some((verb) => line.toLowerCase().startsWith(verb)));
+  const metricLines = bulletLines.filter((line) => /\d+%|\d+\s*(k|m|clienti|utenti|progetti|persone|mesi|giorni|ore)/i.test(line));
+  const writingScore = Math.min(
+    100,
+    Math.round(
+      (bulletLines.length === 0 ? 0 : (actionLines.length / bulletLines.length) * 50) +
+        (metricLines.length > 0 ? 20 : 0) +
+        (parsed.summary && parsed.summary.length >= 80 ? 15 : 0) +
+        (resumeText.length > 0 ? 15 : 0)
+    )
+  );
+
+  const contentScore = Math.min(
+    100,
+    Math.round(
+      (resumeText.length / 18) + (parsed.experience ? 20 : 0) + (parsed.skills ? 15 : 0) + (parsed.education ? 10 : 0)
+    )
+  );
+
+  const readinessScore = Math.min(
+    100,
+    Math.round(
+      [
+        parsed.personalInfo.email || parsed.personalInfo.phone ? 15 : 0,
+        parsed.summary && parsed.summary.length >= 80 ? 15 : 0,
+        parsed.experience ? 25 : 0,
+        parsed.education ? 15 : 0,
+        parsed.skills ? 15 : 0,
+        parsed.languages ? 10 : 0,
+        metricLines.length > 0 ? 5 : 0,
+      ].reduce((sum, value) => sum + value, 0)
+    )
+  );
+
+  const scoreParts = [atsScore, contentScore, writingScore, readinessScore, jobMatchScore].filter((score) => score !== null);
   const score = Math.round(scoreParts.reduce((sum, value) => sum + value, 0) / scoreParts.length);
 
   return {
     score,
     atsScore,
+    contentScore,
+    writingScore,
+    readinessScore,
     jobMatchScore,
     overall:
       score >= 80

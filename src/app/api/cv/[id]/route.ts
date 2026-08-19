@@ -1,11 +1,17 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase/client";
+import { getRequestUser } from "@/lib/apiAuth";
 
 export async function GET(
-  request: Request,
+  request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const user = getRequestUser(request);
+    if (!user) {
+      return NextResponse.json({ error: "Non autorizzato" }, { status: 401 });
+    }
+
     const { id: cvId } = await params;
 
     const { data: cv, error } = await supabase
@@ -21,6 +27,13 @@ export async function GET(
       );
     }
 
+    if ((cv as { userId?: string }).userId !== user.id) {
+      return NextResponse.json(
+        { error: "Non autorizzato" },
+        { status: 403 }
+      );
+    }
+
     return NextResponse.json(cv);
   } catch (error) {
     console.error("Error fetching CV:", error);
@@ -32,12 +45,42 @@ export async function GET(
 }
 
 export async function PUT(
-  request: Request,
+  request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const user = getRequestUser(request);
+    if (!user) {
+      return NextResponse.json({ error: "Non autorizzato" }, { status: 401 });
+    }
+
     const { id: cvId } = await params;
+
+    const { data: existing } = await supabase
+      .from("cvs")
+      .select("id, userId")
+      .eq("id", cvId)
+      .single();
+
+    if (!existing) {
+      return NextResponse.json(
+        { error: "CV non trovato" },
+        { status: 404 }
+      );
+    }
+
+    if ((existing as { userId?: string }).userId !== user.id) {
+      return NextResponse.json(
+        { error: "Non autorizzato" },
+        { status: 403 }
+      );
+    }
+
     const updates = await request.json() as Record<string, unknown>;
+
+    // Impedisce di cambiare il proprietario del CV tramite payload.
+    delete updates.userId;
+    delete updates.id;
 
     const { error } = await supabase
       .from("cvs")
@@ -57,15 +100,20 @@ export async function PUT(
 }
 
 export async function DELETE(
-  request: Request,
+  request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const user = getRequestUser(request);
+    if (!user) {
+      return NextResponse.json({ error: "Non autorizzato" }, { status: 401 });
+    }
+
     const { id: cvId } = await params;
 
     const { data: existing } = await supabase
       .from("cvs")
-      .select("id")
+      .select("id, userId")
       .eq("id", cvId)
       .single();
 
@@ -73,6 +121,13 @@ export async function DELETE(
       return NextResponse.json(
         { error: "CV non trovato" },
         { status: 404 }
+      );
+    }
+
+    if ((existing as { userId?: string }).userId !== user.id) {
+      return NextResponse.json(
+        { error: "Non autorizzato" },
+        { status: 403 }
       );
     }
 

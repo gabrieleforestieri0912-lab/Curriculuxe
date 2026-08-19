@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useLanguage } from "@/context/LanguageContext";
+import BackgroundVideo from "@/components/BackgroundVideo";
 
 export default function Register() {
   const { t } = useLanguage();
@@ -20,11 +21,22 @@ export default function Register() {
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
 
+  // Dopo la registrazione si torna alla dashboard, oppure all'area di azione
+  // da cui si è arrivati (es. una pagina protetta visitata da non loggato).
+  const getNext = (): string => {
+    if (typeof window === "undefined") return "/dashboard";
+    const params = new URLSearchParams(window.location.search);
+    const next = params.get("next");
+    if (next && next.startsWith("/") && !next.startsWith("//")) return next;
+    return "/dashboard";
+  };
+
   const handleGoogleLogin = async () => {
     setError("");
     setGoogleLoading(true);
     try {
-      const res = await fetch("/api/auth/supabase-google");
+      const next = getNext();
+      const res = await fetch(`/api/auth/supabase-google?next=${encodeURIComponent(next)}`);
       const data = await res.json();
       if (data.url) {
         window.location.href = data.url;
@@ -55,7 +67,7 @@ export default function Register() {
       }
 
       localStorage.setItem("user", JSON.stringify(data.user));
-      router.push("/dashboard");
+      router.push(getNext());
     } catch (err) {
       setError((err as Error).message);
     } finally {
@@ -68,7 +80,10 @@ export default function Register() {
   };
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-purple-900 to-indigo-900 text-white">
+    <div className="min-h-screen text-white overflow-x-clip">
+      <BackgroundVideo />
+      <div className="fixed inset-0 bg-black/35 pointer-events-none" />
+      <div className="relative z-10 min-h-screen flex flex-col">
       <div className="absolute top-6 left-6 z-50">
         <Link
           href="/"
@@ -212,6 +227,7 @@ export default function Register() {
           </motion.button>
         </div>
       </motion.div>
+      </div>
     </div>
   );
 }

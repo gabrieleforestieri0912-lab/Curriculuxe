@@ -8,10 +8,11 @@ Piattaforma AI-powered per creare, ottimizzare e monitorare curriculum professio
 
 **Frontend:** Next.js 16 (App Router), React 19, Tailwind CSS, Framer Motion  
 **Backend:** Next.js API Routes (Node.js runtime)  
-**Database:** MongoDB (driver nativo, no Mongoose)  
-**AI:** OpenAI (GPT-3.5-turbo) o Ollama (Llama 3)  
-**Auth:** Cookie-based con Google OAuth  
-**Pagamenti:** Stripe Checkout
+**Database:** Supabase (PostgreSQL)  
+**AI:** OpenAI (GPT-4o-mini) con fallback Ollama per test locali  
+**Auth:** Cookie httpOnly firmato (HMAC-SHA256) con Google OAuth via Supabase Auth  
+**Pagamenti:** Stripe Checkout (sessioni + webhook)  
+**Email:** Resend (notifiche feedback)
 
 ---
 
@@ -21,23 +22,22 @@ Piattaforma AI-powered per creare, ottimizzare e monitorare curriculum professio
 src/
 ├── app/
 │   ├── api/                    # API routes
-│   │   ├── auth/               # Login, register, Google OAuth, lingua
-│   │   ├── checkout/           # Stripe checkout session
-│   │   ├── cv/                 # CRUD CV, analisi, generazione, career kit
-│   │   │   ├── [id]/           # GET/PUT/DELETE singolo CV
-│   │   │   │   ├── status/     # Pipeline tracking (draft→sent→interview→...)
-│   │   │   │   └── versions/   # Versioni per offerta di lavoro
-│   │   │   ├── analyze/        # Analisi ATS con AI + fallback statico
-│   │   │   ├── generate/       # Generazione CV (AI o manuale)
-│   │   │   ├── generate-summary/ # AI summary generator
-│   │   │   ├── rewrite-bullet/ # AI bullet point rewriter
-│   │   │   ├── revise/         # Revisione CV
-│   │   │   ├── career-kit/     # Cover letter + email + skill suggerite
-│   │   │   └── history/        # Cronologia analisi
-│   │   ├── feedback/           # Invio feedback con notifica email
-│   │   ├── interview/          # Feedback AI su risposte colloquio
-│   │   ├── webhooks/stripe/    # Webhook pagamenti
-│   │   └── test-env/           # Utility test ambiente
+│   ├── auth/               # Login, register, Google OAuth (Supabase), lingua
+│   ├── checkout/           # Stripe checkout session
+│   ├── cv/                 # CRUD CV, analisi, generazione, career kit
+│   │   ├── [id]/           # GET/PUT/DELETE singolo CV (auth + ownership)
+│   │   │   ├── status/     # Pipeline tracking (draft→sent→interview→...)
+│   │   │   └── versions/   # Versioni per offerta di lavoro
+│   │   ├── analyze/        # Analisi ATS con AI + fallback statico
+│   │   ├── generate/       # Generazione CV (AI o manuale)
+│   │   ├── generate-summary/ # AI summary generator
+│   │   ├── rewrite-bullet/ # AI bullet point rewriter
+│   │   ├── revise/         # Revisione CV
+│   │   ├── career-kit/     # Cover letter + email + skill suggerite
+│   │   └── history/        # Cronologia analisi
+│   ├── feedback/           # Invio feedback con notifica email (Resend)
+│   ├── interview/          # Feedback AI su risposte colloquio
+│   └── webhooks/stripe/    # Webhook pagamenti
 │   │
 │   ├── dashboard/              # Pagine protette (autenticazione richiesta)
 │   │   ├── page.jsx            # Dashboard principale
@@ -79,14 +79,19 @@ src/
 │       └── definitions/        # Definizioni dei 16 template
 │
 ├── context/
-│   └── LanguageContext.jsx     # Provider lingua (IT/EN)
+│   └── LanguageContext.tsx     # Provider lingua (IT/EN)
 │
 └── lib/
-    ├── auth.js                 # Autenticazione (MongoDB, cookie, Google OAuth)
-    ├── cvAnalysis.js           # Analisi statica CV (regex + scoring)
-    ├── careerKit.js            # Cover letter, skills, market profiles
-    ├── ollama.js               # AI (OpenAI + Ollama)
-    └── i18n.js                 # Traduzioni IT/EN
+    ├── auth.ts                 # Autenticazione (Supabase, cookie firmato, bcrypt)
+    ├── apiAuth.ts              # Helper auth per API routes (cookie → utente)
+    ├── rateLimit.ts            # Rate limiter in-memory + IP extraction
+    ├── credits.ts              # Sistema crediti AI (consumo atomico)
+    ├── ai.ts                   # AI (OpenAI + fallback Ollama, con timeout)
+    ├── cvAnalysis.ts           # Analisi statica CV (regex + scoring)
+    ├── careerKit.ts            # Cover letter, skills, market profiles
+    ├── stripe.ts               # Client Stripe + piani
+    ├── i18n.ts                 # Traduzioni IT/EN
+    └── supabase/               # Client + tipi Supabase
 ```
 
 ---
@@ -212,11 +217,19 @@ Ogni cambio stato registra timestamp e note (storico consultabile via `GET /api/
 
 ## Autenticazione
 
-- **Email/password** con hash SHA-256
-- **Google OAuth** con redirect callback
-- Cookie HTTP-only con dati utente (id, email, nome)
-- Persistenza lingua su account MongoDB (campo `language`)
-- Protezione route lato client con redirect a `/login`
+- **Email/password** con hash bcrypt (le password legacy SHA-256 vengono migrate al login)
+- **Google OAuth** via Supabase Auth (redirect callback)
+- Cookie HTTP-only firmato HMAC-SHA256 con dati utente (id, email, nome)
+- `JWT_SECRET` obbligatorio in produzione (senza, l'app rifiuta di firmare i token)
+- Persistenza lingua su account Supabase (campo `language`)
+- Protezione route: middleware Edge su `/dashboard/*` + verifica token nelle API
+- Rate limiting su login/registrazione e analisi anonime
+
+## Sicurezza API
+
+- Tutte le API CV richiedono autenticazione e verificano l'ownership: un utente può leggere/modificare/cancellare solo i propri CV
+- Le funzionalità AI (bullet, summary, colloqui, generazione) richiedono l'accesso e consumano 1 credito
+- Il consumo crediti usa un update condizionale per evitare race condition
 
 ---
 
@@ -269,7 +282,7 @@ Se l'AI non è disponibile o l'utente non ha crediti, il sistema usa analisi sta
 
 ### Configurazione Stripe
 
-- `STRIPE_SECRET_KEY`, `NEXT_PUBLIC_STRIPE_KEY`, `STRIPE_WEBHOOK_SECRET`
+- `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET` (il checkout è hosted: non serve la chiave pubblica lato client)
 - Gli abbonamenti (`starter`/`pro`/`enterprise`) usano `mode: "subscription"` e richiedono il webhook `invoice.paid` per i rinnovi.
 
 ---
@@ -290,7 +303,9 @@ Due lingue complete (IT/EN):
 ```bash
 # File: .env.local
 
-MONGODB_URI=mongodb+srv://...
+NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
 JWT_SECRET=your-secret-key
 NEXT_PUBLIC_URL=http://localhost:3000
 
@@ -302,10 +317,7 @@ STRIPE_SECRET_KEY=sk_test_...
 NEXT_PUBLIC_STRIPE_KEY=pk_test_...
 STRIPE_WEBHOOK_SECRET=whsec_...
 
-# Google OAuth
-GOOGLE_CLIENT_ID=...
-GOOGLE_CLIENT_SECRET=...
-NEXTAUTH_SECRET=...
+# Google OAuth (configurato nella dashboard Supabase, nessuna chiave lato app)
 
 # Resend (per notifiche feedback)
 RESEND_API_KEY=re_...
@@ -327,15 +339,17 @@ npm start       # Avvia produzione
 
 ---
 
-## Database MongoDB
+## Database Supabase (PostgreSQL)
 
-Collezioni:
+Tabelle (vedi `supabase-migration.sql`):
 
-- `users` — account utente (crediti, lingua, score, statistiche)
+- `users` — account utente (crediti, piano, lingua, score, contatori pipeline)
 - `cvs` — curriculum (con applicationVersions e statusHistory)
 - `analyses` — storico analisi con risultati completi
 - `payments` — transazioni Stripe
 - `feedbacks` — feedback utente
+
+> Nota: i nomi colonna sono camelCase e devono combaciare esattamente con il codice. Il file di migration include le istruzioni `ALTER TABLE` commentate per allineare eventuali DB esistenti creati con lo schema precedente.
 
 ---
 

@@ -1,24 +1,14 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { useLanguage } from "@/context/LanguageContext";
 import { languages } from "@/lib/i18n";
 
 export default function SettingsPage() {
   const { t, lang, changeLanguage } = useLanguage();
-  const tNav = (t as Record<string, Record<string, string>>).nav;
   const tSettings = t.settings as Record<string, string>;
-  const router = useRouter();
   const [saved, setSaved] = useState(false);
-
-  useEffect(() => {
-    if (!localStorage.getItem("user")) {
-      router.push("/login");
-    }
-  }, [router]);
 
   const handleLanguageChange = (code: string) => {
     changeLanguage(code);
@@ -27,19 +17,8 @@ export default function SettingsPage() {
   };
 
   return (
-    <section className="gradient-bg-animated relative min-h-screen overflow-hidden">
+    <section className="relative min-h-screen overflow-hidden">
       <div className="absolute inset-0 subtle-grid opacity-35" />
-      <nav className="fixed top-0 left-0 right-0 z-50 glass-card">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <span className="text-lg font-bold text-white">Curriculuxe</span>
-          </Link>
-          <Link href="/dashboard" className="text-sm text-zinc-400 hover:text-white px-4 py-2">
-            {tNav.backDashboard}
-          </Link>
-        </div>
-      </nav>
-
       <div className="pt-28 pb-16 px-6">
         <div className="max-w-2xl mx-auto">
           <motion.h1

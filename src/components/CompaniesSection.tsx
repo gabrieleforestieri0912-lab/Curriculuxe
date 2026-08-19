@@ -1,45 +1,23 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useLanguage } from "@/context/LanguageContext";
-import {
-  faAirbnb,
-  faAmazon,
-  faApple,
-  faDiscord,
-  faGithub,
-  faGoogle,
-  faLinkedin,
-  faMeta,
-  faMicrosoft,
-  faSalesforce,
-  faShopify,
-  faSlack,
-  faSpotify,
-} from "@fortawesome/free-brands-svg-icons";
-import { IconDefinition } from "@fortawesome/fontawesome-svg-core";
+import CompanyLogo from "./CompanyLogos";
 
-interface CompanyLogo {
-  name: string;
-  icon: IconDefinition;
-  color: string;
-}
-
-const companyLogos: CompanyLogo[] = [
-  { name: "Google", icon: faGoogle, color: "#4285F4" },
-  { name: "Apple", icon: faApple, color: "#f5f5f7" },
-  { name: "Microsoft", icon: faMicrosoft, color: "#00A4EF" },
-  { name: "Amazon", icon: faAmazon, color: "#FF9900" },
-  { name: "Meta", icon: faMeta, color: "#0668E1" },
-  { name: "Salesforce", icon: faSalesforce, color: "#00A1E0" },
-  { name: "Spotify", icon: faSpotify, color: "#1DB954" },
-  { name: "Airbnb", icon: faAirbnb, color: "#FF5A5F" },
-  { name: "GitHub", icon: faGithub, color: "#f5f5f5" },
-  { name: "LinkedIn", icon: faLinkedin, color: "#0A66C2" },
-  { name: "Slack", icon: faSlack, color: "#E01E5A" },
-  { name: "Discord", icon: faDiscord, color: "#5865F2" },
-  { name: "Shopify", icon: faShopify, color: "#95BF47" },
+const companyNames: string[] = [
+  "Google",
+  "Apple",
+  "Microsoft",
+  "Amazon",
+  "Meta",
+  "Salesforce",
+  "Spotify",
+  "Airbnb",
+  "GitHub",
+  "LinkedIn",
+  "Slack",
+  "Discord",
+  "Shopify",
 ];
 
 export default function CompaniesSection() {
@@ -47,7 +25,7 @@ export default function CompaniesSection() {
   const tCompanies = t.companies as Record<string, string>;
   return (
     <section
-      className="py-16 sm:py-20 overflow-hidden gradient-bg"
+      className="py-24 overflow-hidden"
     >
       <style>{`
         @keyframes marquee {
@@ -91,15 +69,12 @@ export default function CompaniesSection() {
         } as React.CSSProperties}
       >
         <div className="marquee-track">
-            {[...companyLogos, ...companyLogos].map((company, i) => (
+            {[...companyNames, ...companyNames].map((name, i) => (
               <div
                 key={i}
                 className="flex items-center px-16 py-6"
               >
-                <FontAwesomeIcon
-                  icon={company.icon}
-                  style={{ color: company.color, width: "64px", height: "64px" }}
-                />
+                <CompanyLogo name={name} />
               </div>
             ))}
           </div>

@@ -1,8 +1,18 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { loginUser, signUserToken } from "@/lib/auth";
+import { checkRateLimit, getClientIp } from "@/lib/rateLimit";
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
+    // Rate limit: 10 tentativi / 15 minuti per IP (anti brute-force).
+    const limit = checkRateLimit(`login:${getClientIp(request)}`, 10, 15 * 60 * 1000);
+    if (!limit.allowed) {
+      return NextResponse.json(
+        { error: "Troppi tentativi. Riprova più tardi." },
+        { status: 429 }
+      );
+    }
+
     const { email, password } = await request.json() as { email: string; password: string };
 
     if (!email || !password) {

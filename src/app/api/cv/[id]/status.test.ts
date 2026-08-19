@@ -47,25 +47,41 @@ beforeEach(() => {
 
 describe("PUT /api/cv/[id]/status", () => {
   it("restituisce 400 per uno status non valido", async () => {
+    const token = signUserToken({ id: "u1", email: "a@b.it", name: "Mario" });
+    enqueue("cvs", { data: { statusHistory: [], userId: "u1" } });
+
     const req = new NextRequest("http://localhost/api/cv/1/status", {
       method: "PUT",
       body: JSON.stringify({ status: "inesistente" }),
-      headers: { "content-type": "application/json" },
+      headers: { "content-type": "application/json", cookie: `user=${token}` },
     });
 
     const res = await PUT(req, { params: Promise.resolve({ id: "1" }) });
 
     expect(res.status).toBe(400);
-    expect(supabaseMock.from).not.toHaveBeenCalled();
   });
 
-  it("aggiorna lo status e lo storico senza cookie utente", async () => {
-    enqueue("cvs", { data: { statusHistory: [] } });
-
+  it("restituisce 401 senza cookie utente", async () => {
     const req = new NextRequest("http://localhost/api/cv/1/status", {
       method: "PUT",
       body: JSON.stringify({ status: "sent", notes: "Inviato via LinkedIn" }),
       headers: { "content-type": "application/json" },
+    });
+
+    const res = await PUT(req, { params: Promise.resolve({ id: "cv1" }) });
+
+    expect(res.status).toBe(401);
+  });
+
+  it("aggiorna lo status e lo storico quando il cookie è valido e il CV è dell'utente", async () => {
+    const token = signUserToken({ id: "u1", email: "a@b.it", name: "Mario" });
+    enqueue("cvs", { data: { statusHistory: [], userId: "u1" } });
+    enqueue("users", { data: { appStatus_sent: 0 } });
+
+    const req = new NextRequest("http://localhost/api/cv/1/status", {
+      method: "PUT",
+      body: JSON.stringify({ status: "sent", notes: "Inviato via LinkedIn" }),
+      headers: { "content-type": "application/json", cookie: `user=${token}` },
     });
 
     const res = await PUT(req, { params: Promise.resolve({ id: "cv1" }) });
@@ -78,10 +94,9 @@ describe("PUT /api/cv/[id]/status", () => {
     expect(supabaseMock.from).toHaveBeenCalledWith("cvs");
   });
 
-  it("incrementa il contatore utente quando il cookie è valido", async () => {
+  it("restituisce 403 se il CV appartiene a un altro utente", async () => {
     const token = signUserToken({ id: "u1", email: "a@b.it", name: "Mario" });
-    enqueue("cvs", { data: { statusHistory: [{ status: "draft", notes: "", changedAt: new Date() }] } });
-    enqueue("users", { data: { appStatus_sent: 0 } });
+    enqueue("cvs", { data: { statusHistory: [], userId: "altro-utente" } });
 
     const req = new NextRequest("http://localhost/api/cv/1/status", {
       method: "PUT",
@@ -91,31 +106,41 @@ describe("PUT /api/cv/[id]/status", () => {
 
     const res = await PUT(req, { params: Promise.resolve({ id: "cv1" }) });
 
-    expect(res.status).toBe(200);
-    const userCalls = supabaseMock.from.mock.calls.filter((c) => c[0] === "users");
-    expect(userCalls.length).toBeGreaterThanOrEqual(1);
+    expect(res.status).toBe(403);
   });
 });
 
 describe("GET /api/cv/[id]/status", () => {
-  it("restituisce 404 se il CV non esiste", async () => {
-    enqueue("cvs", { error: new Error("not found") });
-
-    const res = await GET(new Request("http://localhost/api/cv/1/status"), {
+  it("restituisce 401 senza cookie utente", async () => {
+    const res = await GET(new NextRequest("http://localhost/api/cv/1/status"), {
       params: Promise.resolve({ id: "x" }),
     });
+
+    expect(res.status).toBe(401);
+  });
+
+  it("restituisce 404 se il CV non esiste", async () => {
+    const token = signUserToken({ id: "u1", email: "a@b.it", name: "Mario" });
+    enqueue("cvs", { error: new Error("not found") });
+
+    const res = await GET(
+      new NextRequest("http://localhost/api/cv/1/status", { headers: { cookie: `user=${token}` } }),
+      { params: Promise.resolve({ id: "x" }) }
+    );
 
     expect(res.status).toBe(404);
   });
 
   it("restituisce lo stato corrente del CV", async () => {
+    const token = signUserToken({ id: "u1", email: "a@b.it", name: "Mario" });
     enqueue("cvs", {
-      data: { applicationStatus: "interview", statusHistory: [], fileName: "cv.pdf", template: "ats" },
+      data: { applicationStatus: "interview", statusHistory: [], fileName: "cv.pdf", template: "ats", userId: "u1" },
     });
 
-    const res = await GET(new Request("http://localhost/api/cv/1/status"), {
-      params: Promise.resolve({ id: "x" }),
-    });
+    const res = await GET(
+      new NextRequest("http://localhost/api/cv/1/status", { headers: { cookie: `user=${token}` } }),
+      { params: Promise.resolve({ id: "x" }) }
+    );
     const json = await res.json();
 
     expect(res.status).toBe(200);

@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { useLanguage } from "@/context/LanguageContext";
 
@@ -31,25 +30,17 @@ interface CVItem {
 export default function CVListPage() {
   const { t } = useLanguage();
   const tDash = t.dashboard as Record<string, string>;
-  const tNav = (t as Record<string, Record<string, string>>).nav as Record<string, string>;
-  const router = useRouter();
   const [cvs, setCvs] = useState<CVItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [updatingId, setUpdatingId] = useState<string | null>(null);
 
   useEffect(() => {
-    const checkAuthAndFetch = async () => {
-      const userData = localStorage.getItem("user");
-      if (!userData) {
-        router.push("/login");
-        return;
-      }
-
-      const user = JSON.parse(userData);
-
+    // L'autenticazione è già garantita dal layout dashboard.
+    // Il server ricava l'utente dal cookie di sessione.
+    const fetchCVs = async () => {
       try {
-        const res = await fetch(`/api/cv?userId=${user.id}`);
+        const res = await fetch("/api/cv");
         if (res.ok) {
           const data = await res.json();
           setCvs(data);
@@ -64,8 +55,8 @@ export default function CVListPage() {
       }
     };
 
-    checkAuthAndFetch();
-  }, [router]);
+    fetchCVs();
+  }, []);
 
   const handleStatusChange = async (cvId: string, newStatus: string) => {
     setUpdatingId(cvId);
@@ -108,27 +99,15 @@ export default function CVListPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen gradient-bg flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin w-8 h-8 border-2 border-indigo-500 border-t-transparent rounded-full"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen gradient-bg">
-      <nav className="fixed top-0 left-0 right-0 z-50 glass-card">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <Link href="/dashboard" className="flex items-center gap-2">
-            <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-            <span className="text-white font-medium">{tNav.backDashboard}</span>
-          </Link>
-          <h1 className="text-white font-bold text-lg">{tDash.myCVs}</h1>
-        </div>
-      </nav>
-
-      <div className="pt-28 pb-16 px-6">
+    <div className="min-h-screen">
+      <div className="pt-28 pb-16 px-4 sm:px-6">
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -168,7 +147,7 @@ export default function CVListPage() {
               <p className="text-zinc-400 mb-8">{tDash.noCVsDesc}</p>
               <div className="grid md:grid-cols-3 gap-4 text-left">
                 {([
-                  { href: "/analyze", title: tDash.loadCV, desc: tDash.loadCVDesc },
+                  { href: "/dashboard/analyze", title: tDash.loadCV, desc: tDash.loadCVDesc },
                   { href: "/dashboard/create", title: tDash.createFromScratch, desc: tDash.createFromScratchDesc },
                   { href: "/dashboard/generate", title: tDash.generateFromOffer, desc: tDash.generateFromOfferDesc },
                 ] as const).map((item) => (

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import BackgroundVideo from "@/components/BackgroundVideo";
 
 export const metadata: Metadata = {
   title: "Termini di Servizio | Curriculuxe",
@@ -8,7 +9,10 @@ export const metadata: Metadata = {
 
 export default function TermsPage() {
   return (
-    <main className="min-h-screen gradient-bg-animated px-6 py-24">
+    <main className="min-h-screen text-white overflow-x-clip relative">
+      <BackgroundVideo />
+      <div className="fixed inset-0 bg-black/35 pointer-events-none" />
+      <div className="relative z-10 px-6 py-24">
       <div className="max-w-3xl mx-auto glass-card rounded-2xl p-8 border border-white/10">
         <Link href="/" className="text-sm text-indigo-300 hover:text-indigo-200">
           Torna alla home
@@ -62,6 +66,7 @@ export default function TermsPage() {
             </p>
           </section>
         </div>
+      </div>
       </div>
     </main>
   );

@@ -115,8 +115,8 @@ export default function ScoreDemo() {
 
   return (
     <>
-      <section id="how-it-works" className="py-20 px-6 gradient-bg">
-        <div className="max-w-6xl mx-auto">
+      <section id="how-it-works" className="py-24 px-6">
+        <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -171,8 +171,8 @@ export default function ScoreDemo() {
         </div>
       </section>
 
-      <section className="py-24 px-6 gradient-bg">
-        <div className="max-w-6xl mx-auto">
+      <section className="py-24 px-6">
+        <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -214,21 +214,46 @@ export default function ScoreDemo() {
               <div className="flex items-center gap-6 mb-8">
                 <div className="relative w-24 h-24 shrink-0">
                   <svg className="w-full h-full -rotate-90" viewBox="0 0 36 36">
-                    <circle cx="18" cy="18" r="15.9" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="3" />
+                    {/* Traccia a solco */}
+                    <circle cx="18" cy="18" r="15.9" fill="none" stroke="url(#scoreTrackGrad)" strokeWidth="4" />
+                    {/* Alone luminoso (glow) */}
                     <motion.circle
-                      cx="18" cy="18" r="15.9"
+                      cx="18"
+                      cy="18"
+                      r="15.9"
                       fill="none"
                       stroke="url(#scoreGrad)"
-                      strokeWidth="3"
+                      strokeWidth="4"
                       strokeLinecap="round"
                       strokeDasharray="100"
                       initial={{ strokeDashoffset: 100 }}
                       animate={{ strokeDashoffset: 100 - score }}
-                      transition={{ duration: 0.3 }}
+                      transition={{ type: "spring", stiffness: 70, damping: 20, mass: 1 }}
+                      style={{ filter: "blur(2.5px)" }}
+                      opacity={0.35}
+                    />
+                    {/* Anello 3D */}
+                    <motion.circle
+                      cx="18"
+                      cy="18"
+                      r="15.9"
+                      fill="none"
+                      stroke="url(#scoreGrad)"
+                      strokeWidth="4"
+                      strokeLinecap="round"
+                      strokeDasharray="100"
+                      initial={{ strokeDashoffset: 100 }}
+                      animate={{ strokeDashoffset: 100 - score }}
+                      transition={{ type: "spring", stiffness: 70, damping: 20, mass: 1 }}
                     />
                     <defs>
-                      <linearGradient id="scoreGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="0%" stopColor="#6366f1" />
+                      <linearGradient id="scoreTrackGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stopColor="rgba(255,255,255,0.12)" />
+                        <stop offset="100%" stopColor="rgba(255,255,255,0.03)" />
+                      </linearGradient>
+                      <linearGradient id="scoreGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stopColor="#818cf8" />
+                        <stop offset="45%" stopColor="#c4b5fd" />
                         <stop offset="100%" stopColor="#e879f9" />
                       </linearGradient>
                     </defs>
@@ -248,12 +273,23 @@ export default function ScoreDemo() {
                 {criteria.map((item, i) => (
                   <div key={item.label} className="flex items-center gap-4">
                     <span className="text-zinc-400 text-sm w-24 shrink-0">{item.label}</span>
-                    <div className="flex-1 h-2 bg-white/10 rounded-full overflow-hidden">
+                    <div className="flex-1 h-3 rounded-full bg-gradient-to-b from-white/[0.08] to-white/[0.02] border border-white/10 shadow-[inset_0_1px_4px_rgba(0,0,0,0.55)] overflow-hidden">
                       <motion.div
-                        className={`h-full bg-gradient-to-r ${item.color} rounded-full`}
+                        className="relative h-full rounded-full overflow-hidden"
                         animate={{ width: `${criteriaScores[i]}%` }}
-                        transition={{ duration: 0.4, ease: "easeOut" }}
-                      />
+                        transition={{ type: "spring", stiffness: 70, damping: 20, mass: 1 }}
+                      >
+                        {/* Colore del criterio */}
+                        <div className={`absolute inset-0 bg-gradient-to-r ${item.color}`} />
+                        {/* Ombreggiatura cilindrica 3D */}
+                        <div className="absolute inset-0 bg-gradient-to-b from-white/35 via-white/5 to-black/40" />
+                        {/* Riflesso scorrevole */}
+                        <motion.div
+                          className="absolute top-0 bottom-0 w-1/2 bg-gradient-to-r from-transparent via-white/40 to-transparent"
+                          animate={{ x: ["-100%", "300%"] }}
+                          transition={{ duration: 2.4, repeat: Infinity, repeatDelay: 0.9, ease: "easeInOut" }}
+                        />
+                      </motion.div>
                     </div>
                     <span className="text-white text-sm w-8 text-right">{criteriaScores[i]}</span>
                   </div>

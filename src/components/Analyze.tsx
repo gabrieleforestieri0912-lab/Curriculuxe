@@ -14,6 +14,9 @@ interface Result {
   review?: string;
   isFallback?: boolean;
   atsScore: number;
+  contentScore?: number;
+  writingScore?: number;
+  readinessScore?: number;
   jobMatchScore?: number;
   strengths: string[];
   improvements: Array<{ area: string; impact: string; description: string }>;
@@ -32,9 +35,10 @@ interface Result {
 
 interface AnalyzeProps {
   initialResult?: Result | null;
+  embedded?: boolean;
 }
 
-export default function Analyze({ initialResult = null }: AnalyzeProps) {
+export default function Analyze({ initialResult = null, embedded = false }: AnalyzeProps) {
   const [file, setFile] = useState<File | null>(null);
   const [analyzing, setAnalyzing] = useState(false);
   const [result, setResult] = useState<Result | null>(initialResult);
@@ -184,7 +188,7 @@ export default function Analyze({ initialResult = null }: AnalyzeProps) {
   };
 
   return (
-    <section className="gradient-bg-animated relative min-h-screen overflow-hidden">
+    <section className={embedded ? "relative" : "gradient-bg-animated relative min-h-screen overflow-hidden"}>
       {toast && (
         <motion.div
           initial={{ opacity: 0, y: -12 }}
@@ -195,18 +199,20 @@ export default function Analyze({ initialResult = null }: AnalyzeProps) {
           {toast}
         </motion.div>
       )}
-      <nav className="fixed top-0 left-0 right-0 z-50 glass-card">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between gap-3">
-          <Link href="/" className="flex items-center gap-2">
-            <span className="text-lg font-bold text-white">Curriculuxe</span>
-          </Link>
-          <div className="flex items-center gap-3">
-            <Link href="/register" className="btn-primary text-sm text-white px-5 py-2.5 rounded-full font-medium">
-              Get Started
+      {!embedded && (
+        <nav className="fixed top-0 left-0 right-0 z-50 glass-card">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between gap-3">
+            <Link href="/" className="flex items-center gap-2">
+              <span className="text-lg font-bold text-white">Curriculuxe</span>
             </Link>
+            <div className="flex items-center gap-3">
+              <Link href="/register" className="btn-primary text-sm text-white px-5 py-2.5 rounded-full font-medium">
+                Get Started
+              </Link>
+            </div>
           </div>
-        </div>
-      </nav>
+        </nav>
+      )}
 
       <div className="pt-28 sm:pt-32 pb-12 sm:pb-16 px-4 sm:px-6">
         <div className="max-w-4xl mx-auto">
@@ -429,21 +435,33 @@ export default function Analyze({ initialResult = null }: AnalyzeProps) {
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: 0.25 }}
-                      className="md:col-span-2 grid sm:grid-cols-3 gap-4"
+                      className="md:col-span-2 grid sm:grid-cols-2 lg:grid-cols-5 gap-4"
                     >
                       <div className="bg-white/5 rounded-xl p-4 border border-white/10">
                         <p className="text-zinc-500 text-xs mb-1">Score totale</p>
                         <p className="text-2xl font-bold text-white">{result.score}/100</p>
                       </div>
                       <div className="bg-white/5 rounded-xl p-4 border border-white/10">
-                        <p className="text-zinc-500 text-xs mb-1">ATS</p>
+                        <p className="text-zinc-500 text-xs mb-1">ATS readability</p>
                         <p className="text-2xl font-bold text-emerald-400">{result.atsScore}/100</p>
                       </div>
                       <div className="bg-white/5 rounded-xl p-4 border border-white/10">
-                        <p className="text-zinc-500 text-xs mb-1">Match offerta</p>
+                        <p className="text-zinc-500 text-xs mb-1">Content quality</p>
+                        <p className="text-2xl font-bold text-sky-400">{result.contentScore ?? "--"}/100</p>
+                      </div>
+                      <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+                        <p className="text-zinc-500 text-xs mb-1">Writing</p>
+                        <p className="text-2xl font-bold text-amber-400">{result.writingScore ?? "--"}/100</p>
+                      </div>
+                      <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+                        <p className="text-zinc-500 text-xs mb-1">Job match</p>
                         <p className="text-2xl font-bold text-indigo-300">
                           {result.jobMatchScore ?? "--"}/100
                         </p>
+                      </div>
+                      <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+                        <p className="text-zinc-500 text-xs mb-1">Application readiness</p>
+                        <p className="text-2xl font-bold text-fuchsia-300">{result.readinessScore ?? "--"}/100</p>
                       </div>
                     </motion.div>
 

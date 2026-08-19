@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase/client";
 import { analyzeResume } from "@/lib/cvAnalysis";
 import { generateCVWithAI } from "@/lib/ai";
-import { verifyUserToken } from "@/lib/auth";
+import { getRequestUser } from "@/lib/apiAuth";
 import { consumeCredit } from "@/lib/credits";
 
 const mockCVData = {
@@ -86,21 +86,24 @@ export async function POST(request: NextRequest) {
       mode?: string;
     };
 
-    const { userId, template, personalInfo, summary, experience, education, skills, languages, certifications, prompt, mode } = body;
+    const { template, personalInfo, summary, experience, education, skills, languages, certifications, prompt, mode } = body;
 
-    // La generazione AI consuma 1 credito per gli utenti autenticati.
+    // Tutta la creazione CV richiede autenticazione: l'id dell'utente
+    // viene preso dal cookie, non dal body (evita di salvare CV a nome altrui).
+    const user = getRequestUser(request);
+    if (!user) {
+      return NextResponse.json({ error: "Non autorizzato" }, { status: 401 });
+    }
+    const userId = user.id;
+
+    // La generazione AI consuma 1 credito.
     if (mode === "ai-generated") {
-      const userCookie = request.cookies.get("user")?.value;
-      const user = userCookie ? verifyUserToken(userCookie) : null;
-
-      if (user) {
-        const credit = await consumeCredit(user.id as string);
-        if (!credit.ok) {
-          return NextResponse.json(
-            { error: "Crediti insufficienti. Sottoscrivi un piano o ricarica per generare CV con l'AI." },
-            { status: 402 }
-          );
-        }
+      const credit = await consumeCredit(userId);
+      if (!credit.ok) {
+        return NextResponse.json(
+          { error: "Crediti insufficienti. Sottoscrivi un piano o ricarica per generare CV con l'AI." },
+          { status: 402 }
+        );
       }
     }
 

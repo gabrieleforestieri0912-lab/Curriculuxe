@@ -5,6 +5,7 @@ import { generateCoverAssets, suggestSkills } from "@/lib/careerKit";
 import { analyzeCVWithAI } from "@/lib/ai";
 import { verifyUserToken } from "@/lib/auth";
 import { consumeCredit, getCreditsInfo } from "@/lib/credits";
+import { checkRateLimit, getClientIp } from "@/lib/rateLimit";
 import { supabase } from "@/lib/supabase/client";
 
 export const runtime = "nodejs";
@@ -99,6 +100,9 @@ export async function POST(request: NextRequest) {
     const userCookie = request.cookies.get("user");
     let userObj: Record<string, unknown> | null = null;
 
+    // Limite per utenti anonimi: 5 analisi / 15 minuti per IP.
+    const ipLimit = checkRateLimit(`analyze-anon:${getClientIp(request)}`, 5, 15 * 60 * 1000);
+
     if (userCookie && userCookie.value) {
       userObj = verifyUserToken(userCookie.value);
       if (!userObj) {
@@ -120,8 +124,20 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    if (!userObj && !ipLimit.allowed) {
+      return NextResponse.json(
+        { error: "Hai raggiunto il limite di analisi gratuite. Registrati per continuare." },
+        { status: 429 }
+      );
+    }
+
     if (analysis) {
       (analysis as Record<string, unknown>).parsed = fallbackAnalysis.parsed;
+      for (const key of ["contentScore", "writingScore", "readinessScore"] as const) {
+        if (typeof (analysis as Record<string, unknown>)[key] !== "number") {
+          (analysis as Record<string, unknown>)[key] = fallbackAnalysis[key];
+        }
+      }
     } else {
       analysis = fallbackAnalysis as unknown as Record<string, unknown>;
     }

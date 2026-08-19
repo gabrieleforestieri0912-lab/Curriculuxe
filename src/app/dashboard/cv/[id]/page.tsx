@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
 import { useRouter, useParams } from "next/navigation";
 import { motion } from "framer-motion";
 
@@ -24,6 +23,7 @@ interface Version {
   id?: string;
   role?: string;
   company?: string;
+  jobDescription?: string;
   matchScore?: number;
   missingKeywords?: string[];
   rewrittenBullets?: string[];
@@ -32,6 +32,11 @@ interface Version {
   market?: string;
   coverLetter?: string;
   applicationEmail?: string;
+  tailored?: {
+    summary?: string;
+    skills?: string;
+    experience?: Array<{ role?: string; company?: string; description?: string; startDate?: string; endDate?: string }>;
+  };
 }
 
 export default function CVPage() {
@@ -48,26 +53,13 @@ export default function CVPage() {
   const [targetMarket, setTargetMarket] = useState("italia");
   const [versionLoading, setVersionLoading] = useState(false);
   const [versionError, setVersionError] = useState("");
+  const [applySuccess, setApplySuccess] = useState("");
+  const [aiCoverId, setAiCoverId] = useState<string | null>(null);
+  const [aiCoverError, setAiCoverError] = useState("");
+  const [aiCoverErrorId, setAiCoverErrorId] = useState<string | null>(null);
 
   useEffect(() => {
-    const checkAuth = async () => {
-      const userData = localStorage.getItem("user");
-      if (userData) return;
-
-      try {
-        const res = await fetch("/api/auth/me");
-        if (!res.ok) {
-          router.push("/login");
-          return;
-        }
-      } catch {
-        router.push("/login");
-        return;
-      }
-    };
-
-    checkAuth();
-
+    // L'autenticazione è già garantita dal layout dashboard.
     async function fetchCV() {
       try {
         const res = await fetch(`/api/cv/${params.id}`);
@@ -87,6 +79,58 @@ export default function CVPage() {
 
     fetchCV();
   }, [params.id, router]);
+
+  useEffect(() => {
+    try {
+      const raw = sessionStorage.getItem("curriculuxe:tailorJob");
+      if (raw) {
+        const tailorJob = JSON.parse(raw) as {
+          company?: string;
+          role?: string;
+          jobDescription?: string;
+          market?: string;
+        };
+        if (tailorJob.company) setTargetCompany(tailorJob.company);
+        if (tailorJob.role) setTargetRole(tailorJob.role);
+        if (tailorJob.jobDescription) setJobDescription(tailorJob.jobDescription);
+        if (tailorJob.market) setTargetMarket(tailorJob.market);
+        sessionStorage.removeItem("curriculuxe:tailorJob");
+      }
+    } catch {
+      // storage non disponibile o payload malformato: ignora.
+    }
+  }, []);
+
+  const handleApplyTailored = async (version: Version) => {
+    if (!version.tailored) return;
+    setVersionError("");
+    setApplySuccess("");
+    try {
+      const res = await fetch(`/api/cv/${params.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          summary: version.tailored.summary,
+          skills: version.tailored.skills,
+          experience: version.tailored.experience,
+        }),
+      });
+      if (res.ok) {
+        setCv((current) => ({
+          ...(current || {}),
+          summary: version.tailored?.summary,
+          skills: version.tailored?.skills,
+          experience: version.tailored?.experience as CVData["experience"],
+        }));
+        setApplySuccess("Versione applicata al CV con successo");
+      } else {
+        const data = await res.json();
+        setVersionError(data.error || "Errore durante l'applicazione della versione");
+      }
+    } catch {
+      setVersionError("Errore di rete durante l'applicazione della versione");
+    }
+  };
 
   const handleAIRevision = async () => {
     if (!aiPrompt.trim()) return;
@@ -155,6 +199,45 @@ export default function CVPage() {
     }
   };
 
+  const handleGenerateCoverLetter = async (version: Version) => {
+    setAiCoverId(version.id || null);
+    setAiCoverError("");
+    setAiCoverErrorId(null);
+    try {
+      const res = await fetch("/api/cv/cover-letter", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          cv,
+          jobDescription: version.jobDescription,
+          company: version.company,
+          role: version.role,
+          market: version.market || "italia",
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setAiCoverError(data.error || "Errore durante la generazione della cover letter");
+        setAiCoverErrorId(version.id || null);
+        return;
+      }
+      setCv((current) => {
+        const versions = ((current as CVData)?.applicationVersions || []) as Version[];
+        const updated = versions.map((v) =>
+          v.id === version.id
+            ? { ...v, coverLetter: data.coverLetter, applicationEmail: data.applicationEmail }
+            : v
+        );
+        return { ...(current || {}), applicationVersions: updated as CVData["applicationVersions"] };
+      });
+    } catch {
+      setAiCoverError("Errore di rete durante la generazione della cover letter");
+      setAiCoverErrorId(version.id || null);
+    } finally {
+      setAiCoverId(null);
+    }
+  };
+
   const getScoreColor = (score: number) => {
     if (score >= 80) return "text-emerald-400";
     if (score >= 60) return "text-yellow-400";
@@ -169,7 +252,7 @@ export default function CVPage() {
 
   if (loading) {
     return (
-      <section className="gradient-bg-animated relative min-h-screen flex items-center justify-center overflow-hidden">
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
         <div className="animate-spin w-8 h-8 border-2 border-indigo-500 border-t-transparent rounded-full"></div>
       </section>
     );
@@ -178,26 +261,7 @@ export default function CVPage() {
   const versions = cv?.applicationVersions as Version[] | undefined;
 
   return (
-    <section className="gradient-bg-animated relative min-h-screen overflow-hidden">
-      <nav className="fixed top-0 left-0 right-0 z-50 glass-card">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between gap-3">
-          <Link href="/dashboard" className="flex items-center gap-2">
-            <span className="hidden sm:inline text-lg font-bold text-white">Curriculuxe</span>
-          </Link>
-          <div className="flex items-center gap-3">
-            <button className="btn-primary px-3 sm:px-5 py-2.5 rounded-full text-sm font-medium flex items-center gap-2">
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-              <span className="hidden sm:inline">Download PDF</span><span className="sm:hidden">PDF</span>
-            </button>
-            <Link href="/dashboard" className="text-sm text-zinc-400 hover:text-white px-2 sm:px-4 py-2">
-              Dashboard
-            </Link>
-          </div>
-        </div>
-      </nav>
-
+    <section className="relative min-h-screen overflow-hidden">
       <div className="pt-28 sm:pt-32 pb-12 sm:pb-16 px-4 sm:px-6">
         <div className="max-w-6xl mx-auto">
           <motion.div
@@ -415,6 +479,7 @@ export default function CVPage() {
                     className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-indigo-500 focus:outline-none h-32 resize-none"
                   />
                   {versionError && <p className="text-red-400 text-sm mt-2">{versionError}</p>}
+                  {applySuccess && <p className="text-emerald-400 text-sm mt-2">{applySuccess}</p>}
                   <button
                     onClick={handleCreateVersion}
                     disabled={versionLoading || !jobDescription.trim()}
@@ -496,6 +561,64 @@ export default function CVPage() {
                                   {version.applicationEmail}
                                 </pre>
                               )}
+                            </details>
+                          )}
+                          <button
+                            onClick={() => handleGenerateCoverLetter(version)}
+                            disabled={aiCoverId === version.id}
+                            className="w-full mt-3 px-4 py-2.5 rounded-xl bg-indigo-500/15 border border-indigo-500/30 text-indigo-300 text-sm font-semibold hover:bg-indigo-500/25 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                          >
+                            {aiCoverId === version.id ? (
+                              <>
+                                <div className="animate-spin w-3.5 h-3.5 border-2 border-indigo-300 border-t-transparent rounded-full"></div>
+                                Generazione in corso...
+                              </>
+                            ) : (
+                              <>
+                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                </svg>
+                                Genera cover letter con AI
+                              </>
+                            )}
+                          </button>
+                          {aiCoverErrorId === version.id && aiCoverError && (
+                            <p className="text-red-400 text-xs mt-2">{aiCoverError}</p>
+                          )}
+                          {version.tailored && (
+                            <details className="mt-3">
+                              <summary className="cursor-pointer text-emerald-300 text-sm">
+                                CV personalizzato per questa offerta
+                              </summary>
+                              {version.tailored.summary && (
+                                <div className="mt-3 rounded-lg bg-white/5 p-3">
+                                  <p className="text-zinc-500 text-xs mb-1">Profilo personalizzato</p>
+                                  <p className="text-zinc-300 text-xs leading-relaxed">{version.tailored.summary}</p>
+                                </div>
+                              )}
+                              {version.tailored.skills && (
+                                <div className="mt-3 rounded-lg bg-white/5 p-3">
+                                  <p className="text-zinc-500 text-xs mb-1">Skills aggiornate</p>
+                                  <p className="text-zinc-300 text-xs">{version.tailored.skills}</p>
+                                </div>
+                              )}
+                              {version.tailored.experience && version.tailored.experience.length > 0 && (
+                                <div className="mt-3 rounded-lg bg-white/5 p-3">
+                                  <p className="text-zinc-500 text-xs mb-1">Esperienze riscritte</p>
+                                  {version.tailored.experience.map((exp, i) => (
+                                    <p key={i} className="text-zinc-300 text-xs leading-relaxed mb-1">
+                                      {exp.role && <span className="text-white font-medium">{exp.role}: </span>}
+                                      {exp.description}
+                                    </p>
+                                  ))}
+                                </div>
+                              )}
+                              <button
+                                onClick={() => handleApplyTailored(version)}
+                                className="w-full mt-3 px-4 py-2.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-sm font-semibold hover:bg-emerald-500/25 transition-all"
+                              >
+                                Applica al CV
+                              </button>
                             </details>
                           )}
                         </div>

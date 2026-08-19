@@ -1,10 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { generateSummaryWithAI } from "@/lib/ai";
-import { verifyUserToken } from "@/lib/auth";
+import { getRequestUser } from "@/lib/apiAuth";
 import { consumeCredit } from "@/lib/credits";
 
 export async function POST(request: NextRequest) {
   try {
+    // Richiede autenticazione: l'AI non è disponibile per utenti anonimi.
+    const user = getRequestUser(request);
+    if (!user) {
+      return NextResponse.json({ error: "Non autorizzato" }, { status: 401 });
+    }
+
     const { experiences, skills, targetRole, tone } = await request.json() as {
       experiences?: Array<Record<string, unknown>>;
       skills?: string;
@@ -19,18 +25,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // La generazione summary consuma 1 credito per gli utenti autenticati.
-    const userCookie = request.cookies.get("user")?.value;
-    const user = userCookie ? verifyUserToken(userCookie) : null;
-
-    if (user) {
-      const credit = await consumeCredit(user.id as string);
-      if (!credit.ok) {
-        return NextResponse.json(
-          { error: "Crediti insufficienti. Sottoscrivi un piano o ricarica per usare l'AI." },
-          { status: 402 }
-        );
-      }
+    // La generazione summary consuma 1 credito.
+    const credit = await consumeCredit(user.id);
+    if (!credit.ok) {
+      return NextResponse.json(
+        { error: "Crediti insufficienti. Sottoscrivi un piano o ricarica per usare l'AI." },
+        { status: 402 }
+      );
     }
 
     const result = await generateSummaryWithAI(experiences, skills, targetRole, tone);

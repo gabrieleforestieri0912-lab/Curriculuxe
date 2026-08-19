@@ -4,8 +4,6 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
-import AnimatedCounter from "@/components/AnimatedCounter";
-import BackgroundVideo from "@/components/BackgroundVideo";
 import { useLanguage } from "@/context/LanguageContext";
 
 const scanSteps = [
@@ -33,11 +31,10 @@ export default function Hero() {
   };
 
   return (
-    <section className="gradient-bg relative min-h-screen overflow-hidden pt-28 sm:pt-32 pb-16 sm:pb-20">
-      <BackgroundVideo />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_8%,rgba(232,121,249,0.18),transparent_34%),linear-gradient(180deg,transparent,rgba(0,0,0,0.38))]" />
+    <section className="relative min-h-screen overflow-hidden pt-28 sm:pt-32 pb-16 sm:pb-20">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_8%,rgba(232,121,249,0.18),transparent_34%)]" />
 
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 w-full">
+      <div className="relative z-10 max-w-7xl mx-auto px-6 w-full">
         <div className="text-center max-w-5xl mx-auto">
           <motion.h1
             initial={{ opacity: 0, y: 30 }}
@@ -206,32 +203,6 @@ export default function Hero() {
                 </div>
               </div>
             </div>
-          </div>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.42 }}
-          className="grid grid-cols-1 sm:grid-cols-3 gap-5 sm:gap-8 max-w-3xl mx-auto mt-12 sm:mt-16"
-        >
-          <div className="text-center">
-            <div className="text-3xl sm:text-4xl font-bold text-white mb-1">
-              <AnimatedCounter value={50} suffix="K+" />
-            </div>
-            <div className="text-sm text-zinc-500">{tHero.statsCV as string}</div>
-          </div>
-          <div className="text-center">
-            <div className="text-3xl sm:text-4xl font-bold text-white mb-1">
-              <AnimatedCounter value={94} suffix="%" />
-            </div>
-            <div className="text-sm text-zinc-500">{tHero.statsOptimized as string}</div>
-          </div>
-          <div className="text-center">
-            <div className="text-3xl sm:text-4xl font-bold text-white mb-1">
-              <AnimatedCounter value={4.9} decimals={1} />
-            </div>
-            <div className="text-sm text-zinc-500">{tHero.statsRating as string}</div>
           </div>
         </motion.div>
       </div>

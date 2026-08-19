@@ -17,8 +17,18 @@ const { enqueue, resetDb, supabaseMock } = vi.hoisted(() => {
     const chain: any = { data: res.data ?? null, error: res.error ?? null };
     chain.select = () => chain;
     chain.insert = () => chain;
-    chain.update = () => chain;
+    chain.update = (updates: Record<string, unknown>) => {
+      // Simula l'update condizionale: applica il decremento se credits > 0.
+      const current = chain.data as { credits?: number } | null;
+      if (current && typeof current.credits === "number" && current.credits > 0) {
+        chain.data = { ...current, ...updates };
+      } else {
+        chain.data = null;
+      }
+      return chain;
+    };
     chain.eq = () => chain;
+    chain.gte = () => chain;
     chain.single = async () => ({ data: chain.data, error: chain.error });
     return chain;
   }
@@ -74,6 +84,9 @@ describe("getCreditsInfo", () => {
 
 describe("consumeCredit", () => {
   it("decrementa i crediti quando disponibili", async () => {
+    // consumeCredit legge i crediti (getCreditsInfo) e poi aggiorna in modo
+    // condizionale: serve una risposta per ciascuna query su "users".
+    enqueue("users", { data: { credits: 3, plan: "starter" } });
     enqueue("users", { data: { credits: 3, plan: "starter" } });
 
     const res = await consumeCredit("u1");
@@ -84,6 +97,7 @@ describe("consumeCredit", () => {
 
   it("decrementa i crediti anche per i piani premium", async () => {
     enqueue("users", { data: { credits: 500, plan: "pro" } });
+    enqueue("users", { data: { credits: 500, plan: "pro" } });
 
     const res = await consumeCredit("u1");
 
@@ -92,6 +106,16 @@ describe("consumeCredit", () => {
 
   it("fallisce se i crediti sono esauriti", async () => {
     enqueue("users", { data: { credits: 0, plan: "pro" } });
+    enqueue("users", { data: { credits: 0, plan: "pro" } });
+
+    const res = await consumeCredit("u1");
+
+    expect(res).toEqual({ ok: false, credits: 0 });
+  });
+
+  it("fallisce se l'update condizionale non tocca righe (race)", async () => {
+    enqueue("users", { data: { credits: 1, plan: "pro" } });
+    enqueue("users", { data: null });
 
     const res = await consumeCredit("u1");
 

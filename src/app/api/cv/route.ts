@@ -1,22 +1,18 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase/client";
+import { getRequestUser } from "@/lib/apiAuth";
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
-    const userId = searchParams.get("userId");
-
-    if (!userId) {
-      return NextResponse.json(
-        { error: "UserId mancante" },
-        { status: 400 }
-      );
+    const user = getRequestUser(request);
+    if (!user) {
+      return NextResponse.json({ error: "Non autorizzato" }, { status: 401 });
     }
 
     const { data: userCVs, error } = await supabase
       .from("cvs")
       .select("*")
-      .eq("userId", userId)
+      .eq("userId", user.id)
       .order("createdAt", { ascending: false });
 
     if (error) throw error;
@@ -31,23 +27,20 @@ export async function GET(request: Request) {
   }
 }
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
-    const { userId, template, personalInfo } = await request.json() as {
-      userId: string;
+    const user = getRequestUser(request);
+    if (!user) {
+      return NextResponse.json({ error: "Non autorizzato" }, { status: 401 });
+    }
+
+    const { template, personalInfo } = await request.json() as {
       template?: string;
       personalInfo?: Record<string, unknown>;
     };
 
-    if (!userId) {
-      return NextResponse.json(
-        { error: "UserId mancante" },
-        { status: 400 }
-      );
-    }
-
     const newCV = {
-      userId,
+      userId: user.id,
       template: template || "moderno",
       personalInfo: personalInfo || {},
       summary: "",

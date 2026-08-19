@@ -1,13 +1,19 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase/client";
 import { analyzeResume } from "@/lib/cvAnalysis";
-import { generateCoverAssets, suggestSkills } from "@/lib/careerKit";
+import { generateCoverAssets, suggestSkills, buildTailoredCV } from "@/lib/careerKit";
+import { getRequestUser } from "@/lib/apiAuth";
 
 export async function POST(
-  request: Request,
+  request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const user = getRequestUser(request);
+    if (!user) {
+      return NextResponse.json({ error: "Non autorizzato" }, { status: 401 });
+    }
+
     const { id: cvId } = await params;
     const { company = "", role = "", jobDescription = "", market = "italia" } = await request.json() as {
       company?: string;
@@ -33,6 +39,10 @@ export async function POST(
       return NextResponse.json({ error: "CV non trovato" }, { status: 404 });
     }
 
+    if ((cv as { userId?: string }).userId !== user.id) {
+      return NextResponse.json({ error: "Non autorizzato" }, { status: 403 });
+    }
+
     const analysis = analyzeResume({
       cv,
       jobDescription,
@@ -51,6 +61,14 @@ export async function POST(
       role: role || skillKit.role,
     });
 
+    const tailored = buildTailoredCV({
+      cv,
+      matchedKeywords: analysis.matchedKeywords,
+      rewrittenBullets: analysis.rewrittenBullets,
+      suggestedSkills: skillKit.suggestions,
+      targetRole: role || skillKit.role,
+    });
+
     const version = {
       id: crypto.randomUUID(),
       company: company.trim() || "Azienda target",
@@ -65,6 +83,7 @@ export async function POST(
       marketGuidance: coverAssets.marketGuidance,
       coverLetter: coverAssets.coverLetter,
       applicationEmail: coverAssets.applicationEmail,
+      tailored,
       status: "bozza",
       createdAt: new Date(),
     };

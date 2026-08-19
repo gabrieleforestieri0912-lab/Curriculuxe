@@ -39,8 +39,7 @@ export default function Footer() {
 
   return (
     <footer
-      className="py-16 px-6 border-t border-white/5 relative overflow-hidden"
-      style={{ background: "#0a0a0a" }}
+      className="py-16 px-6 border-t border-white/5 relative overflow-hidden bg-black/70"
     >
       <div className="absolute inset-0 bg-gradient-to-t from-fuchsia-950/10 via-transparent to-transparent pointer-events-none" />
 

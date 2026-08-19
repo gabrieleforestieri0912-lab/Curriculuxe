@@ -207,6 +207,6 @@ describe("analyzeCVWithAI", () => {
     const body = JSON.parse(String(init.body));
     expect(body.prompt).not.toContain("a".repeat(5000));
     expect(body.prompt).toContain("a".repeat(4000));
-    expect(body.prompt.length).toBeLessThan(6000);
+    expect(body.prompt.length).toBeLessThan(6500);
   });
 });

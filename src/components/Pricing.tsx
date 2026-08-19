@@ -118,7 +118,7 @@ export default function Pricing() {
   return (
     <section
       id="pricing"
-      className="py-24 px-6 gradient-bg"
+      className="py-24 px-6"
     >
       <div className="max-w-7xl mx-auto">
         <motion.div
@@ -162,7 +162,7 @@ export default function Pricing() {
           </div>
         </motion.div>
 
-        <div className="grid md:grid-cols-2 gap-8 items-stretch">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8 items-stretch">
           {plans.map((plan, i) => {
             const raw =
               plan.monthlyPrice === 0
@@ -183,7 +183,7 @@ export default function Pricing() {
                 whileHover={{ y: -5 }}
                 className={`glass-card rounded-2xl p-8 relative flex flex-col h-full ${
                   plan.popular
-                    ? "border-fuchsia-500/30 glow-magenta ring-2 ring-fuchsia-500/20 scale-[1.03]"
+                    ? "border-fuchsia-500/30 glow-magenta ring-2 ring-fuchsia-500/20 lg:scale-[1.03]"
                     : "border-white/10"
                 }`}
               >

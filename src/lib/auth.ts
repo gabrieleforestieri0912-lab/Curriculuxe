@@ -4,10 +4,20 @@ import { supabase } from "@/lib/supabase/client";
 import { SIGNUP_CREDITS } from "@/lib/credits";
 import type { User } from "@/lib/supabase/types";
 
+const DEV_FALLBACK_SECRET = "curriculuxe-dev-secret-change-in-production";
+
+function getJwtSecret(): string {
+  const secret = process.env.JWT_SECRET;
+  if (!secret && process.env.NODE_ENV === "production") {
+    // In produzione un secret prevedibile rende i token forgiabili: meglio fallire.
+    throw new Error("JWT_SECRET non configurato: impossibile firmare i token in produzione");
+  }
+  return secret || DEV_FALLBACK_SECRET;
+}
+
 export function signUserToken(payload: Record<string, unknown>): string {
-  const secret = process.env.JWT_SECRET || "curriculuxe-dev-secret-change-in-production";
   const data = JSON.stringify(payload);
-  const signature = createHmac("sha256", secret).update(data).digest("hex");
+  const signature = createHmac("sha256", getJwtSecret()).update(data).digest("hex");
   return `${Buffer.from(data).toString("base64")}.${signature}`;
 }
 
@@ -16,8 +26,7 @@ export function verifyUserToken(token: string): Record<string, unknown> | null {
     const parts = token.split(".");
     if (parts.length !== 2) return null;
     const data = Buffer.from(parts[0], "base64").toString("utf-8");
-    const secret = process.env.JWT_SECRET || "curriculuxe-dev-secret-change-in-production";
-    const expectedSig = createHmac("sha256", secret).update(data).digest("hex");
+    const expectedSig = createHmac("sha256", getJwtSecret()).update(data).digest("hex");
     if (parts[1] !== expectedSig) return null;
     return JSON.parse(data);
   } catch {

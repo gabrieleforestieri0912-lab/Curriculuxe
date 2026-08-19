@@ -78,7 +78,7 @@ export async function createCheckoutSession(amount: number, userId: string, user
       ],
       mode: "payment",
       success_url: plan === "credits10" ? `${process.env.NEXT_PUBLIC_URL}/dashboard?checkout_success=true` : `${process.env.NEXT_PUBLIC_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: plan === "credits10" ? `${process.env.NEXT_PUBLIC_URL}/dashboard` : `${process.env.NEXT_PUBLIC_URL}/pricing`,
+      cancel_url: plan === "credits10" ? `${process.env.NEXT_PUBLIC_URL}/dashboard` : `${process.env.NEXT_PUBLIC_URL}/#pricing`,
       customer_email: userEmail,
       metadata: {
         userId: String(userId),
@@ -134,7 +134,7 @@ export async function createSubscriptionCheckout(
         },
       ],
       success_url: `${process.env.NEXT_PUBLIC_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.NEXT_PUBLIC_URL}/pricing`,
+      cancel_url: `${process.env.NEXT_PUBLIC_URL}/#pricing`,
       customer_email: userEmail,
       metadata: {
         userId: String(userId),

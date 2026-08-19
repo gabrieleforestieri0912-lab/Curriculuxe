@@ -6,9 +6,15 @@ const OLLAMA_MODEL = process.env.OLLAMA_MODEL || "deepseek-r1:8b";
 
 const OPENAI_MODEL = process.env.OPENAI_MODEL || "gpt-4o-mini";
 
+const AI_TIMEOUT_MS = 30_000;
+
 async function callOpenAI(prompt: string): Promise<string | null> {
   if (!process.env.OPENAI_API_KEY) return null;
-  const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+  const openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
+    timeout: AI_TIMEOUT_MS,
+    maxRetries: 1,
+  });
   const response = await openai.chat.completions.create({
     model: OPENAI_MODEL,
     response_format: { type: "json_object" },
@@ -18,19 +24,26 @@ async function callOpenAI(prompt: string): Promise<string | null> {
 }
 
 async function callOllama(prompt: string): Promise<string | null> {
-  const response = await fetch(`${OLLAMA_HOST}/api/generate`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      model: OLLAMA_MODEL,
-      prompt,
-      format: "json",
-      stream: false,
-    }),
-  });
-  if (!response.ok) throw new Error(`Ollama HTTP error! status: ${response.status}`);
-  const data = await response.json();
-  return data.response || null;
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), AI_TIMEOUT_MS);
+  try {
+    const response = await fetch(`${OLLAMA_HOST}/api/generate`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: OLLAMA_MODEL,
+        prompt,
+        format: "json",
+        stream: false,
+      }),
+      signal: controller.signal,
+    });
+    if (!response.ok) throw new Error(`Ollama HTTP error! status: ${response.status}`);
+    const data = await response.json();
+    return data.response || null;
+  } finally {
+    clearTimeout(timeout);
+  }
 }
 
 async function callAI(prompt: string): Promise<string | null> {
@@ -196,6 +209,143 @@ Genera un CV completo e professionale basato su questa descrizione. Includi:
   }
 }
 
+export async function generateCoverLetterWithAI({
+  cv,
+  jobDescription,
+  company = "",
+  role = "",
+  market = "italia",
+  name = "",
+}: {
+  cv: Record<string, unknown>;
+  jobDescription?: string;
+  company?: string;
+  role?: string;
+  market?: string;
+  name?: string;
+}): Promise<{ coverLetter: string; applicationEmail: string } | null> {
+  const marketGuidance: Record<string, string> = {
+    italia: "tono professionale, diretto e concreto; usa il Lei solo se l'azienda lo usa; firma con nome e recapiti.",
+    europa: "tono internazionale, misurato e orientato alle competenze; lingua dell'offerta.",
+    usa: "conciso, orientato ai risultati e sicuro; mai piu di una pagina; evidenzia impatto misurabile.",
+  };
+
+  const prompt = `Sei un esperto di candidature professionali. Scrivi una cover letter personalizzata e una email di candidatura ancorate ALL'ESPERIENZA REALE del candidato.
+
+Dati del candidato:
+Nome: ${name || "Il Candidato"}
+Esperienze: ${JSON.stringify((cv.experience as Array<Record<string, unknown>>) || [])}
+Competenze: ${(cv.skills as string) || "N/A"}
+Istruzione: ${JSON.stringify((cv.education as Array<Record<string, unknown>>) || [])}
+Profilo: ${(cv.summary as string) || "N/A"}
+
+Offerta di lavoro:
+Azienda: ${company || "l'azienda"}
+Ruolo: ${role || "il ruolo"}
+Job Description: ${jobDescription || "N/A"}
+Mercato: ${market} (${marketGuidance[market] || marketGuidance.italia})
+
+Requisiti della cover letter:
+1. Deve citare 2-3 esperienze/risultati REALI del candidato, in modo specifico (azienda, ruolo, impatto), non generico.
+2. Deve collegare ogni esperienza citata ai requisiti dell'offerta.
+3. Massimo 200 parole, tono ${marketGuidance[market] || marketGuidance.italia}.
+4. Non inventare dati: usa solo quanto fornito. Se manca qualcosa, mantienilo generico ma credibile.
+
+Rispondi SOLO in formato JSON:
+{
+  "coverLetter": "<cover letter completa, con saluto iniziale e firma con il nome del candidato>",
+  "applicationEmail": "<email di candidatura breve: oggetto + corpo + firma>"
+}`;
+
+  try {
+    const response = await callAI(prompt);
+    if (!response) return null;
+    const parsed = JSON.parse(response);
+    if (!parsed.coverLetter || !parsed.applicationEmail) return null;
+    return { coverLetter: parsed.coverLetter, applicationEmail: parsed.applicationEmail };
+  } catch (error) {
+    console.error("Error generating cover letter with AI:", error);
+    return null;
+  }
+}
+
+export interface NegotiationResult {
+  emailSubject: string;
+  emailBody: string;
+  talkingPoints: string[];
+  counterProposal: string;
+  benchmarks: string[];
+}
+
+export async function negotiateOfferWithAI({
+  company = "",
+  role = "",
+  salary = "",
+  profile = "",
+  points = "",
+  market = "italia",
+}: {
+  company?: string;
+  role?: string;
+  salary?: string;
+  profile?: string;
+  points?: string;
+  market?: string;
+}): Promise<NegotiationResult | null> {
+  const benchmarkHints: Record<string, string> = {
+    italia: "riferimenti a Glassdoor Italia, LinkedIn Salary, Levels.fyi per il ruolo, la seniority e la citta",
+    europa: "benchmark di mercato europei per il ruolo e il paese (Glassdoor, Levels.fyi, LinkedIn Salary)",
+    usa: "salary bands USA da Levels.fyi, Glassdoor e compensazioni di mercato per citta e seniority",
+  };
+
+  const prompt = `Sei un negoziatore di offerte di lavoro esperto, con una solida conoscenza dei benchmark di mercato (${benchmarkHints[market] || benchmarkHints.italia}).
+
+Offerta ricevuta:
+Azienda: ${company || "N/A"}
+Ruolo: ${role || "N/A"}
+Compenso offerto: ${salary || "N/A"}
+
+Profilo del candidato (esperienze/skill rilevanti): ${profile || "N/A"}
+
+Punti che il candidato vuole negoziare (es. RAL, bonus, equity, ferie, remote, budget formazione): ${points || "compenso complessivo e benefit"}
+
+Genera:
+1. Un'email di negoziazione professionale e assertiva (mai aggressiva) in italiano, che:
+   - ringrazia e mostra entusiasmo per il ruolo
+   - propone un range di compenso realistico basato su benchmark e sul profilo
+   - elenca 1-2 punti di negoziazione oltre alla RAL (bonus, equity, benefit, remote)
+   - chiude con apertura al dialogo
+2. 4-5 talking points da usare in una call di negoziazione.
+3. Una proposta controfferta sintetica (una riga).
+4. 2-3 benchmark di mercato plausibili da citare.
+
+Rispondi SOLO in formato JSON:
+{
+  "emailSubject": "<oggetto email>",
+  "emailBody": "<corpo email completo>",
+  "talkingPoints": ["<punto 1>", "<punto 2>", "<punto 3>", "<punto 4>"],
+  "counterProposal": "<proposta in una riga>",
+  "benchmarks": ["<benchmark 1>", "<benchmark 2>", "<benchmark 3>"]
+}`;
+
+  try {
+    const response = await callAI(prompt);
+    if (!response) return null;
+    const parsed = JSON.parse(response);
+    if (!parsed.emailSubject || !parsed.emailBody) return null;
+    return {
+      emailSubject: parsed.emailSubject,
+      emailBody: parsed.emailBody,
+      talkingPoints: Array.isArray(parsed.talkingPoints) ? parsed.talkingPoints : [],
+      counterProposal: parsed.counterProposal || "",
+      benchmarks: Array.isArray(parsed.benchmarks) ? parsed.benchmarks : [],
+    };
+  } catch (error) {
+    console.error("Error negotiating offer with AI:", error);
+    return null;
+  }
+}
+
 export async function analyzeCVWithAI(
   cvText: string,
   jobDescription?: string
@@ -207,6 +357,9 @@ Restituisci l'analisi ESCLUSIVAMENTE in formato JSON con questa esatta struttura
 {
   "score": <numero da 0 a 100 che valuta il match complessivo>,
   "atsScore": <numero da 0 a 100 che valuta quanto il CV è ben formattato per gli ATS (sezioni chiare, risultati misurabili)>,
+  "contentScore": <numero da 0 a 100 che valuta la completezza e ricchezza dei contenuti (esperienze, competenze, istruzione)>,
+  "writingScore": <numero da 0 a 100 che valuta la qualità della scrittura (verbi d'azione, chiarezza, grammatica, bullet quantificati)>,
+  "readinessScore": <numero da 0 a 100 che valuta quanto il CV è pronto per l'invio (contatti, profilo, esperienza, lingue, metriche)>,
   "jobMatchScore": <numero da 0 a 100 che indica la sovrapposizione delle competenze>,
   "overall": "<Una frase breve (max 15 parole) che riassume il giudizio sul CV>",
   "strengths": ["<punto di forza 1>", "<punto di forza 2>", "<punto di forza 3>"],

@@ -1,8 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage } from "@/context/LanguageContext";
 
@@ -39,9 +38,7 @@ const commonQuestions: Questions = {
 
 export default function InterviewPage() {
   const { t, lang } = useLanguage();
-  const tNav = (t as Record<string, Record<string, string>>).nav;
   const tInterview = t.interview as Record<string, string>;
-  const router = useRouter();
   const [role, setRole] = useState("");
   const [started, setStarted] = useState(false);
   const [currentQuestion, setCurrentQuestion] = useState(0);
@@ -51,12 +48,6 @@ export default function InterviewPage() {
   const [history, setHistory] = useState<Array<{ q: string; a: string }>>([]);
   const [showTips, setShowTips] = useState(false);
   const [creditsError, setCreditsError] = useState(false);
-
-  useEffect(() => {
-    if (!localStorage.getItem("user")) {
-      router.push("/login");
-    }
-  }, [router]);
 
   const questions = commonQuestions[lang] || commonQuestions.it;
 
@@ -122,20 +113,8 @@ export default function InterviewPage() {
   };
 
   return (
-    <section className="gradient-bg relative min-h-screen overflow-hidden">
+    <section className="relative min-h-screen overflow-hidden">
       <div className="absolute inset-0 subtle-grid opacity-35" />
-      <nav className="fixed top-0 left-0 right-0 z-50 glass-card">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <Link href="/dashboard" className="flex items-center gap-2">
-            <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-            <span className="text-white font-medium">{tNav.backDashboard}</span>
-          </Link>
-          <h1 className="text-white font-bold text-lg">{tInterview.title}</h1>
-        </div>
-      </nav>
-
       <div className="relative z-10 pt-28 pb-16 px-6">
         <div className="max-w-3xl mx-auto">
           {!started ? (

@@ -1,10 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getInterviewFeedback } from "@/lib/ai";
-import { verifyUserToken } from "@/lib/auth";
+import { getRequestUser } from "@/lib/apiAuth";
 import { consumeCredit } from "@/lib/credits";
 
 export async function POST(request: NextRequest) {
   try {
+    // Richiede autenticazione: l'AI non è disponibile per utenti anonimi.
+    const user = getRequestUser(request);
+    if (!user) {
+      return NextResponse.json({ error: "Non autorizzato" }, { status: 401 });
+    }
+
     const { question, answer, role } = await request.json() as {
       question: string;
       answer: string;
@@ -18,18 +24,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Il feedback colloquio consuma 1 credito per gli utenti autenticati.
-    const userCookie = request.cookies.get("user")?.value;
-    const user = userCookie ? verifyUserToken(userCookie) : null;
-
-    if (user) {
-      const credit = await consumeCredit(user.id as string);
-      if (!credit.ok) {
-        return NextResponse.json(
-          { error: "Crediti insufficienti. Sottoscrivi un piano o ricarica per usare l'AI." },
-          { status: 402 }
-        );
-      }
+    // Il feedback colloquio consuma 1 credito.
+    const credit = await consumeCredit(user.id);
+    if (!credit.ok) {
+      return NextResponse.json(
+        { error: "Crediti insufficienti. Sottoscrivi un piano o ricarica per usare l'AI." },
+        { status: 402 }
+      );
     }
 
     const feedback = await getInterviewFeedback(question, answer, role);

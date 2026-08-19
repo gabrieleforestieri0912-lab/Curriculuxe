@@ -31,7 +31,7 @@ const initialFormData = {
 export default function CreateCVPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen gradient-bg flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin w-8 h-8 border-2 border-indigo-500 border-t-transparent rounded-full" />
       </div>
     }>
@@ -57,10 +57,12 @@ function CreateCVContent() {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
+    // L'autenticazione è già garantita dal layout dashboard.
     const userData = localStorage.getItem("user");
-    if (!userData) { router.push("/login"); return; }
-    try { setUser(JSON.parse(userData)); } catch { router.push("/login"); }
-  }, [router]);
+    if (userData) {
+      try { setUser(JSON.parse(userData)); } catch { /* ignore */ }
+    }
+  }, []);
 
   useEffect(() => {
     const m = searchParams.get("mode");
@@ -134,7 +136,6 @@ function CreateCVContent() {
   const _t = t as Record<string, Record<string, string>>;
   const tGen = _t.generate as Record<string, string>;
   const tCreate = _t.create as Record<string, string>;
-  const tNav = _t.nav as Record<string, string>;
 
   const handleGenerateAI = async () => {
     if (!prompt.trim()) { setError(tGen.errorPrompt); return; }
@@ -170,7 +171,7 @@ function CreateCVContent() {
   ];
 
   return (
-    <section className="gradient-bg relative min-h-screen overflow-hidden">
+    <section className="relative min-h-screen overflow-hidden">
       {generating && (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm">
           <div className="text-center">
@@ -192,28 +193,20 @@ function CreateCVContent() {
         </motion.div>
       )}
 
-      <nav className="fixed top-0 left-0 right-0 z-50 glass-card">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <Link href="/dashboard" className="flex items-center gap-2">
-            <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-            <span className="text-white font-medium">{tNav.backDashboard}</span>
-          </Link>
+      <div className="relative z-10 pt-28 pb-16 px-4 sm:px-6">
+        <div className="max-w-5xl mx-auto">
           {mode && (
-            <button onClick={() => setMode(null)} className="text-sm text-zinc-400 hover:text-white px-3 py-1.5 rounded-lg hover:bg-white/5 transition-all">
-              {tNav.backDashboard}
+            <button onClick={() => setMode(null)} className="mb-6 inline-flex items-center gap-2 text-sm text-zinc-400 hover:text-white transition-colors">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+              {_t.nav.backDashboard}
             </button>
           )}
-        </div>
-      </nav>
-
-      <div className="relative z-10 pt-28 pb-16 px-6">
-        <div className="max-w-5xl mx-auto">
           {!mode ? (
             <>
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-12">
-                <h1 className="text-4xl font-bold text-white mb-4">
+                <h1 className="text-3xl sm:text-4xl font-bold text-white mb-4">
                   {tCreate.title} <span className="text-gradient">{tCreate.titleHighlight}</span>
                 </h1>
                 <p className="text-zinc-400 text-lg">{tCreate.subtitle}</p>
@@ -281,7 +274,7 @@ function CreateCVContent() {
                   </svg>
                   {tGen.suggestions}
                 </h2>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                   {promptSuggestions.map((s) => (
                     <button key={s.id} onClick={() => handleSelectSuggestion(s)}
                       className="p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-indigo-500/50 transition-all text-left"
@@ -503,21 +496,21 @@ function CreateCVContent() {
                     </motion.div>
                   )}
 
-                  <div className="flex gap-3 justify-end">
+                  <div className="flex flex-col sm:flex-row gap-3 sm:justify-end">
                     <button onClick={() => setCurrentSection(sections[Math.max(0, sections.findIndex(s => s.id === currentSection) - 1)].id)}
                       disabled={currentSection === sections[0].id}
-                      className="btn-secondary px-6 py-3 rounded-xl font-semibold disabled:opacity-30"
+                      className="btn-secondary px-6 py-3 rounded-xl font-semibold disabled:opacity-30 w-full sm:w-auto"
                     >
                       Precedente
                     </button>
                     <button onClick={() => setCurrentSection(sections[Math.min(sections.length - 1, sections.findIndex(s => s.id === currentSection) + 1)].id)}
                       disabled={currentSection === sections[sections.length - 1].id}
-                      className="btn-secondary px-6 py-3 rounded-xl font-semibold disabled:opacity-30"
+                      className="btn-secondary px-6 py-3 rounded-xl font-semibold disabled:opacity-30 w-full sm:w-auto"
                     >
                       Successivo
                     </button>
                     <button onClick={handleSaveManual} disabled={saving}
-                      className="btn-primary px-8 py-3 rounded-xl font-bold disabled:opacity-50"
+                      className="btn-primary px-8 py-3 rounded-xl font-bold disabled:opacity-50 w-full sm:w-auto"
                     >
                       {saving ? tCreate.generating : tCreate.generateCV}
                     </button>

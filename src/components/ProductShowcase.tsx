@@ -20,7 +20,7 @@ export default function ProductShowcase() {
   const [activeHighlight, setActiveHighlight] = useState<string | null>(null);
 
   return (
-    <section className="py-24 px-6 gradient-bg">
+    <section className="py-24 px-6">
       <div className="max-w-7xl mx-auto">
         
         {/* Section Header */}
@@ -89,11 +89,11 @@ export default function ProductShowcase() {
 
                 <div className="pt-3 border-t border-white/5">
                   <p className="text-[11px] font-bold text-zinc-500 uppercase tracking-wider mb-2">Score Breakdown</p>
-                  <div className="flex gap-1.5 items-center">
-                    <div className="h-1.5 w-10 bg-violet-500 rounded-full" />
-                    <div className="h-1.5 w-10 bg-indigo-500 rounded-full" />
-                    <div className="h-1.5 w-10 bg-emerald-500 rounded-full" />
-                    <div className="h-1.5 w-10 bg-zinc-700 rounded-full" />
+                  <div className="flex gap-1.5 items-center flex-wrap gap-y-2">
+                    <div className="h-1.5 w-8 sm:w-10 bg-violet-500 rounded-full" />
+                    <div className="h-1.5 w-8 sm:w-10 bg-indigo-500 rounded-full" />
+                    <div className="h-1.5 w-8 sm:w-10 bg-emerald-500 rounded-full" />
+                    <div className="h-1.5 w-8 sm:w-10 bg-zinc-700 rounded-full" />
                     <span className="text-[10px] text-zinc-400 font-semibold ml-2">91% of maximum</span>
                   </div>
                 </div>

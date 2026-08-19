@@ -15,7 +15,8 @@ import {
   Cpu, 
   LogOut, 
   LayoutDashboard,
-  FileText
+  FileText,
+  ChevronDown
 } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 
@@ -28,11 +29,18 @@ interface UserData {
   id?: string;
 }
 
+interface NavChild {
+  label: string;
+  href: string;
+  icon?: React.ComponentType<{ className?: string }>;
+}
+
 interface NavLink {
   label: string;
   href: string;
   badge?: string;
   icon?: React.ComponentType<{ className?: string }>;
+  children?: NavChild[];
 }
 
 export default function Navbar() {
@@ -43,6 +51,8 @@ export default function Navbar() {
   const [showMenu, setShowMenu] = useState(false);
   const [menuPos, setMenuPos] = useState<{ top: number; right: number }>({ top: 0, right: 0 });
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+  const [openMobile, setOpenMobile] = useState<string | null>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -114,7 +124,12 @@ export default function Navbar() {
     };
   }, []);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    try {
+      await fetch("/api/auth/logout", { method: "POST" });
+    } catch {
+      // best effort: anche se la chiamata fallisce, puliamo il localStorage
+    }
     localStorage.removeItem("user");
     setUser(null);
     setShowMenu(false);
@@ -133,12 +148,36 @@ export default function Navbar() {
     setShowMenu(!showMenu);
   };
 
+  // Per gli utenti non loggati, i link delle aree di azione passano ?next= in modo
+  // che dopo il login si venga reindirizzati alla dashboard o all'area voluta.
+  const loginWithNext = (path: string) => `/login?next=${encodeURIComponent(path)}`;
+
   const navLinks: NavLink[] = [
     { label: tNav.features as string, href: "/#features" },
     { label: tNav.howItWorks as string, href: "/#how-it-works" },
-    { label: tNav.templates as string, href: user ? "/dashboard/create" : "/login", badge: "PRO", icon: LayoutTemplate },
-    { label: tNav.aiAnalyzer as string, href: user ? "/analyze" : "/login", badge: "AI", icon: Cpu },
-    { label: tNav.feedback as string, href: user ? "/dashboard/feedback" : "/login", icon: MessageSquare },
+    {
+      label: tNav.templates as string,
+      href: user ? "/dashboard/create" : loginWithNext("/dashboard/create"),
+      badge: "PRO",
+      icon: LayoutTemplate,
+      children: [
+        { label: tNav.templatesCreateManual as string, href: user ? "/dashboard/create?mode=manual" : loginWithNext("/dashboard/create?mode=manual"), icon: FileText },
+        { label: tNav.templatesGenerateAI as string, href: user ? "/dashboard/create?mode=ai" : loginWithNext("/dashboard/create?mode=ai"), icon: Sparkles },
+        { label: tNav.templatesMyCVs as string, href: user ? "/dashboard/cvs" : loginWithNext("/dashboard/cvs"), icon: LayoutDashboard },
+      ],
+    },
+    {
+      label: tNav.aiAnalyzer as string,
+      href: user ? "/analyze" : loginWithNext("/analyze"),
+      badge: "AI",
+      icon: Cpu,
+      children: [
+        { label: tNav.aiAnalyze as string, href: user ? "/analyze" : loginWithNext("/analyze"), icon: Cpu },
+        { label: tNav.aiGenerate as string, href: user ? "/dashboard/create?mode=ai" : loginWithNext("/dashboard/create?mode=ai"), icon: Sparkles },
+        { label: tNav.aiInterview as string, href: user ? "/dashboard/interview" : loginWithNext("/dashboard/interview"), icon: MessageSquare },
+        { label: tNav.aiFeedback as string, href: user ? "/dashboard/feedback" : loginWithNext("/dashboard/feedback"), icon: MessageSquare },
+      ],
+    },
     { label: tNav.pricing as string, href: "/#pricing" },
   ];
 
@@ -211,11 +250,11 @@ export default function Navbar() {
 
   return (
     <>
-      <nav className="fixed top-4 left-0 right-0 z-50 px-4 sm:px-6 transition-all duration-300">
-        <div className="max-w-6xl mx-auto rounded-full border border-white/10 bg-white/[0.04] backdrop-blur-xl shadow-lg shadow-black/30 px-5 sm:px-6 py-2.5 sm:py-3 flex items-center justify-between">
+      <nav className="fixed top-4 left-0 right-0 z-50 px-3 sm:px-6 transition-all duration-300">
+        <div className="max-w-6xl mx-auto rounded-full border border-white/10 bg-white/[0.04] backdrop-blur-xl shadow-lg shadow-black/30 px-4 sm:px-6 py-2.5 sm:py-3 flex items-center justify-between">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 group">
-            <span className="text-xl font-bold text-white tracking-wide transition-all group-hover:text-fuchsia-400">
+          <Link href="/" className="flex items-center gap-2 group min-w-0">
+            <span className="text-lg sm:text-xl font-bold text-white tracking-wide transition-all group-hover:text-fuchsia-400">
               Curriculuxe
             </span>
           </Link>
@@ -224,6 +263,62 @@ export default function Navbar() {
           <div className="hidden lg:flex items-center gap-1 bg-white/5 border border-white/8 rounded-full p-1 backdrop-blur-md">
             {navLinks.map((link) => {
               const Icon = link.icon;
+              if (link.children?.length) {
+                return (
+                  <div
+                    key={link.label}
+                    className="relative"
+                    onMouseEnter={() => setOpenDropdown(link.label)}
+                    onMouseLeave={() => setOpenDropdown(null)}
+                  >
+                    <button
+                      onClick={() => setOpenDropdown(openDropdown === link.label ? null : link.label)}
+                      className="relative flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold text-zinc-400 hover:text-white transition-all hover:bg-white/5 group cursor-pointer"
+                    >
+                      {Icon && <Icon className="w-3.5 h-3.5 text-zinc-500 group-hover:text-fuchsia-400 transition-colors" />}
+                      {link.label}
+                      {link.badge && (
+                        <span className={`text-[8px] font-bold px-1.5 py-0.5 rounded-full uppercase ${
+                          link.badge === "AI" 
+                            ? "bg-indigo-500/20 text-indigo-300 border border-indigo-500/30"
+                            : "bg-fuchsia-500/20 text-fuchsia-300 border border-fuchsia-500/30"
+                        }`}>
+                          {link.badge}
+                        </span>
+                      )}
+                      <ChevronDown className={`w-3 h-3 text-zinc-500 transition-transform duration-200 ${openDropdown === link.label ? "rotate-180" : ""}`} />
+                    </button>
+                    <AnimatePresence>
+                      {openDropdown === link.label && (
+                        <motion.div
+                          initial={{ opacity: 0, y: 8, scale: 0.98 }}
+                          animate={{ opacity: 1, y: 0, scale: 1 }}
+                          exit={{ opacity: 0, y: 8, scale: 0.98 }}
+                          transition={{ duration: 0.15 }}
+                          className="absolute left-1/2 -translate-x-1/2 top-full pt-2 z-50"
+                        >
+                          <div className="min-w-[220px] rounded-2xl border border-white/10 bg-[#18181b]/95 backdrop-blur-xl shadow-lg shadow-black/30 p-2">
+                            {link.children.map((child) => {
+                              const ChildIcon = child.icon;
+                              return (
+                                <Link
+                                  key={child.label}
+                                  href={child.href}
+                                  onClick={() => setOpenDropdown(null)}
+                                  className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-zinc-400 hover:text-white transition-all hover:bg-white/5"
+                                >
+                                  {ChildIcon && <ChildIcon className="w-4 h-4 text-zinc-500" />}
+                                  {child.label}
+                                </Link>
+                              );
+                            })}
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                );
+              }
               return (
                 <Link
                   key={link.label}
@@ -247,7 +342,7 @@ export default function Navbar() {
           </div>
 
           {/* Right action area */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
             {user ? (
               <div className="flex items-center gap-3">
                 {user.credits !== undefined && (
@@ -277,11 +372,11 @@ export default function Navbar() {
                 </div>
               </div>
             ) : (
-              <div className="flex items-center gap-2">
-                <Link href="/login" className="text-sm font-medium text-zinc-300 hover:text-white transition-colors px-4 py-2">
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <Link href="/login" className="hidden sm:block text-sm font-medium text-zinc-300 hover:text-white transition-colors px-4 py-2">
                   {tNav.login as string}
                 </Link>
-                <Link href="/register" className="btn-primary text-sm text-white px-5 py-2.5 rounded-full font-bold shadow-lg shadow-fuchsia-500/20 hover:shadow-fuchsia-500/30 transition-all scale-100 hover:scale-[1.02]">
+                <Link href="/register" className="btn-primary text-xs sm:text-sm text-white px-4 sm:px-5 py-2.5 rounded-full font-bold shadow-lg shadow-fuchsia-500/20 hover:shadow-fuchsia-500/30 transition-all scale-100 hover:scale-[1.02]">
                   {tNav.register as string}
                 </Link>
               </div>
@@ -311,6 +406,62 @@ export default function Navbar() {
                 <div className="space-y-1">
                   {navLinks.map((link) => {
                     const Icon = link.icon;
+                    if (link.children?.length) {
+                      const isOpen = openMobile === link.label;
+                      return (
+                        <div key={link.label}>
+                          <button
+                            onClick={() => setOpenMobile(isOpen ? null : link.label)}
+                            className="w-full flex items-center justify-between p-3 rounded-xl hover:bg-white/5 text-zinc-300 hover:text-white transition-all cursor-pointer"
+                          >
+                            <div className="flex items-center gap-3">
+                              {Icon && <Icon className="w-4 h-4 text-zinc-400" />}
+                              <span className="font-medium text-sm">{link.label}</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              {link.badge && (
+                                <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full uppercase ${
+                                  link.badge === "AI" 
+                                    ? "bg-indigo-500/20 text-indigo-300 border border-indigo-500/30"
+                                    : "bg-fuchsia-500/20 text-fuchsia-300 border border-fuchsia-500/30"
+                                }`}>
+                                  {link.badge}
+                                </span>
+                              )}
+                              <ChevronDown className={`w-4 h-4 text-zinc-500 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`} />
+                            </div>
+                          </button>
+                          <AnimatePresence>
+                            {isOpen && (
+                              <motion.div
+                                initial={{ height: 0, opacity: 0 }}
+                                animate={{ height: "auto", opacity: 1 }}
+                                exit={{ height: 0, opacity: 0 }}
+                                transition={{ duration: 0.2 }}
+                                className="overflow-hidden"
+                              >
+                                <div className="ml-3 pl-3 border-l border-white/10 space-y-1 mt-1">
+                                  {link.children.map((child) => {
+                                    const ChildIcon = child.icon;
+                                    return (
+                                      <Link
+                                        key={child.label}
+                                        href={child.href}
+                                        onClick={() => setIsMobileOpen(false)}
+                                        className="flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 text-zinc-400 hover:text-white transition-all"
+                                      >
+                                        {ChildIcon && <ChildIcon className="w-4 h-4 text-zinc-500" />}
+                                        <span className="font-medium text-sm">{child.label}</span>
+                                      </Link>
+                                    );
+                                  })}
+                                </div>
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
+                        </div>
+                      );
+                    }
                     return (
                       <Link
                         key={link.label}
@@ -367,6 +518,24 @@ export default function Navbar() {
                         {tNav.logout as string}
                       </button>
                     </div>
+                  </div>
+                )}
+                {!user && (
+                  <div className="border-t border-white/5 pt-4 mt-2 grid grid-cols-2 gap-2">
+                    <Link
+                      href="/login"
+                      onClick={() => setIsMobileOpen(false)}
+                      className="flex items-center justify-center p-3 rounded-xl bg-white/5 border border-white/10 text-sm font-semibold text-zinc-300 hover:text-white"
+                    >
+                      {tNav.login as string}
+                    </Link>
+                    <Link
+                      href="/register"
+                      onClick={() => setIsMobileOpen(false)}
+                      className="flex items-center justify-center p-3 rounded-xl btn-primary text-sm font-bold text-white"
+                    >
+                      {tNav.register as string}
+                    </Link>
                   </div>
                 )}
               </div>

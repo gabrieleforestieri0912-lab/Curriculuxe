@@ -1,4 +1,4 @@
-import type { CoverAssets, SkillSuggestion, TemplateAdvice, Experience as ExperienceType, Education as EducationType } from "@/lib/supabase/types";
+import type { CoverAssets, SkillSuggestion, TemplateAdvice, Experience as ExperienceType, Education as EducationType, TailoredCV } from "@/lib/supabase/types";
 import { extractKeywords, cvToText, normalizeText } from "@/lib/cvAnalysis";
 
 interface CvInput {
@@ -117,6 +117,47 @@ export function generateCoverAssets({ cv = {}, jobDescription = "", market = "it
     applicationEmail,
     market: profile.label,
     marketGuidance: profile.guidance,
+  };
+}
+
+export function buildTailoredCV({
+  cv = {},
+  matchedKeywords = [],
+  rewrittenBullets = [],
+  suggestedSkills = [],
+  targetRole = "",
+}: {
+  cv?: CvInput;
+  matchedKeywords?: string[];
+  rewrittenBullets?: string[];
+  suggestedSkills?: string[];
+  targetRole?: string;
+} = {}): TailoredCV {
+  const keywordPhrase = matchedKeywords.slice(0, 6).join(", ");
+  const baseSummary = cv.summary || "Professionista con esperienza e competenze rilevanti";
+  const roleSuffix = targetRole ? ` per il ruolo di ${targetRole}` : "";
+  const summary = baseSummary.trim();
+  const tailoredSummary = summary
+    ? `${summary.replace(/\.$/, "")}. ${keywordPhrase ? `Allineato alle priorita chiave dell'offerta: ${keywordPhrase}.` : "Profilo orientato ai risultati."}`
+    : `Professionista con competenze in ${keywordPhrase || "ambiti rilevanti per l'offerta"}${roleSuffix}.`;
+
+  const currentSkills = cv.skills
+    ? cv.skills.split(",").map((skill) => skill.trim()).filter(Boolean)
+    : [];
+  const tailoredSkills = [...new Set([...currentSkills, ...suggestedSkills])].join(", ");
+
+  const experience = (cv.experience || []).map((exp, index) => {
+    const rewritten = rewrittenBullets[index];
+    if (rewritten && exp.description !== rewritten) {
+      return { ...exp, description: rewritten };
+    }
+    return exp;
+  });
+
+  return {
+    summary: tailoredSummary,
+    skills: tailoredSkills,
+    experience,
   };
 }
 

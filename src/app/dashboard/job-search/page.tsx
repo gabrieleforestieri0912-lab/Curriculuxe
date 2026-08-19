@@ -1,8 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { useLanguage } from "@/context/LanguageContext";
 
@@ -50,18 +48,48 @@ const emailTemplates: EmailTemplates = {
 
 export default function JobSearchPage() {
   const { t, lang } = useLanguage();
-  const tNav = (t as Record<string, Record<string, string>>).nav;
   const tJobSearch = t.jobSearch as Record<string, string>;
-  const router = useRouter();
   const [activeTab, setActiveTab] = useState("strategy");
   const [templateType, setTemplateType] = useState("acceptance");
   const [copied, setCopied] = useState(false);
+  const [negCompany, setNegCompany] = useState("");
+  const [negRole, setNegRole] = useState("");
+  const [negSalary, setNegSalary] = useState("");
+  const [negPoints, setNegPoints] = useState("");
+  const [negMarket, setNegMarket] = useState("italia");
+  const [negLoading, setNegLoading] = useState(false);
+  const [negResult, setNegResult] = useState<Record<string, unknown> | null>(null);
+  const [negError, setNegError] = useState("");
 
-  useEffect(() => {
-    if (!localStorage.getItem("user")) {
-      router.push("/login");
+  const runNegotiation = async () => {
+    if (!negRole.trim()) return;
+    setNegLoading(true);
+    setNegError("");
+    setNegResult(null);
+    try {
+      const res = await fetch("/api/jobs/negotiate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          company: negCompany,
+          role: negRole,
+          salary: negSalary,
+          points: negPoints,
+          market: negMarket,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setNegError(data.error || "Errore durante la generazione della negoziazione");
+        return;
+      }
+      setNegResult(data);
+    } catch {
+      setNegError("Errore di rete. Riprova.");
+    } finally {
+      setNegLoading(false);
     }
-  }, [router]);
+  };
 
   const templates = emailTemplates[lang] || emailTemplates.it;
   const currentTemplate = templates[templateType];
@@ -80,21 +108,9 @@ export default function JobSearchPage() {
   ];
 
   return (
-    <section className="gradient-bg relative min-h-screen overflow-hidden">
+    <section className="relative min-h-screen overflow-hidden">
       <div className="absolute inset-0 subtle-grid opacity-35" />
-      <nav className="fixed top-0 left-0 right-0 z-50 glass-card">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <Link href="/dashboard" className="flex items-center gap-2">
-            <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-            <span className="text-white font-medium">{tNav.backDashboard}</span>
-          </Link>
-          <h1 className="text-white font-bold text-lg">{tJobSearch.title}</h1>
-        </div>
-      </nav>
-
-      <div className="relative z-10 pt-28 pb-16 px-6">
+      <div className="relative z-10 pt-28 pb-16 px-4 sm:px-6">
         <div className="max-w-4xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -178,7 +194,7 @@ export default function JobSearchPage() {
             >
               <h2 className="text-xl font-bold text-white mb-6">{tJobSearch.emailTemplate}</h2>
 
-              <div className="flex gap-2 mb-6">
+              <div className="flex gap-2 mb-6 overflow-x-auto pb-1">
                 {[
                   { id: "acceptance", label: "Accettazione" },
                   { id: "rejection", label: "Rifiuto" },
@@ -187,7 +203,7 @@ export default function JobSearchPage() {
                   <button
                     key={type.id}
                     onClick={() => { setTemplateType(type.id); setCopied(false); }}
-                    className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
+                    className={`px-4 py-2 rounded-xl text-sm font-medium transition-all whitespace-nowrap ${
                       templateType === type.id
                         ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
                         : "bg-white/5 text-zinc-400 border border-white/10 hover:text-white"
@@ -230,6 +246,156 @@ export default function JobSearchPage() {
               animate={{ opacity: 1, y: 0 }}
               className="space-y-6"
             >
+              <div className="glass-card rounded-2xl p-8 border border-white/10">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-10 h-10 rounded-xl bg-emerald-500/15 flex items-center justify-center">
+                    <svg className="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-bold text-white">Negoziatore AI</h2>
+                    <p className="text-zinc-400 text-sm">Inserisci i dati dell&apos;offerta: Atlas genera email, talking points e controproposta basati su benchmark di mercato.</p>
+                  </div>
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-4 mb-4">
+                  <div>
+                    <label className="block text-sm font-medium text-zinc-400 mb-2">Azienda</label>
+                    <input
+                      type="text"
+                      value={negCompany}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNegCompany(e.target.value)}
+                      placeholder="Es. Facile.it"
+                      className="w-full bg-black/25 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-emerald-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-zinc-400 mb-2">Ruolo *</label>
+                    <input
+                      type="text"
+                      value={negRole}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNegRole(e.target.value)}
+                      placeholder="Es. Senior Frontend Engineer"
+                      className="w-full bg-black/25 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-emerald-500"
+                    />
+                  </div>
+                </div>
+                <div className="grid md:grid-cols-2 gap-4 mb-4">
+                  <div>
+                    <label className="block text-sm font-medium text-zinc-400 mb-2">Compenso offerto</label>
+                    <input
+                      type="text"
+                      value={negSalary}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNegSalary(e.target.value)}
+                      placeholder="Es. 55.000€ RAL + bonus"
+                      className="w-full bg-black/25 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-emerald-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-zinc-400 mb-2">Mercato</label>
+                    <div className="flex gap-2">
+                      {[
+                        { id: "italia", label: "Italia" },
+                        { id: "europa", label: "Europa" },
+                        { id: "usa", label: "USA" },
+                      ].map((m) => (
+                        <button
+                          key={m.id}
+                          type="button"
+                          onClick={() => setNegMarket(m.id)}
+                          className={`flex-1 rounded-xl px-3 py-3 text-sm transition-all ${
+                            negMarket === m.id
+                              ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
+                              : "bg-white/5 text-zinc-400 border border-white/10 hover:text-white"
+                          }`}
+                        >
+                          {m.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-zinc-400 mb-2">Punti da negoziare (opzionale)</label>
+                  <input
+                    type="text"
+                    value={negPoints}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNegPoints(e.target.value)}
+                    placeholder="Es. RAL, stock options, ferie extra, budget formazione"
+                    className="w-full bg-black/25 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-emerald-500"
+                  />
+                </div>
+
+                <button
+                  onClick={runNegotiation}
+                  disabled={negLoading || !negRole.trim()}
+                  className="w-full btn-primary py-3 rounded-xl font-semibold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                >
+                  {negLoading ? (
+                    <>
+                      <div className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full"></div>
+                      Generazione in corso...
+                    </>
+                  ) : (
+                    "Genera strategia di negoziazione con AI"
+                  )}
+                </button>
+
+                {negError && <p className="text-red-400 text-sm mt-3">{negError}</p>}
+
+                {negResult && (
+                  <div className="mt-6 space-y-4">
+                    <div className="rounded-xl bg-white/5 border border-white/10 p-5">
+                      <p className="text-emerald-300 font-semibold mb-2">Oggetto email</p>
+                      <p className="text-zinc-300 text-sm">{negResult.emailSubject as string}</p>
+                    </div>
+                    <div className="rounded-xl bg-white/5 border border-white/10 p-5">
+                      <p className="text-emerald-300 font-semibold mb-2">Email di negoziazione</p>
+                      <pre className="whitespace-pre-wrap text-zinc-300 text-sm leading-relaxed font-mono">{negResult.emailBody as string}</pre>
+                      <button
+                        onClick={() => copyToClipboard(negResult.emailBody as string)}
+                        className="mt-3 btn-secondary px-4 py-2 rounded-lg text-sm font-semibold"
+                      >
+                        {copied ? "Copied!" : "Copia email"}
+                      </button>
+                    </div>
+                    {Array.isArray(negResult.talkingPoints) && (negResult.talkingPoints as string[]).length > 0 && (
+                      <div className="rounded-xl bg-white/5 border border-white/10 p-5">
+                        <p className="text-emerald-300 font-semibold mb-3">Talking points per la call</p>
+                        <ul className="space-y-2">
+                          {(negResult.talkingPoints as string[]).map((point, i) => (
+                            <li key={i} className="flex items-start gap-2 text-sm text-zinc-300">
+                              <span className="text-emerald-400 mt-0.5">{"\u2022"}</span>
+                              {point}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                    {negResult.counterProposal && (
+                      <div className="rounded-xl bg-emerald-500/10 border border-emerald-500/20 p-5">
+                        <p className="text-emerald-300 font-semibold mb-2">Controproposta</p>
+                        <p className="text-zinc-300 text-sm">{negResult.counterProposal as string}</p>
+                      </div>
+                    )}
+                    {Array.isArray(negResult.benchmarks) && (negResult.benchmarks as string[]).length > 0 && (
+                      <div className="rounded-xl bg-white/5 border border-white/10 p-5">
+                        <p className="text-emerald-300 font-semibold mb-3">Benchmark da citare</p>
+                        <ul className="space-y-2">
+                          {(negResult.benchmarks as string[]).map((b, i) => (
+                            <li key={i} className="flex items-start gap-2 text-sm text-zinc-300">
+                              <span className="text-emerald-400 mt-0.5">{"\u2022"}</span>
+                              {b}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+
               <div className="glass-card rounded-2xl p-8 border border-white/10">
                 <h2 className="text-xl font-bold text-white mb-6">{tJobSearch.negotiation}</h2>
                 <p className="text-zinc-400 mb-6">{tJobSearch.negotiationDesc}</p>

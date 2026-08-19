@@ -5,6 +5,9 @@ import type { AnalysisResult } from "@/lib/supabase/types";
 const sampleResult: AnalysisResult = {
   score: 75,
   atsScore: 80,
+  contentScore: 70,
+  writingScore: 65,
+  readinessScore: 72,
   jobMatchScore: 60,
   overall: "Buona base, ma servono keyword.",
   strengths: ["Contatti rilevati", "Sezione esperienza presente"],

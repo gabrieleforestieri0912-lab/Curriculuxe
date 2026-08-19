@@ -70,8 +70,15 @@ export interface ApplicationVersion {
   marketGuidance?: string[];
   coverLetter?: string;
   applicationEmail?: string;
+  tailored?: TailoredCV;
   status: string;
   createdAt: string;
+}
+
+export interface TailoredCV {
+  summary: string;
+  skills: string;
+  experience: Experience[];
 }
 
 export interface StatusEntry {
@@ -130,6 +137,9 @@ export interface CVTemplate {
 export interface AnalysisResult {
   score: number;
   atsScore: number;
+  contentScore: number;
+  writingScore: number;
+  readinessScore: number;
   jobMatchScore: number | null;
   overall: string;
   strengths: string[];
@@ -176,6 +186,44 @@ export interface InterviewFeedback {
   improvements: string[];
   starSuggestion: string;
   improvedAnswer: string;
+}
+
+export type QuestionType = "coding" | "system_design" | "behavioral";
+
+export interface Company {
+  id: string;
+  slug: string;
+  name: string;
+  logoUrl?: string;
+  isPublished: boolean;
+  createdAt: string;
+}
+
+export interface InterviewQuestion {
+  id: string;
+  companyId: string;
+  questionText: string;
+  type: QuestionType;
+  difficulty?: string;
+  approachNotes?: string;
+  isPublished: boolean;
+  createdAt: string;
+}
+
+export interface MockSession {
+  id: string;
+  userId: string;
+  questionId?: string;
+  userAnswer: string;
+  aiFeedback: MockGrading | null;
+  createdAt: string;
+}
+
+export interface MockGrading {
+  score: number;
+  strengths: string[];
+  improvements: string[];
+  sampleAnswer: string;
 }
 
 export interface BulletRewrite {
