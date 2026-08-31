@@ -5,7 +5,9 @@ import { Resend } from "resend";
 
 const SUPPORT_EMAIL = "gabriele.forestieri0912@gmail.com";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Lazy: se RESEND_API_KEY non è configurata non blocchiamo il modulo
+// (evita errori in fase di build/collecting page data su Vercel).
+const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
 async function sendFeedbackEmail(feedback: { userEmail: string; type: string; userName: string; message: string }) {
   try {
