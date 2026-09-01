@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = process.env.NEXT_PUBLIC_URL || "https://curriculuxe.app";
+  const baseUrl = process.env.NEXT_PUBLIC_URL || "https://curriculuxe.vercel.app";
 
   // Solo route pubbliche: le pagine /dashboard/* sono protette dal login
   // e non devono comparire nella sitemap.

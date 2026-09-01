@@ -12,7 +12,7 @@ import Footer from "@/components/Footer";
 import BackgroundVideo from "@/components/BackgroundVideo";
 import { faqIt } from "@/lib/faq";
 
-const baseUrl = process.env.NEXT_PUBLIC_URL || "https://curriculuxe.app";
+const baseUrl = process.env.NEXT_PUBLIC_URL || "https://curriculuxe.vercel.app";
 
 // Structured data: SoftwareApplication con le offerte dei piani (GEO/entity).
 const softwareAppSchema = {

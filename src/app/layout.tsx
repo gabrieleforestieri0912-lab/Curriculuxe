@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const baseUrl = process.env.NEXT_PUBLIC_URL || "https://curriculuxe.app";
+const baseUrl = process.env.NEXT_PUBLIC_URL || "https://curriculuxe.vercel.app";
 
 export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),
@@ -52,7 +52,7 @@ export const metadata: Metadata = {
     },
   },
   icons: {
-    icon: "/icon.svg",
+    icon: "/icon.png",
   },
   manifest: "/manifest.webmanifest",
   openGraph: {
@@ -65,7 +65,7 @@ export const metadata: Metadata = {
       "Analisi ATS, generazione CV con AI, riscrittura bullet e preparazione ai colloqui. Tutto in un'unica piattaforma.",
     images: [
       {
-        url: `${baseUrl}/icon.svg`,
+        url: `${baseUrl}/icon.png`,
         width: 512,
         height: 512,
         alt: "Curriculuxe",
@@ -77,7 +77,7 @@ export const metadata: Metadata = {
     title: "Curriculuxe - Crea il Curriculum Perfetto con l'AI",
     description:
       "Analisi ATS, generazione CV con AI, riscrittura bullet e preparazione ai colloqui. Tutto in un'unica piattaforma.",
-    images: [`${baseUrl}/icon.svg`],
+    images: [`${baseUrl}/icon.png`],
   },
 };
 
@@ -97,7 +97,7 @@ export default function RootLayout({
     "@id": `${baseUrl}/#organization`,
     name: "Curriculuxe",
     url: baseUrl,
-    logo: `${baseUrl}/icon.svg`,
+    logo: `${baseUrl}/icon.png`,
     description:
       "Piattaforma AI-powered per creare, ottimizzare e monitorare curriculum professionali con analisi ATS e preparazione ai colloqui.",
     contactPoint: {

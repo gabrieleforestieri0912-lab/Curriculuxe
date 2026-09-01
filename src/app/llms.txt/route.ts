@@ -1,6 +1,6 @@
 export const dynamic = "force-static";
 
-const BASE_URL = process.env.NEXT_PUBLIC_URL || "https://curriculuxe.app";
+const BASE_URL = process.env.NEXT_PUBLIC_URL || "https://curriculuxe.vercel.app";
 
 export function GET() {
   const content = `# Curriculuxe
