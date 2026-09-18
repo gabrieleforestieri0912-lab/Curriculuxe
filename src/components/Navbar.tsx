@@ -153,8 +153,23 @@ export default function Navbar() {
   const loginWithNext = (path: string) => `/login?next=${encodeURIComponent(path)}`;
 
   const navLinks: NavLink[] = [
+    { label: (tNav.careerMarket as string) || "Career Market", href: "/career-market" },
+    { label: (tNav.resumeScore as string) || "Resume Score", href: "/resume-score" },
+    {
+      label: (tNav.resources as string) || "Risorse",
+      href: "/guides",
+      children: [
+        { label: "Template CV", href: "/templates", icon: LayoutTemplate },
+        { label: "Roadmap", href: "/roadmaps", icon: FileText },
+        { label: "Guide", href: "/guides", icon: FileText },
+        { label: "Progetti", href: "/projects", icon: LayoutDashboard },
+        { label: "Salaries", href: "/salaries", icon: FileText },
+        { label: "Compare", href: "/compare", icon: FileText },
+        { label: "About", href: "/about", icon: FileText },
+      ],
+    },
+    { label: (tNav.mcp as string) || "Connect AI", href: "/mcp", badge: "MCP" },
     { label: tNav.features as string, href: "/#features" },
-    { label: tNav.howItWorks as string, href: "/#how-it-works" },
     {
       label: tNav.templates as string,
       href: user ? "/dashboard/create" : loginWithNext("/dashboard/create"),
@@ -178,7 +193,7 @@ export default function Navbar() {
         { label: tNav.aiFeedback as string, href: user ? "/dashboard/feedback" : loginWithNext("/dashboard/feedback"), icon: MessageSquare },
       ],
     },
-    { label: tNav.pricing as string, href: "/#pricing" },
+    { label: tNav.pricing as string, href: "/pricing" },
   ];
 
   const menuContent = showMenu ? (
@@ -273,6 +288,8 @@ export default function Navbar() {
                   >
                     <button
                       onClick={() => setOpenDropdown(openDropdown === link.label ? null : link.label)}
+                      aria-expanded={openDropdown === link.label}
+                      aria-haspopup="menu"
                       className="relative flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold text-zinc-400 hover:text-white transition-all hover:bg-white/5 group cursor-pointer"
                     >
                       {Icon && <Icon className="w-3.5 h-3.5 text-zinc-500 group-hover:text-fuchsia-400 transition-colors" />}
@@ -291,6 +308,8 @@ export default function Navbar() {
                     <AnimatePresence>
                       {openDropdown === link.label && (
                         <motion.div
+                          role="menu"
+                          aria-label={link.label}
                           initial={{ opacity: 0, y: 8, scale: 0.98 }}
                           animate={{ opacity: 1, y: 0, scale: 1 }}
                           exit={{ opacity: 0, y: 8, scale: 0.98 }}
@@ -359,6 +378,9 @@ export default function Navbar() {
                   <button
                     ref={buttonRef}
                     onClick={handleToggleMenu}
+                    aria-haspopup="menu"
+                    aria-expanded={showMenu}
+                    aria-label={user?.name ? `Menu utente di ${user.name}` : "Menu utente"}
                     className="w-8 h-8 rounded-full overflow-hidden border border-white/10 hover:border-fuchsia-500/40 transition-colors cursor-pointer flex items-center justify-center bg-zinc-800"
                   >
                     {user.picture ? (
@@ -385,6 +407,9 @@ export default function Navbar() {
             {/* Mobile menu trigger */}
             <button
               onClick={() => setIsMobileOpen(!isMobileOpen)}
+              aria-expanded={isMobileOpen}
+              aria-controls={isMobileOpen ? "mobile-menu" : undefined}
+              aria-label={isMobileOpen ? "Chiudi menu" : "Apri menu"}
               className="lg:hidden p-2 rounded-xl bg-white/5 border border-white/8 text-zinc-400 hover:text-white transition-all"
             >
               {isMobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -397,6 +422,7 @@ export default function Navbar() {
           <AnimatePresence>
             {isMobileOpen && (
               <motion.div
+                id="mobile-menu"
                 initial={{ opacity: 0, y: -8, height: 0 }}
                 animate={{ opacity: 1, y: 0, height: "auto" }}
                 exit={{ opacity: 0, y: -8, height: 0 }}
@@ -412,6 +438,8 @@ export default function Navbar() {
                         <div key={link.label}>
                           <button
                             onClick={() => setOpenMobile(isOpen ? null : link.label)}
+                            aria-expanded={isOpen}
+                            aria-haspopup="true"
                             className="w-full flex items-center justify-between p-3 rounded-xl hover:bg-white/5 text-zinc-300 hover:text-white transition-all cursor-pointer"
                           >
                             <div className="flex items-center gap-3">

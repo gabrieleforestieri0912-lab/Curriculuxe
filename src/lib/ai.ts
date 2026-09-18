@@ -1,63 +1,49 @@
-import OpenAI from "openai";
 import type { InterviewFeedback, BulletRewrite, SummaryResult } from "@/lib/supabase/types";
 
-const OLLAMA_HOST = process.env.OLLAMA_HOST || "http://127.0.0.1:11434";
-const OLLAMA_MODEL = process.env.OLLAMA_MODEL || "deepseek-r1:8b";
-
-const OPENAI_MODEL = process.env.OPENAI_MODEL || "gpt-4o-mini";
+// Groq espone un'API compatibile con OpenAI: una sola chiamata chat/completions
+// con output forzato in JSON, senza provider di fallback.
+const GROQ_API_URL =
+  process.env.GROQ_API_URL || "https://api.groq.com/openai/v1/chat/completions";
+const GROQ_MODEL = process.env.GROQ_MODEL || "llama-3.3-70b-versatile";
 
 const AI_TIMEOUT_MS = 30_000;
 
-async function callOpenAI(prompt: string): Promise<string | null> {
-  if (!process.env.OPENAI_API_KEY) return null;
-  const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
-    timeout: AI_TIMEOUT_MS,
-    maxRetries: 1,
-  });
-  const response = await openai.chat.completions.create({
-    model: OPENAI_MODEL,
-    response_format: { type: "json_object" },
-    messages: [{ role: "user", content: prompt }],
-  });
-  return response.choices[0].message.content;
-}
+async function callAI(prompt: string): Promise<string | null> {
+  const apiKey = process.env.GROQ_API_KEY;
+  if (!apiKey) {
+    console.warn("GROQ_API_KEY non configurata: nessuna funzionalità AI attiva.");
+    return null;
+  }
 
-async function callOllama(prompt: string): Promise<string | null> {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), AI_TIMEOUT_MS);
   try {
-    const response = await fetch(`${OLLAMA_HOST}/api/generate`, {
+    const response = await fetch(GROQ_API_URL, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+      },
       body: JSON.stringify({
-        model: OLLAMA_MODEL,
-        prompt,
-        format: "json",
-        stream: false,
+        model: GROQ_MODEL,
+        messages: [{ role: "user", content: prompt }],
+        response_format: { type: "json_object" },
       }),
       signal: controller.signal,
     });
-    if (!response.ok) throw new Error(`Ollama HTTP error! status: ${response.status}`);
+
+    if (!response.ok) {
+      throw new Error(`Groq HTTP error! status: ${response.status}`);
+    }
+
     const data = await response.json();
-    return data.response || null;
+    const content = data?.choices?.[0]?.message?.content;
+    return typeof content === "string" && content.trim() ? content : null;
+  } catch (error) {
+    console.warn("Groq non disponibile:", error);
+    return null;
   } finally {
     clearTimeout(timeout);
-  }
-}
-
-async function callAI(prompt: string): Promise<string | null> {
-  try {
-    const openaiResponse = await callOpenAI(prompt);
-    if (openaiResponse) return openaiResponse;
-  } catch (openaiError) {
-    console.warn("OpenAI non disponibile, fallback a Ollama:", openaiError);
-  }
-  try {
-    return await callOllama(prompt);
-  } catch (ollamaError) {
-    console.warn("Ollama non disponibile, nessun provider AI attivo:", ollamaError);
-    return null;
   }
 }
 

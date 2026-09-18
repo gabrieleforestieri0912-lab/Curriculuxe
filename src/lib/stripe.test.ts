@@ -21,7 +21,7 @@ afterEach(() => {
 
 describe("PRICES", () => {
   it("espone i piani con i prezzi in centesimi", () => {
-    expect(PRICES).toEqual({ credits10: 999, starter: 499, pro: 900, enterprise: 2900 });
+    expect(PRICES).toEqual({ credits10: 999, starter: 499, pro: 699, enterprise: 999 });
   });
 });
 

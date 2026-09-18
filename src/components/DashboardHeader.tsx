@@ -270,6 +270,9 @@ export default function DashboardHeader({
               <button
                 ref={buttonRef}
                 onClick={handleToggleMenu}
+                aria-haspopup="menu"
+                aria-expanded={showMenu}
+                aria-label={user?.name ? `Menu utente di ${user.name}` : "Menu utente"}
                 className="w-8 h-8 rounded-full overflow-hidden border border-white/10 hover:border-fuchsia-500/40 transition-colors cursor-pointer flex items-center justify-center bg-zinc-800"
               >
                 {user?.picture ? (

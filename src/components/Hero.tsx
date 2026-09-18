@@ -31,8 +31,9 @@ export default function Hero() {
   };
 
   return (
-    <section className="relative min-h-screen overflow-hidden pt-28 sm:pt-32 pb-16 sm:pb-20">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_8%,rgba(232,121,249,0.18),transparent_34%)]" />
+    <section className="gradient-bg relative min-h-screen overflow-hidden pt-28 sm:pt-32 pb-16 sm:pb-20">
+      <div className="absolute inset-0 subtle-grid" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_8%,rgba(232,121,249,0.18),transparent_34%),linear-gradient(180deg,transparent,rgba(0,0,0,0.38))]" />
 
       <div className="relative z-10 max-w-7xl mx-auto px-6 w-full">
         <div className="text-center max-w-5xl mx-auto">

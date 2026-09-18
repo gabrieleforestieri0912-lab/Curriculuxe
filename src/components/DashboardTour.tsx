@@ -181,6 +181,9 @@ export default function DashboardTour({ steps, open, labels, onClose }: Dashboar
 
           {/* Tooltip */}
           <motion.div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="tour-title"
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 8 }}
@@ -201,7 +204,7 @@ export default function DashboardTour({ steps, open, labels, onClose }: Dashboar
               </button>
             </div>
 
-            <p className="text-white font-semibold mb-1.5">{steps[stepIndex]?.title}</p>
+            <p id="tour-title" className="text-white font-semibold mb-1.5">{steps[stepIndex]?.title}</p>
             <p className="text-zinc-400 text-sm leading-relaxed mb-4">{steps[stepIndex]?.description}</p>
 
             <div className="flex items-center justify-between gap-2">

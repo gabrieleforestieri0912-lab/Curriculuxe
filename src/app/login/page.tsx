@@ -5,7 +5,6 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useLanguage } from "@/context/LanguageContext";
-import BackgroundVideo from "@/components/BackgroundVideo";
 
 export default function Login() {
   const { t } = useLanguage();
@@ -16,6 +15,8 @@ export default function Login() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState<{ email?: string; password?: string }>({});
 
   // Dopo il login si torna alla dashboard, oppure all'area di azione
   // da cui si è arrivati (es. una pagina protetta visitata da non loggato).
@@ -47,6 +48,16 @@ export default function Login() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const errs: { email?: string; password?: string } = {};
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      errs.email = "Inserisci un indirizzo email valido";
+    }
+    if (formData.password.length < 6) {
+      errs.password = "La password deve avere almeno 6 caratteri";
+    }
+    setFieldErrors(errs);
+    if (Object.keys(errs).length > 0) return;
+
     setLoading(true);
     setError("");
     try {
@@ -73,13 +84,13 @@ export default function Login() {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    if (fieldErrors[e.target.name as keyof typeof fieldErrors]) {
+      setFieldErrors((prev) => ({ ...prev, [e.target.name]: undefined }));
+    }
   };
 
   return (
-    <div className="min-h-screen text-white overflow-x-clip">
-      <BackgroundVideo />
-      <div className="fixed inset-0 bg-black/35 pointer-events-none" />
-      <div className="relative z-10 min-h-screen flex flex-col">
+    <div className="min-h-screen bg-linear-to-br from-purple-900 to-indigo-900 text-white">
       <div className="absolute top-6 left-6 z-50">
         <Link
           href="/"
@@ -124,10 +135,16 @@ export default function Login() {
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
+                autoComplete="email"
                 required
-                className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white focus:border-indigo-500 focus:ring-indigo-500/20 focus:ring-2 outline-none"
+                aria-invalid={!!fieldErrors.email}
+                aria-describedby={fieldErrors.email ? "email-error" : undefined}
+                className={`w-full bg-white/5 border rounded-lg px-4 py-3 text-white focus:border-indigo-500 focus:ring-indigo-500/20 focus:ring-2 outline-none ${fieldErrors.email ? "border-red-500/60" : "border-white/10"}`}
                 placeholder="la.tua@email.com"
               />
+              {fieldErrors.email && (
+                <p id="email-error" role="alert" className="text-red-400 text-xs mt-1">{fieldErrors.email}</p>
+              )}
             </div>
             <div>
               <label
@@ -136,25 +153,49 @@ export default function Login() {
               >
                 {tAuth.password}
               </label>
-              <input
-                type="password"
-                id="password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                required
-                className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white focus:border-indigo-500 focus:ring-indigo-500/20 focus:ring-2 outline-none"
-                placeholder="********"
-              />
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  id="password"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  autoComplete="current-password"
+                  required
+                  aria-invalid={!!fieldErrors.password}
+                  aria-describedby={fieldErrors.password ? "password-error" : undefined}
+                  className={`w-full bg-white/5 border rounded-lg px-4 py-3 text-white focus:border-indigo-500 focus:ring-indigo-500/20 focus:ring-2 outline-none pr-12 ${fieldErrors.password ? "border-red-500/60" : "border-white/10"}`}
+                  placeholder="********"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((v) => !v)}
+                  aria-label={showPassword ? "Nascondi password" : "Mostra password"}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white transition-colors p-1"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    {showPassword ? (
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18" />
+                    ) : (
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    )}
+                    {!showPassword && <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />}
+                  </svg>
+                </button>
+              </div>
+              {fieldErrors.password && (
+                <p id="password-error" role="alert" className="text-red-400 text-xs mt-1">{fieldErrors.password}</p>
+              )}
             </div>
             {error && (
-              <p className="text-red-400 text-sm text-center">{error}</p>
+              <p role="alert" className="text-red-400 text-sm text-center">{error}</p>
             )}
             <motion.button
               type="submit"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               disabled={loading}
+              aria-busy={loading}
               className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-full font-semibold text-sm transition-all glow-border disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? "Accesso in corso..." : tAuth.loginButton}
@@ -210,7 +251,6 @@ export default function Login() {
           </p>
         </div>
       </motion.div>
-      </div>
     </div>
   );
 }

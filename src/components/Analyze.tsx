@@ -191,6 +191,7 @@ export default function Analyze({ initialResult = null, embedded = false }: Anal
     <section className={embedded ? "relative" : "gradient-bg-animated relative min-h-screen overflow-hidden"}>
       {toast && (
         <motion.div
+          role="status"
           initial={{ opacity: 0, y: -12 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -12 }}
@@ -328,6 +329,7 @@ export default function Analyze({ initialResult = null, embedded = false }: Anal
             {analyzing && (
               <motion.div
                 key="analyzing"
+                role="status"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}

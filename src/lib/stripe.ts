@@ -8,15 +8,15 @@ export const STRIPE = stripe;
 export const PRICES: Record<string, number> = {
   credits10: 999,
   starter: 499,
-  pro: 900,
-  enterprise: 2900,
+  pro: 699,
+  enterprise: 999,
 };
 
 /** Prezzi annuali (in centesimi) per i piani in abbonamento. */
 export const YEARLY_PRICES: Record<string, number> = {
   starter: 399,
-  pro: 599,
-  enterprise: 1899,
+  pro: 499,
+  enterprise: 699,
 };
 
 /** Crediti AI erogati ogni mese/anno per ogni piano in abbonamento. */

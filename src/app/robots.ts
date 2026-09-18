@@ -10,6 +10,7 @@ export default function robots(): MetadataRoute.Robots {
         // ClaudeBot, Google-Extended, etc.) so chatbots can discover the platform.
         userAgent: "*",
         allow: "/",
+        disallow: ["/dashboard/", "/api/", "/success"],
       },
     ],
     sitemap: `${baseUrl}/sitemap.xml`,

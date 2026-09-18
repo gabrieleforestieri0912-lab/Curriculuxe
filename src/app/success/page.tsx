@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { useLanguage } from "@/context/LanguageContext";
-import BackgroundVideo from "@/components/BackgroundVideo";
 
 export default function SuccessPage() {
   const { t } = useLanguage();
@@ -78,10 +77,8 @@ export default function SuccessPage() {
   }
 
   return (
-    <div className="min-h-screen text-white overflow-x-clip">
-      <BackgroundVideo />
-      <div className="fixed inset-0 bg-black/35 pointer-events-none" />
-      <div className="relative z-10 flex items-center justify-center min-h-screen px-6">
+    <div className="min-h-screen bg-linear-to-br from-purple-900 to-indigo-900 text-white">
+      <div className="flex items-center justify-center min-h-screen px-6">
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}

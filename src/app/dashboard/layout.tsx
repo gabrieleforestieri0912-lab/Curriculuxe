@@ -1,8 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import BackgroundVideo from "@/components/BackgroundVideo";
 import DashboardHeader from "@/components/DashboardHeader";
 import DashboardSidebar from "@/components/DashboardSidebar";
 import DashboardLoading from "@/components/DashboardLoading";
@@ -19,6 +18,17 @@ export default function DashboardLayout({
   const [authReady, setAuthReady] = useState(false);
   const { t } = useLanguage();
   const tDash = t.dashboard as Record<string, string>;
+  const drawerCloseRef = useRef<HTMLButtonElement>(null);
+
+  // Chiudi la drawer mobile con Esc e ripristina il focus sul trigger.
+  useEffect(() => {
+    if (!sidebarOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setSidebarOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [sidebarOpen]);
 
   // Auth verificato una sola volta per sessione: niente più check duplicati
   // in ogni singola pagina (causa principale dei caricamenti lenti).
@@ -58,8 +68,7 @@ export default function DashboardLayout({
   if (!authReady) {
     return (
       <>
-        <BackgroundVideo />
-        <div className="fixed inset-0 bg-black/50 pointer-events-none" />
+        <div aria-hidden="true" className="fixed inset-0 subtle-grid opacity-35 pointer-events-none" />
         <div className="relative z-10">
           <DashboardLoading />
         </div>
@@ -69,8 +78,7 @@ export default function DashboardLayout({
 
   return (
     <>
-      <BackgroundVideo />
-      <div className="fixed inset-0 bg-black/50 pointer-events-none" />
+      <div aria-hidden="true" className="fixed inset-0 subtle-grid opacity-35 pointer-events-none" />
 
       <div className="relative z-10 flex flex-col min-h-screen">
         {/* Header della dashboard (fisso, al posto della navbar) */}
@@ -96,7 +104,7 @@ export default function DashboardLayout({
             </aside>
 
             {/* Contenuto della pagina */}
-            <main className="flex-1 min-w-0">{children}</main>
+            <main id="main-content" className="flex-1 min-w-0">{children}</main>
           </div>
         </div>
       </div>
@@ -107,13 +115,20 @@ export default function DashboardLayout({
           <div
             className="absolute inset-0 bg-black/60 backdrop-blur-sm"
             onClick={() => setSidebarOpen(false)}
+            aria-label="Chiudi menu"
           />
-          <div className="absolute left-0 top-0 bottom-0 w-72 glass-card rounded-none border-r border-white/10 p-5 overflow-y-auto">
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-label="Menu di navigazione"
+            className="absolute left-0 top-0 bottom-0 w-72 glass-card rounded-none border-r border-white/10 p-5 overflow-y-auto"
+          >
             <div className="flex items-center justify-between mb-5">
               <p className="text-zinc-500 text-xs uppercase tracking-wider">
                 {tDash.workspace as string}
               </p>
               <button
+                ref={drawerCloseRef}
                 onClick={() => setSidebarOpen(false)}
                 className="p-1.5 rounded-lg bg-white/5 text-zinc-400 hover:text-white cursor-pointer"
                 aria-label="Chiudi menu"

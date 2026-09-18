@@ -9,7 +9,7 @@ Piattaforma AI-powered per creare, ottimizzare e monitorare curriculum professio
 **Frontend:** Next.js 16 (App Router), React 19, Tailwind CSS, Framer Motion  
 **Backend:** Next.js API Routes (Node.js runtime)  
 **Database:** Supabase (PostgreSQL)  
-**AI:** OpenAI (GPT-4o-mini) con fallback Ollama per test locali  
+**AI:** Groq (Llama 3.3 70B, output JSON)  
 **Auth:** Cookie httpOnly firmato (HMAC-SHA256) con Google OAuth via Supabase Auth  
 **Pagamenti:** Stripe Checkout (sessioni + webhook)  
 **Email:** Resend (notifiche feedback)
@@ -86,7 +86,7 @@ src/
     ├── apiAuth.ts              # Helper auth per API routes (cookie → utente)
     ├── rateLimit.ts            # Rate limiter in-memory + IP extraction
     ├── credits.ts              # Sistema crediti AI (consumo atomico)
-    ├── ai.ts                   # AI (OpenAI + fallback Ollama, con timeout)
+    ├── ai.ts                   # AI (Groq, con timeout)
     ├── cvAnalysis.ts           # Analisi statica CV (regex + scoring)
     ├── careerKit.ts            # Cover letter, skills, market profiles
     ├── stripe.ts               # Client Stripe + piani
@@ -111,7 +111,7 @@ Carica un CV (PDF/DOCX/TXT) e ricevi:
 - **Bullet point riscritti** in formato Azione + Strumento + Risultato
 - **Metriche di leggibilità**
 
-L'analisi usa AI (OpenAI o Ollama) se l'utente ha crediti; altrimenti fallback su analisi statica regex.
+L'analisi usa l'AI (Groq) se l'utente ha crediti; altrimenti fallback su analisi statica regex.
 
 ### 2. Ottimizzazione per Job Description
 
@@ -235,17 +235,13 @@ Ogni cambio stato registra timestamp e note (storico consultabile via `GET /api/
 
 ## AI Provider
 
-Configurabile in `.env.local`:
+Configurabile in `.env`:
 
 ```bash
-# OpenAI (provider primario, richiede API key)
-OPENAI_API_KEY=sk-...
+# Groq (unico provider AI, richiede API key)
+GROQ_API_KEY=gsk_...
 # Modello adatto all'analisi/generazione CV (JSON output). Sovrascrivibile.
-OPENAI_MODEL=gpt-4o-mini
-
-# Ollama (fallback solo per test locali temporanei)
-OLLAMA_HOST=http://127.0.0.1:11434
-OLLAMA_MODEL=deepseek-r1:8b
+GROQ_MODEL=llama-3.3-70b-versatile
 ```
 
 L'AI viene usata per:
@@ -267,8 +263,8 @@ Se l'AI non è disponibile o l'utente non ha crediti, il sistema usa analisi sta
 |-------|------|--------|------------|
 | `free` | Gratuito | €0 | 5 crediti di prova alla registrazione |
 | `starter` | Abbonamento ricorrente | €4.99/mese (€3.99/anno) | 50 crediti/mese |
-| `pro` | Abbonamento ricorrente | €8.99/mese (€5.99/anno) | 500 crediti/mese |
-| `enterprise` | Abbonamento ricorrente | €28.99/mese (€18.99/anno) | 2000 crediti/mese |
+| `pro` | Abbonamento ricorrente | €6.99/mese (€4.99/anno) | 500 crediti/mese |
+| `enterprise` | Abbonamento ricorrente | €9.99/mese (€6.99/anno) | 2000 crediti/mese |
 | `credits10` | Ricarica one-time | €9.99 | +10 crediti |
 
 ### Sistema crediti
@@ -309,8 +305,9 @@ SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
 JWT_SECRET=your-secret-key
 NEXT_PUBLIC_URL=http://localhost:3000
 
-# OpenAI (opzionale)
-OPENAI_API_KEY=sk-...
+# Groq (provider AI)
+GROQ_API_KEY=gsk_...
+GROQ_MODEL=llama-3.3-70b-versatile
 
 # Stripe
 STRIPE_SECRET_KEY=sk_test_...

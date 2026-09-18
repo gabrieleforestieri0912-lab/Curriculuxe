@@ -1,19 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
-vi.mock("openai", () => ({
-  __esModule: true,
-  default: vi.fn().mockImplementation(
-    class MockOpenAI {
-      chat = {
-        completions: {
-          create: vi.fn().mockResolvedValue({
-            choices: [{ message: { content: JSON.stringify({ ok: true }) } }],
-          }),
-        },
-      };
-    } as unknown as (...args: any[]) => any
-  ),
-}));
+const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
 
 let fetchSpy: ReturnType<typeof vi.spyOn> | null = null;
 
@@ -23,18 +10,28 @@ function mockFetchImpl(impl: () => Promise<unknown>) {
   return fetchSpy;
 }
 
-function mockOllamaJson(payload: unknown) {
-  return mockFetchImpl(async () => ({ ok: true, json: async () => ({ response: JSON.stringify(payload) }) }));
+function mockGroqJson(payload: unknown) {
+  return mockFetchImpl(async () => ({
+    ok: true,
+    json: async () => ({ choices: [{ message: { content: JSON.stringify(payload) } }] }),
+  }));
 }
 
-function mockOllamaFailure() {
+function mockGroqRaw(content: string) {
+  return mockFetchImpl(async () => ({
+    ok: true,
+    json: async () => ({ choices: [{ message: { content } }] }),
+  }));
+}
+
+function mockGroqFailure() {
   return mockFetchImpl(async () => {
     throw new Error("ECONNREFUSED");
   });
 }
 
-function mockOllamaInvalidJson() {
-  return mockFetchImpl(async () => ({ ok: true, json: async () => ({ response: "non è json" }) }));
+function mockGroqHttpError(status = 429) {
+  return mockFetchImpl(async () => ({ ok: false, status }));
 }
 
 import {
@@ -45,12 +42,9 @@ import {
   analyzeCVWithAI,
 } from "@/lib/ai";
 
-const OLLAMA_HOST = "http://127.0.0.1:11434";
-
 beforeEach(() => {
   vi.unstubAllEnvs();
-  vi.stubEnv("OPENAI_API_KEY", "");
-  vi.stubEnv("OLLAMA_HOST", OLLAMA_HOST);
+  vi.stubEnv("GROQ_API_KEY", "gsk-test");
 });
 
 afterEach(() => {
@@ -60,8 +54,8 @@ afterEach(() => {
 });
 
 describe("getInterviewFeedback", () => {
-  it("restituisce il feedback parsato quando Ollama risponde con JSON valido", async () => {
-    const fetchMock = mockOllamaJson({
+  it("restituisce il feedback parsato quando Groq risponde con JSON valido", async () => {
+    mockGroqJson({
       score: 8,
       strengths: ["Chiaro", "Concreto"],
       improvements: ["Manca contesto"],
@@ -80,33 +74,45 @@ describe("getInterviewFeedback", () => {
     });
 
     const [url, init] = fetchSpy!.mock.calls[0] as [string, RequestInit];
-    expect(url).toBe(`${OLLAMA_HOST}/api/generate`);
+    expect(url).toBe(GROQ_API_URL);
+    expect((init.headers as Record<string, string>).Authorization).toBe("Bearer gsk-test");
     const body = JSON.parse(String(init.body));
-    expect(body.stream).toBe(false);
     expect(body.model).toBeTruthy();
+    expect(body.response_format).toEqual({ type: "json_object" });
+    expect(body.messages[0].content).toContain("Parlami di te");
   });
 
-  it("restituisce null quando Ollama non è disponibile e non c'è OpenAI key", async () => {
-    mockOllamaFailure();
+  it("restituisce null quando GROQ_API_KEY non è configurata", async () => {
+    vi.stubEnv("GROQ_API_KEY", "");
+    const res = await getInterviewFeedback("q", "a", "role");
+    expect(res).toBeNull();
+    expect(fetchSpy).toBeNull();
+  });
+
+  it("restituisce null quando la rete fallisce", async () => {
+    mockGroqFailure();
+    expect(await getInterviewFeedback("q", "a", "role")).toBeNull();
+  });
+
+  it("restituisce null su errore HTTP di Groq", async () => {
+    mockGroqHttpError();
     expect(await getInterviewFeedback("q", "a", "role")).toBeNull();
   });
 
   it("restituisce null quando la risposta non è JSON valido", async () => {
-    mockOllamaInvalidJson();
+    mockGroqRaw("non è json");
     expect(await getInterviewFeedback("q", "a", "role")).toBeNull();
   });
 
-  it("usa OpenAI come provider primario quando c'è la key", async () => {
-    vi.stubEnv("OPENAI_API_KEY", "sk-test");
-    mockOllamaFailure();
-    const res = await getInterviewFeedback("q", "a", "role");
-    expect(res).toEqual({ ok: true });
+  it("restituisce null quando il contenuto della risposta è vuoto", async () => {
+    mockGroqRaw("");
+    expect(await getInterviewFeedback("q", "a", "role")).toBeNull();
   });
 });
 
 describe("rewriteBulletWithAI", () => {
   it("restituisce il bullet riscritto", async () => {
-    mockOllamaJson({
+    mockGroqJson({
       original: "Ho lavorato su X",
       rewritten: "Ottimizzato X riducendo i costi del 40%",
       metricsAdded: ["40%"],
@@ -121,14 +127,14 @@ describe("rewriteBulletWithAI", () => {
   });
 
   it("restituisce null su errore di rete", async () => {
-    mockOllamaFailure();
+    mockGroqFailure();
     expect(await rewriteBulletWithAI("x", "role")).toBeNull();
   });
 });
 
 describe("generateSummaryWithAI", () => {
   it("restituisce summary, headline e keyStrengths", async () => {
-    mockOllamaJson({
+    mockGroqJson({
       summary: "Developer con 8 anni di esperienza",
       headline: "Senior Full Stack Developer",
       keyStrengths: ["React", "Node.js"],
@@ -146,7 +152,7 @@ describe("generateSummaryWithAI", () => {
   });
 
   it("gestisce input senza parametri", async () => {
-    mockOllamaJson({ summary: "s", headline: "h", keyStrengths: [] });
+    mockGroqJson({ summary: "s", headline: "h", keyStrengths: [] });
     const res = await generateSummaryWithAI();
     expect(res?.summary).toBe("s");
   });
@@ -154,7 +160,7 @@ describe("generateSummaryWithAI", () => {
 
 describe("generateCVWithAI", () => {
   it("restituisce il CV generato", async () => {
-    mockOllamaJson({
+    mockGroqJson({
       personalInfo: { name: "Mario Rossi" },
       summary: "Profilo",
       experience: [{ company: "Acme", role: "Dev", description: "Ridotti costi del 40%" }],
@@ -171,14 +177,14 @@ describe("generateCVWithAI", () => {
   });
 
   it("restituisce null su risposta non JSON", async () => {
-    mockOllamaInvalidJson();
+    mockGroqRaw("non è json");
     expect(await generateCVWithAI("profilo")).toBeNull();
   });
 });
 
 describe("analyzeCVWithAI", () => {
   it("restituisce l'analisi strutturata", async () => {
-    mockOllamaJson({
+    mockGroqJson({
       score: 85,
       atsScore: 90,
       jobMatchScore: 80,
@@ -198,15 +204,16 @@ describe("analyzeCVWithAI", () => {
   });
 
   it("tronca il testo del CV a 4000 caratteri nel prompt", async () => {
-    mockOllamaJson({ score: 50 });
+    mockGroqJson({ score: 50 });
     const longText = "a".repeat(5000);
 
     await analyzeCVWithAI(longText);
 
     const [, init] = fetchSpy!.mock.calls[0] as [string, RequestInit];
     const body = JSON.parse(String(init.body));
-    expect(body.prompt).not.toContain("a".repeat(5000));
-    expect(body.prompt).toContain("a".repeat(4000));
-    expect(body.prompt.length).toBeLessThan(6500);
+    const prompt = body.messages[0].content as string;
+    expect(prompt).not.toContain("a".repeat(5000));
+    expect(prompt).toContain("a".repeat(4000));
+    expect(prompt.length).toBeLessThan(6500);
   });
 });

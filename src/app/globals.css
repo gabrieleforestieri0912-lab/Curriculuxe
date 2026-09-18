@@ -192,3 +192,23 @@ body {
 *::-webkit-scrollbar-corner {
   background: transparent;
 }
+
+/* Accessibilità: focus visibile per navigazione da tastiera */
+:where(a, button, input, textarea, select, [tabindex]):focus-visible {
+  outline: 2px solid var(--accent-light);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Rispetta chi preferisce animazioni ridotte: disattiva animazioni/
+   transizioni non essenziali su tutto il sito. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

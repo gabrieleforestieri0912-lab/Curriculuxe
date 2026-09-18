@@ -34,7 +34,8 @@ export default function DashboardSidebar({ onNavigate }: DashboardSidebarProps) 
             href={link.href}
             prefetch
             onClick={onNavigate}
-            className={`block rounded-xl px-3 py-2 text-sm transition-all ${
+            aria-current={active ? "page" : undefined}
+            className={`block rounded-xl px-3 py-2.5 text-sm transition-all ${
               active
                 ? "bg-indigo-500/15 text-white font-medium border border-indigo-500/30"
                 : "text-zinc-300 hover:bg-white/5 hover:text-white border border-transparent"

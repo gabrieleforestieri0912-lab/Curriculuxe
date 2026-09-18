@@ -14,6 +14,10 @@ const it: Record<string, unknown> = {
   nav: {
     features: "Funzionalità",
     howItWorks: "Come Funziona",
+    careerMarket: "Career Market",
+    resumeScore: "Resume Score",
+    resources: "Risorse",
+    mcp: "Connect AI",
     templates: "Template",
     aiAnalyzer: "AI Analyzer",
     feedback: "Feedback",
@@ -241,8 +245,8 @@ const it: Record<string, unknown> = {
     plans: [
       { name: "Free", price: "0", desc: "Per iniziare", features: ["Analisi base CV", "Score ATS", "1 template", "5 crediti AI di prova", "Export PDF", "1 CV attivo", "Supporto via email"], cta: "Inizia Gratis" },
       { name: "Starter", price: "4.99", desc: "Per chi vuole usare l'AI", features: ["50 crediti AI al mese", "Analisi CV con AI", "Generazione CV con AI", "Riscrittura bullet point", "Simulazione colloqui", "Tutti i 16 template", "Export PDF/DOC/TXT"], priceYearly: "3.99", cta: "Sottoscrivi" },
-      { name: "Pro", price: "8.99", desc: "Per professionisti", features: ["500 crediti AI al mese", "Tutti i 16 template", "Career kit completo", "Export PDF/DOC/TXT", "Priorità supporto", "Versioni CV per offerta illimitate", "Riscrittura bullet con AI"], priceYearly: "5.99", cta: "Passa a Pro" },
-      { name: "Enterprise", price: "28.99", desc: "Per team e aziende", features: ["2000 crediti AI al mese", "Tutto del piano Pro", "API access", "CV illimitati per team", "Admin dashboard", "Supporto dedicato", "Integrazione ATS aziendale"], priceYearly: "18.99", cta: "Contatta Vendite" },
+      { name: "Pro", price: "6.99", desc: "Per professionisti", features: ["500 crediti AI al mese", "Tutti i 16 template", "Career kit completo", "Export PDF/DOC/TXT", "Priorità supporto", "Versioni CV per offerta illimitate", "Riscrittura bullet con AI"], priceYearly: "4.99", cta: "Passa a Pro" },
+      { name: "Enterprise", price: "9.99", desc: "Per team e aziende", features: ["2000 crediti AI al mese", "Tutto del piano Pro", "API access", "CV illimitati per team", "Admin dashboard", "Supporto dedicato", "Integrazione ATS aziendale"], priceYearly: "6.99", cta: "Contatta Vendite" },
     ],
     trust: ["Pagamento sicuro", "Attivazione immediata", "Cancella quando vuoi", "Supporto in italiano"],
     cta: "Inizia ora",
@@ -565,6 +569,10 @@ const en: Record<string, unknown> = {
   nav: {
     features: "Features",
     howItWorks: "How It Works",
+    careerMarket: "Career Market",
+    resumeScore: "Resume Score",
+    resources: "Resources",
+    mcp: "Connect AI",
     templates: "Templates",
     aiAnalyzer: "AI Analyzer",
     feedback: "Feedback",
@@ -792,8 +800,8 @@ const en: Record<string, unknown> = {
     plans: [
       { name: "Free", price: "0", desc: "To get started", features: ["Basic CV analysis", "ATS Score", "1 template", "5 trial AI credits", "PDF export", "1 active CV", "Email support"], cta: "Start Free" },
       { name: "Starter", price: "4.99", desc: "For AI beginners", features: ["50 AI credits per month", "AI CV analysis", "AI CV generation", "Bullet point rewriting", "Interview simulation", "All 16 templates", "PDF/DOC/TXT export"], priceYearly: "3.99", cta: "Subscribe" },
-      { name: "Pro", price: "8.99", desc: "For professionals", features: ["500 AI credits per month", "All 16 templates", "Full career kit", "PDF/DOC/TXT export", "Priority support", "Unlimited CV versions per offer", "AI bullet rewriting"], priceYearly: "5.99", cta: "Go Pro" },
-      { name: "Enterprise", price: "28.99", desc: "For teams & companies", features: ["2000 AI credits per month", "Everything in Pro", "API access", "Unlimited team CVs", "Admin dashboard", "Dedicated support", "Corporate ATS integration"], priceYearly: "18.99", cta: "Contact Sales" },
+      { name: "Pro", price: "6.99", desc: "For professionals", features: ["500 AI credits per month", "All 16 templates", "Full career kit", "PDF/DOC/TXT export", "Priority support", "Unlimited CV versions per offer", "AI bullet rewriting"], priceYearly: "4.99", cta: "Go Pro" },
+      { name: "Enterprise", price: "9.99", desc: "For teams & companies", features: ["2000 AI credits per month", "Everything in Pro", "API access", "Unlimited team CVs", "Admin dashboard", "Dedicated support", "Corporate ATS integration"], priceYearly: "6.99", cta: "Contact Sales" },
     ],
     trust: ["Secure payment", "Instant activation", "Cancel anytime", "Italian support"],
     cta: "Start now",
