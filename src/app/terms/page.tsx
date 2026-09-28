@@ -143,6 +143,39 @@ export default function TermsPage() {
               .
             </p>
           </section>
+
+          <section>
+            <h2 className="text-xl font-semibold text-white mb-2">11. Dati personali: cosa raccogliamo e come li usiamo</h2>
+            <p>
+              Per usare il Servizio raccogliamo: dati account (nome, email, password
+              cifrata); dati del profilo base Google se accedi con Google (nome,
+              email, foto profilo tramite gli ambiti standard openid, email e
+              profile — nessun accesso a Gmail, Drive o Contatti); contenuti da te
+              forniti (CV, esperienze, job description, cover letter, feedback);
+              dati di pagamento gestiti da Stripe (non vediamo né memorizziamo i
+              dati della carta); dati tecnici (cookie di sessione sicuri, preferenza
+              di lingua, analytics anonime).
+            </p>
+            <p className="mt-2">
+              Usiamo questi dati solo per erogare il Servizio (creazione, analisi e
+              ottimizzazione CV, autenticazione, pagamenti, sicurezza e comunicazioni
+              di servizio). I testi inviati alle funzioni AI sono elaborati
+              esclusivamente per produrre il risultato richiesto e non sono venduti
+              né condivisi a fini pubblicitari. I dati sono ospitati su Supabase
+              (UE/USA con garanzie GDPR), il sito su Vercel, i pagamenti su Stripe,
+              le email di servizio su Resend. Conserviamo i dati finché
+              l&apos;account è attivo; puoi chiedere accesso, rettifica o
+              cancellazione scrivendo a{" "}
+              <a href={`mailto:${CONTACT_EMAIL}`} className="text-indigo-300 hover:text-indigo-200">
+                {CONTACT_EMAIL}
+              </a>
+              . L&apos;informativa completa è nella{" "}
+              <Link href="/privacy" className="text-indigo-300 hover:text-indigo-200">
+                Privacy Policy
+              </Link>
+              .
+            </p>
+          </section>
         </div>
       </div>
     </main>
