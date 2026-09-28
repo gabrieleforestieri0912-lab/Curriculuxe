@@ -340,7 +340,7 @@ npm start       # Avvia produzione
 
 ## Database Supabase (PostgreSQL)
 
-Tabelle (vedi `supabase-migration.sql`):
+Tabelle (vedi `supabase/supabase-migration.sql`):
 
 - `users` — account utente (crediti, piano, lingua, score, contatori pipeline)
 - `cvs` — curriculum (con applicationVersions e statusHistory)
