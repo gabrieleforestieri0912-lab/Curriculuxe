@@ -48,7 +48,17 @@ const faqSchema = {
 
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 min-h-screen overflow-x-clip">
+    <div className="flex flex-col flex-1 min-h-screen overflow-x-clip gradient-bg relative">
+      {/* Sfondo viola esteso a tutta la landing */}
+      <div className="absolute inset-0 subtle-grid pointer-events-none" aria-hidden="true" />
+      <div
+        className="absolute inset-0 pointer-events-none"
+        aria-hidden="true"
+        style={{
+          background:
+            "radial-gradient(circle at 50% 6%, rgba(232,121,249,0.16), transparent 36%), radial-gradient(circle at 85% 40%, rgba(129,140,248,0.10), transparent 30%), radial-gradient(circle at 12% 65%, rgba(168,85,247,0.10), transparent 32%), linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.25) 55%, rgba(0,0,0,0.45) 100%)",
+        }}
+      />
       <div className="relative z-10 flex flex-col flex-1">
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(softwareAppSchema) }} />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />

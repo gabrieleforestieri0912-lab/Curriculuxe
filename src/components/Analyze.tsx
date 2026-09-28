@@ -7,6 +7,7 @@ import { cvTemplates, getTemplateById } from "@/lib/templates/cvTemplates";
 import TemplatePreview from "@/components/TemplatePreview";
 import { exportToTxt, exportToDoc, exportToPdf } from "@/lib/exportUtils";
 import type { AnalysisResult } from "@/lib/supabase/types";
+import { useLanguage } from "@/context/LanguageContext";
 
 interface Result {
   score: number;
@@ -51,6 +52,14 @@ export default function Analyze({ initialResult = null, embedded = false }: Anal
   const [targetMarket, setTargetMarket] = useState("italia");
   const [toast, setToast] = useState("");
   const [user, setUser] = useState<Record<string, unknown> | null>(null);
+  const { t, lang } = useLanguage();
+  const tA = t.analyze as Record<string, string>;
+  const tNav = t.nav as Record<string, string>;
+  const tInterview = t.interview as Record<string, string>;
+  const titleWords = String(tA.title).split(" ");
+  const titleLast = titleWords.pop() || "";
+  const titleFirst = titleWords.join(" ");
+  const matchedWord = String(tA.matchedKeywords).toLowerCase();
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -80,10 +89,10 @@ export default function Analyze({ initialResult = null, embedded = false }: Anal
     window.setTimeout(() => setToast(""), 2200);
   };
 
-  const copyText = async (text: string, label: string) => {
+  const copyText = async (text: string) => {
     if (!text) return;
     await navigator.clipboard.writeText(text);
-    showToast(`${label} copiato`);
+    showToast(String(tA.copied));
   };
 
   useEffect(() => {
@@ -159,12 +168,12 @@ export default function Analyze({ initialResult = null, embedded = false }: Anal
 
       const data = await res.json();
       if (!res.ok) {
-        setAnalysisError(data.error || "Errore durante l'analisi");
+        setAnalysisError(data.error || String(tA.errorGeneric));
         return;
       }
 
       setResult(data);
-      showToast(`${data.matchedKeywords?.length || 0} keyword trovate`);
+      showToast(`${data.matchedKeywords?.length || 0} ${matchedWord}`);
 
       try {
         const meRes = await fetch("/api/auth/me");
@@ -181,7 +190,7 @@ export default function Analyze({ initialResult = null, embedded = false }: Anal
       }
     } catch {
       console.error("Analysis error");
-      setAnalysisError("Errore nella comunicazione con il server");
+      setAnalysisError(String(tA.errorGeneric));
     } finally {
       setAnalyzing(false);
     }
@@ -208,7 +217,7 @@ export default function Analyze({ initialResult = null, embedded = false }: Anal
             </Link>
             <div className="flex items-center gap-3">
               <Link href="/register" className="btn-primary text-sm text-white px-5 py-2.5 rounded-full font-medium">
-                Get Started
+                {tNav.register}
               </Link>
             </div>
           </div>
@@ -224,10 +233,10 @@ export default function Analyze({ initialResult = null, embedded = false }: Anal
             className="text-center mb-12"
           >
             <h1 className="text-3xl sm:text-4xl font-bold text-white mb-4">
-              Analizza il tuo <span className="text-gradient">Curriculum</span>
+              {titleFirst} <span className="text-gradient">{titleLast}</span>
             </h1>
             <p className="text-zinc-400 text-base sm:text-lg">
-              Carica il tuo CV e l&apos;AI ti dar&agrave; una valutazione completa
+              {tA.subtitle}
             </p>
           </motion.div>
 
@@ -266,10 +275,10 @@ export default function Analyze({ initialResult = null, embedded = false }: Anal
                   <div className="text-center">
                     <label className="cursor-pointer">
                       <span className="text-white font-medium mb-2 block">
-                        {file ? file.name : isDragging ? "Rilascia il file qui" : "Carica il tuo curriculum (PDF)"}
+                        {file ? file.name : String(tA.uploadArea)}
                       </span>
                       <span className="text-zinc-500 text-sm">
-                        {isDragging ? "Sto caricando..." : "Formato supportato: PDF, DOCX"}
+                        {isDragging ? String(tA.analyzing) : String(tA.uploadFormats)}
                       </span>
                       <input
                         type="file"
@@ -286,17 +295,23 @@ export default function Analyze({ initialResult = null, embedded = false }: Anal
                       animate={{ opacity: 1, y: 0 }}
                       className="w-full max-w-2xl space-y-4"
                     >
+                      <label className="block text-left text-sm font-medium text-zinc-300 mb-2">
+                        {tA.jobDescription}
+                      </label>
                       <textarea
                         value={jobDescription}
                         onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setJobDescription(e.target.value)}
-                        placeholder="Incolla qui l'offerta di lavoro per calcolare match, keyword mancanti e versione mirata del CV..."
+                        placeholder={String(tA.jobDescriptionPlaceholder)}
                         className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-indigo-500 focus:outline-none h-32 resize-none"
                       />
+                      <p className="text-left text-sm font-medium text-zinc-300 mb-2 mt-4">
+                        {tA.market}
+                      </p>
                       <div className="grid grid-cols-3 gap-2">
                         {[
-                          { id: "italia", label: "Italia" },
-                          { id: "europa", label: "Europa" },
-                          { id: "usa", label: "USA" },
+                          { id: "italia", label: String(tA.marketItalia) },
+                          { id: "europa", label: String(tA.marketEuropa) },
+                          { id: "usa", label: String(tA.marketUSA) },
                         ].map((market) => (
                           <button
                             key={market.id}
@@ -315,7 +330,7 @@ export default function Analyze({ initialResult = null, embedded = false }: Anal
                         onClick={analyzeResume}
                         className="btn-primary w-full sm:w-auto text-white px-6 sm:px-8 py-3 rounded-full font-semibold glow-border flex items-center justify-center gap-2 mx-auto"
                       >
-                        Analizza CV e offerta
+                        {tA.analyzeButton}
                       </button>
                       {analysisError && (
                         <p className="text-red-400 text-sm text-center">{analysisError}</p>
@@ -344,9 +359,9 @@ export default function Analyze({ initialResult = null, embedded = false }: Anal
                     <svg className="w-8 h-8 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                     </svg>
-                    <span className="text-white font-medium">L&apos;AI sta analizzando il tuo curriculum...</span>
+                    <span className="text-white font-medium">{tA.analyzing}</span>
                   </motion.div>
-                  <p className="text-zinc-500 text-sm">Questo potrebbe richiedere qualche secondo</p>
+                  <p className="text-zinc-500 text-sm">{tA.analyzingDesc}</p>
                 </div>
               </motion.div>
             )}
@@ -366,9 +381,9 @@ export default function Analyze({ initialResult = null, embedded = false }: Anal
                   className="glass-card rounded-2xl p-5 sm:p-8 glow-border"
                 >
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-6">
-                    <h2 className="text-xl font-bold text-white">Risultato dell&apos;analisi</h2>
+                    <h2 className="text-xl font-bold text-white">{tA.results}</h2>
                     <span className="text-sm text-zinc-500">
-                      {result.isFallback ? "Analisi di base (Regole statiche)" : "Powered by AI"}
+                      {result.isFallback ? String(tA.fallbackLabel) : "Powered by AI"}
                     </span>
                   </div>
 
@@ -378,12 +393,11 @@ export default function Analyze({ initialResult = null, embedded = false }: Anal
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                       </svg>
                       <div>
-                        <strong>Analisi AI non disponibile o crediti esauriti.</strong><br />
-                        Stiamo mostrando un&apos;analisi di base.{" "}
+                        <strong>{tA.noCredits}</strong><br />
+                        {tA.fallbackLabel}.{" "}
                         <Link href="/#pricing" className="underline font-medium text-yellow-300 hover:text-yellow-200">
-                          Vedi i piani
-                        </Link>{" "}
-                        per sbloccare l&apos;analisi intelligente o riprova pi&ugrave; tardi.
+                          {tInterview.viewPricing}
+                        </Link>
                       </div>
                     </div>
                   )}
@@ -440,29 +454,29 @@ export default function Analyze({ initialResult = null, embedded = false }: Anal
                       className="md:col-span-2 grid sm:grid-cols-2 lg:grid-cols-5 gap-4"
                     >
                       <div className="bg-white/5 rounded-xl p-4 border border-white/10">
-                        <p className="text-zinc-500 text-xs mb-1">Score totale</p>
+                        <p className="text-zinc-500 text-xs mb-1">{tA.overallScore}</p>
                         <p className="text-2xl font-bold text-white">{result.score}/100</p>
                       </div>
                       <div className="bg-white/5 rounded-xl p-4 border border-white/10">
-                        <p className="text-zinc-500 text-xs mb-1">ATS readability</p>
+                        <p className="text-zinc-500 text-xs mb-1">{tA.atsScore}</p>
                         <p className="text-2xl font-bold text-emerald-400">{result.atsScore}/100</p>
                       </div>
                       <div className="bg-white/5 rounded-xl p-4 border border-white/10">
-                        <p className="text-zinc-500 text-xs mb-1">Content quality</p>
+                        <p className="text-zinc-500 text-xs mb-1">{tA.contentScore}</p>
                         <p className="text-2xl font-bold text-sky-400">{result.contentScore ?? "--"}/100</p>
                       </div>
                       <div className="bg-white/5 rounded-xl p-4 border border-white/10">
-                        <p className="text-zinc-500 text-xs mb-1">Writing</p>
+                        <p className="text-zinc-500 text-xs mb-1">{tA.writingScore}</p>
                         <p className="text-2xl font-bold text-amber-400">{result.writingScore ?? "--"}/100</p>
                       </div>
                       <div className="bg-white/5 rounded-xl p-4 border border-white/10">
-                        <p className="text-zinc-500 text-xs mb-1">Job match</p>
+                        <p className="text-zinc-500 text-xs mb-1">{tA.jobMatchScore}</p>
                         <p className="text-2xl font-bold text-indigo-300">
                           {result.jobMatchScore ?? "--"}/100
                         </p>
                       </div>
                       <div className="bg-white/5 rounded-xl p-4 border border-white/10">
-                        <p className="text-zinc-500 text-xs mb-1">Application readiness</p>
+                        <p className="text-zinc-500 text-xs mb-1">{tA.readinessScore}</p>
                         <p className="text-2xl font-bold text-fuchsia-300">{result.readinessScore ?? "--"}/100</p>
                       </div>
                     </motion.div>
@@ -477,7 +491,7 @@ export default function Analyze({ initialResult = null, embedded = false }: Anal
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                         </svg>
-                        Punti di forza
+                        {tA.strengths}
                       </h3>
                       <ul className="space-y-2">
                         {result.strengths.map((s: string, i: number) => (
@@ -505,7 +519,7 @@ export default function Analyze({ initialResult = null, embedded = false }: Anal
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                         </svg>
-                        Aree di miglioramento
+                        {tA.improvements}
                       </h3>
                       <div className={!user ? "blur-md pointer-events-none select-none opacity-60" : ""}>
                         {result.improvements.map((imp: { area: string; impact: string; description: string }, i: number) => (
@@ -526,7 +540,7 @@ export default function Analyze({ initialResult = null, embedded = false }: Anal
                                       : "bg-blue-500/20 text-blue-400"
                                   }`}
                               >
-                                {imp.impact}
+                                {imp.impact === "Alto" ? tA.high : imp.impact === "Medio" ? tA.medium : imp.impact === "Basso" ? tA.low : imp.impact}
                               </span>
                             </div>
                             <p className="text-zinc-400 text-sm">{imp.description}</p>
@@ -539,9 +553,9 @@ export default function Analyze({ initialResult = null, embedded = false }: Anal
                           <svg className="w-8 h-8 text-indigo-400 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                           </svg>
-                          <p className="text-white font-medium mb-3">Sblocca l&apos;analisi completa</p>
+                          <p className="text-white font-medium mb-3">{tA.loginToUnlock}</p>
                           <Link href="/register" className="btn-primary px-4 py-2 rounded-lg text-sm font-semibold">
-                            Crea account gratuito
+                            {tNav.register}
                           </Link>
                         </div>
                       )}
@@ -550,14 +564,14 @@ export default function Analyze({ initialResult = null, embedded = false }: Anal
 
                   <div className="grid md:grid-cols-2 gap-6 mt-6">
                     <div className="bg-white/5 rounded-xl p-5 border border-white/10">
-                      <h3 className="text-indigo-300 font-semibold mb-3">Controlli ATS</h3>
+                      <h3 className="text-indigo-300 font-semibold mb-3">{tA.atsChecks}</h3>
                       <div className="space-y-3">
                         {result.atsChecks?.map((check: { label: string; passed: boolean; fix?: string }, i: number) => (
                           <div key={i} className="text-sm">
                             <div className="flex items-center justify-between gap-3">
                               <span className="text-white">{check.label}</span>
                               <span className={check.passed ? "text-emerald-400" : "text-red-400"}>
-                                {check.passed ? "OK" : "Da sistemare"}
+                                {check.passed ? String(tA.pass) : String(tA.fail)}
                               </span>
                             </div>
                             {!check.passed && <p className="text-zinc-500 mt-1">{check.fix}</p>}
@@ -567,8 +581,8 @@ export default function Analyze({ initialResult = null, embedded = false }: Anal
                     </div>
 
                     <div className="bg-white/5 rounded-xl p-5 border border-white/10">
-                      <h3 className="text-indigo-300 font-semibold mb-3">Keyword offerta</h3>
-                      <p className="text-zinc-500 text-xs mb-2">Mancanti</p>
+                      <h3 className="text-indigo-300 font-semibold mb-3">{tA.keywords}</h3>
+                      <p className="text-zinc-500 text-xs mb-2">{tA.missingKeywords}</p>
                       <div className="flex flex-wrap gap-2 mb-4">
                         {(result.missingKeywords || []).slice(0, 12).map((keyword: string) => (
                           <span key={keyword} className="px-2 py-1 rounded-full bg-red-500/15 text-red-300 text-xs">
@@ -576,7 +590,7 @@ export default function Analyze({ initialResult = null, embedded = false }: Anal
                           </span>
                         ))}
                       </div>
-                      <p className="text-zinc-500 text-xs mb-2">Gia presenti</p>
+                      <p className="text-zinc-500 text-xs mb-2">{tA.matchedKeywords}</p>
                       <div className="flex flex-wrap gap-2">
                         {(result.matchedKeywords || []).slice(0, 12).map((keyword: string) => (
                           <span key={keyword} className="px-2 py-1 rounded-full bg-emerald-500/15 text-emerald-300 text-xs">
@@ -589,16 +603,16 @@ export default function Analyze({ initialResult = null, embedded = false }: Anal
 
                   {result.rewrittenBullets && result.rewrittenBullets.length > 0 && (
                     <div className="mt-6 bg-white/5 rounded-xl p-5 border border-white/10">
-                      <h3 className="text-indigo-300 font-semibold mb-3">Bullet achievement-oriented</h3>
+                      <h3 className="text-indigo-300 font-semibold mb-3">{tA.rewrittenBullets}</h3>
                       <ul className="space-y-2">
                         {result.rewrittenBullets.slice(0, 6).map((bullet: string, i: number) => (
                           <li key={i} className="text-zinc-300 text-sm flex gap-2 items-start">
                             <button
                               type="button"
-                              onClick={() => copyText(bullet, "Bullet")}
+                              onClick={() => copyText(bullet)}
                               className="mt-0.5 rounded bg-indigo-500/15 px-2 py-1 text-[10px] text-indigo-300 hover:bg-indigo-500/25"
                             >
-                              Copia
+                              {tA.copy}
                             </button>
                             <span>{bullet}</span>
                           </li>
@@ -609,9 +623,9 @@ export default function Analyze({ initialResult = null, embedded = false }: Anal
 
                   <div className="grid md:grid-cols-2 gap-6 mt-6">
                     <div className="bg-white/5 rounded-xl p-5 border border-white/10">
-                      <h3 className="text-indigo-300 font-semibold mb-3">Skill consigliate per il ruolo</h3>
+                      <h3 className="text-indigo-300 font-semibold mb-3">{tA.suggestedSkills}</h3>
                       <p className="text-zinc-500 text-xs mb-3">
-                        Ruolo rilevato: {result.detectedRole || "general"}
+                        {tA.detectedRole} {result.detectedRole || "general"}
                       </p>
                       <div className="flex flex-wrap gap-2">
                         {(result.suggestedSkills || []).map((skill: string) => (
@@ -623,7 +637,7 @@ export default function Analyze({ initialResult = null, embedded = false }: Anal
                     </div>
 
                     <div className="bg-white/5 rounded-xl p-5 border border-white/10">
-                      <h3 className="text-indigo-300 font-semibold mb-3">Regole mercato {result.market}</h3>
+                      <h3 className="text-indigo-300 font-semibold mb-3">{tA.marketRules} {result.market}</h3>
                       <ul className="space-y-2">
                         {(result.marketGuidance || []).map((tip: string) => (
                           <li key={tip} className="text-zinc-300 text-sm flex gap-2">
@@ -639,13 +653,13 @@ export default function Analyze({ initialResult = null, embedded = false }: Anal
                     <div className="grid md:grid-cols-2 gap-6 mt-6">
                       <div className="bg-white/5 rounded-xl p-5 border border-white/10">
                         <div className="flex items-center justify-between gap-3 mb-3">
-                          <h3 className="text-indigo-300 font-semibold">Lettera di presentazione</h3>
+                          <h3 className="text-indigo-300 font-semibold">{tA.coverLetter}</h3>
                           <button
                             type="button"
-                            onClick={() => copyText(result.coverLetter || "", "Lettera")}
+                            onClick={() => copyText(result.coverLetter || "")}
                             className="rounded-lg bg-white/10 px-3 py-1 text-xs text-white hover:bg-white/15"
                           >
-                            Copia
+                            {tA.copy}
                           </button>
                         </div>
                         <pre className="whitespace-pre-wrap text-zinc-300 text-sm font-sans">
@@ -654,13 +668,13 @@ export default function Analyze({ initialResult = null, embedded = false }: Anal
                       </div>
                       <div className="bg-white/5 rounded-xl p-5 border border-white/10">
                         <div className="flex items-center justify-between gap-3 mb-3">
-                          <h3 className="text-indigo-300 font-semibold">Email candidatura</h3>
+                          <h3 className="text-indigo-300 font-semibold">{tA.applicationEmail}</h3>
                           <button
                             type="button"
-                            onClick={() => copyText(result.applicationEmail || "", "Email")}
+                            onClick={() => copyText(result.applicationEmail || "")}
                             className="rounded-lg bg-white/10 px-3 py-1 text-xs text-white hover:bg-white/15"
                           >
-                            Copia
+                            {tA.copy}
                           </button>
                         </div>
                         <pre className="whitespace-pre-wrap text-zinc-300 text-sm font-sans">
@@ -677,7 +691,7 @@ export default function Analyze({ initialResult = null, embedded = false }: Anal
                     className="mt-6 space-y-4"
                   >
                     <div className="flex items-center justify-between">
-                      <p className="text-zinc-400 text-sm">Esporta l&apos;analisi:</p>
+                      <p className="text-zinc-400 text-sm">{tA.exportLabel}</p>
                       <button
                         onClick={() => setShowTemplates(!showTemplates)}
                         className="text-sm text-indigo-400 hover:text-indigo-300 flex items-center gap-1"
@@ -685,21 +699,21 @@ export default function Analyze({ initialResult = null, embedded = false }: Anal
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" />
                         </svg>
-                        Template
+                        {tA.templates}
                       </button>
                     </div>
                     <div className="grid sm:grid-cols-3 gap-3 rounded-xl bg-white/5 border border-white/10 p-4">
                       <div>
-                        <p className="text-zinc-500 text-xs">Formato</p>
+                        <p className="text-zinc-500 text-xs">{tA.formatLabel}</p>
                         <p className="text-white text-sm">TXT, DOC, PDF</p>
                       </div>
                       <div>
-                        <p className="text-zinc-500 text-xs">Template</p>
+                        <p className="text-zinc-500 text-xs">{tA.templates}</p>
                         <p className="text-white text-sm">{getTemplateById(selectedTemplate).name}</p>
                       </div>
                       <div>
                         <p className="text-zinc-500 text-xs">ATS-safe</p>
-                        <p className="text-white text-sm">{result.atsScore >= 80 ? "Si" : "Da verificare"}</p>
+                        <p className="text-white text-sm">{result.atsScore >= 80 ? (lang === "it" ? "Sì" : "Yes") : String(tA.fail)}</p>
                       </div>
                     </div>
 
@@ -740,7 +754,7 @@ export default function Analyze({ initialResult = null, embedded = false }: Anal
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                         </svg>
-                        TXT
+                        {tA.exportTxt}
                       </button>
                       <button
                         onClick={() => exportToDoc(result as unknown as AnalysisResult, selectedTemplate, file, setIsExporting)}
@@ -750,7 +764,7 @@ export default function Analyze({ initialResult = null, embedded = false }: Anal
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                         </svg>
-                        DOC
+                        {tA.exportDoc}
                       </button>
                       <button
                         onClick={() => exportToPdf(result as unknown as AnalysisResult, selectedTemplate, file, setIsExporting, showToast)}
@@ -760,7 +774,7 @@ export default function Analyze({ initialResult = null, embedded = false }: Anal
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
                         </svg>
-                        PDF
+                        {tA.exportPdf}
                       </button>
                     </div>
                     <button
@@ -770,7 +784,7 @@ export default function Analyze({ initialResult = null, embedded = false }: Anal
                       }}
                       className="btn-secondary w-full text-white py-3 rounded-full font-medium mt-4"
                     >
-                      Carica un altro curriculum
+                      {tA.uploadAnother}
                     </button>
                   </motion.div>
                 </motion.div>

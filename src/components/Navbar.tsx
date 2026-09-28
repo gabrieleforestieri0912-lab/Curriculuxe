@@ -269,6 +269,14 @@ export default function Navbar() {
         <div className="max-w-6xl mx-auto rounded-full border border-white/10 bg-white/[0.04] backdrop-blur-xl shadow-lg shadow-black/30 px-4 sm:px-6 py-2.5 sm:py-3 flex items-center justify-between">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 group min-w-0">
+            <Image
+              src="/curriculuxe.png"
+              alt="Logo Curriculuxe"
+              width={28}
+              height={28}
+              className="rounded-lg shrink-0 shadow-md shadow-fuchsia-500/20"
+              priority
+            />
             <span className="text-lg sm:text-xl font-bold text-white tracking-wide transition-all group-hover:text-fuchsia-400">
               Curriculuxe
             </span>

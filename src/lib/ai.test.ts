@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
-const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
+const AI_API_URL = "https://api.xkiro.com/v1/chat/completions";
 
 let fetchSpy: ReturnType<typeof vi.spyOn> | null = null;
 
@@ -10,27 +10,27 @@ function mockFetchImpl(impl: () => Promise<unknown>) {
   return fetchSpy;
 }
 
-function mockGroqJson(payload: unknown) {
+function mockAIJson(payload: unknown) {
   return mockFetchImpl(async () => ({
     ok: true,
     json: async () => ({ choices: [{ message: { content: JSON.stringify(payload) } }] }),
   }));
 }
 
-function mockGroqRaw(content: string) {
+function mockAIRaw(content: string) {
   return mockFetchImpl(async () => ({
     ok: true,
     json: async () => ({ choices: [{ message: { content } }] }),
   }));
 }
 
-function mockGroqFailure() {
+function mockAIFailure() {
   return mockFetchImpl(async () => {
     throw new Error("ECONNREFUSED");
   });
 }
 
-function mockGroqHttpError(status = 429) {
+function mockAIHttpError(status = 429) {
   return mockFetchImpl(async () => ({ ok: false, status }));
 }
 
@@ -44,7 +44,7 @@ import {
 
 beforeEach(() => {
   vi.unstubAllEnvs();
-  vi.stubEnv("GROQ_API_KEY", "gsk-test");
+  vi.stubEnv("AI_API_KEY", "sk-xt-test");
 });
 
 afterEach(() => {
@@ -54,8 +54,8 @@ afterEach(() => {
 });
 
 describe("getInterviewFeedback", () => {
-  it("restituisce il feedback parsato quando Groq risponde con JSON valido", async () => {
-    mockGroqJson({
+  it("restituisce il feedback parsato quando il provider risponde con JSON valido", async () => {
+    mockAIJson({
       score: 8,
       strengths: ["Chiaro", "Concreto"],
       improvements: ["Manca contesto"],
@@ -74,45 +74,45 @@ describe("getInterviewFeedback", () => {
     });
 
     const [url, init] = fetchSpy!.mock.calls[0] as [string, RequestInit];
-    expect(url).toBe(GROQ_API_URL);
-    expect((init.headers as Record<string, string>).Authorization).toBe("Bearer gsk-test");
+    expect(url).toBe(AI_API_URL);
+    expect((init.headers as Record<string, string>).Authorization).toBe("Bearer sk-xt-test");
     const body = JSON.parse(String(init.body));
     expect(body.model).toBeTruthy();
     expect(body.response_format).toEqual({ type: "json_object" });
     expect(body.messages[0].content).toContain("Parlami di te");
   });
 
-  it("restituisce null quando GROQ_API_KEY non è configurata", async () => {
-    vi.stubEnv("GROQ_API_KEY", "");
+  it("restituisce null quando AI_API_KEY non è configurata", async () => {
+    vi.stubEnv("AI_API_KEY", "");
     const res = await getInterviewFeedback("q", "a", "role");
     expect(res).toBeNull();
     expect(fetchSpy).toBeNull();
   });
 
   it("restituisce null quando la rete fallisce", async () => {
-    mockGroqFailure();
+    mockAIFailure();
     expect(await getInterviewFeedback("q", "a", "role")).toBeNull();
   });
 
-  it("restituisce null su errore HTTP di Groq", async () => {
-    mockGroqHttpError();
+  it("restituisce null su errore HTTP del provider", async () => {
+    mockAIHttpError();
     expect(await getInterviewFeedback("q", "a", "role")).toBeNull();
   });
 
   it("restituisce null quando la risposta non è JSON valido", async () => {
-    mockGroqRaw("non è json");
+    mockAIRaw("non è json");
     expect(await getInterviewFeedback("q", "a", "role")).toBeNull();
   });
 
   it("restituisce null quando il contenuto della risposta è vuoto", async () => {
-    mockGroqRaw("");
+    mockAIRaw("");
     expect(await getInterviewFeedback("q", "a", "role")).toBeNull();
   });
 });
 
 describe("rewriteBulletWithAI", () => {
   it("restituisce il bullet riscritto", async () => {
-    mockGroqJson({
+    mockAIJson({
       original: "Ho lavorato su X",
       rewritten: "Ottimizzato X riducendo i costi del 40%",
       metricsAdded: ["40%"],
@@ -127,14 +127,14 @@ describe("rewriteBulletWithAI", () => {
   });
 
   it("restituisce null su errore di rete", async () => {
-    mockGroqFailure();
+    mockAIFailure();
     expect(await rewriteBulletWithAI("x", "role")).toBeNull();
   });
 });
 
 describe("generateSummaryWithAI", () => {
   it("restituisce summary, headline e keyStrengths", async () => {
-    mockGroqJson({
+    mockAIJson({
       summary: "Developer con 8 anni di esperienza",
       headline: "Senior Full Stack Developer",
       keyStrengths: ["React", "Node.js"],
@@ -152,7 +152,7 @@ describe("generateSummaryWithAI", () => {
   });
 
   it("gestisce input senza parametri", async () => {
-    mockGroqJson({ summary: "s", headline: "h", keyStrengths: [] });
+    mockAIJson({ summary: "s", headline: "h", keyStrengths: [] });
     const res = await generateSummaryWithAI();
     expect(res?.summary).toBe("s");
   });
@@ -160,7 +160,7 @@ describe("generateSummaryWithAI", () => {
 
 describe("generateCVWithAI", () => {
   it("restituisce il CV generato", async () => {
-    mockGroqJson({
+    mockAIJson({
       personalInfo: { name: "Mario Rossi" },
       summary: "Profilo",
       experience: [{ company: "Acme", role: "Dev", description: "Ridotti costi del 40%" }],
@@ -177,14 +177,14 @@ describe("generateCVWithAI", () => {
   });
 
   it("restituisce null su risposta non JSON", async () => {
-    mockGroqRaw("non è json");
+    mockAIRaw("non è json");
     expect(await generateCVWithAI("profilo")).toBeNull();
   });
 });
 
 describe("analyzeCVWithAI", () => {
   it("restituisce l'analisi strutturata", async () => {
-    mockGroqJson({
+    mockAIJson({
       score: 85,
       atsScore: 90,
       jobMatchScore: 80,
@@ -204,7 +204,7 @@ describe("analyzeCVWithAI", () => {
   });
 
   it("tronca il testo del CV a 4000 caratteri nel prompt", async () => {
-    mockGroqJson({ score: 50 });
+    mockAIJson({ score: 50 });
     const longText = "a".repeat(5000);
 
     await analyzeCVWithAI(longText);

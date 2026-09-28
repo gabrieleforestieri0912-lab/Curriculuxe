@@ -1,9 +1,11 @@
 export const languages: Record<string, { label: string; flag: string }> = {
-  it: { label: "Italiano", flag: "🇮🇹" },
-  en: { label: "English", flag: "🇬🇧" },
+  it: { label: "Italiano", flag: "IT" },
+  en: { label: "English", flag: "EN" },
 };
 
 export const defaultLanguage = "it";
+
+export const supportedLanguages = Object.keys(languages);
 
 interface TranslationMap {
   [key: string]: string | string[] | TranslationMap | TranslationMap[];
@@ -357,7 +359,7 @@ const it: Record<string, unknown> = {
     title: "Analizza il tuo Curriculum",
     subtitle: "Carica il tuo CV e ricevi un'analisi dettagliata con score ATS, suggerimenti e riscritture AI.",
     uploadArea: "Trascina il tuo CV qui o clicca per caricare",
-    uploadFormats: "Formati supportati: PDF, DOCX, TXT",
+    uploadFormats: "Formati supportati: PDF, DOCX",
     jobDescription: "Job Description (opzionale)",
     jobDescriptionPlaceholder: "Incolla la descrizione della posizione per cui ti candidi...",
     market: "Mercato",
@@ -397,6 +399,15 @@ const it: Record<string, unknown> = {
     templateAdvice: "Consigli ATS",
     loginToUnlock: "Accedi per sbloccare tutte le funzionalità",
     noCredits: "Crediti insufficienti. Ricarica per usare l'analisi AI.",
+    errorGeneric: "Errore durante l'analisi. Riprova più tardi.",
+    analyzingDesc: "Potrebbero volerci alcuni secondi.",
+    fallbackLabel: "Analisi di base (regole statiche)",
+    contentScore: "Qualità contenuti",
+    writingScore: "Scrittura",
+    readinessScore: "Prontezza candidatura",
+    detectedRole: "Ruolo rilevato:",
+    exportLabel: "Esporta l'analisi:",
+    formatLabel: "Formato",
   },
   auth: {
     loginTitle: "Accedi",
@@ -561,6 +572,12 @@ const it: Record<string, unknown> = {
     certPlaceholder: "Certificazione - 2023...",
     generating: "Generazione in corso",
     generatingDesc: "Attendi mentre creiamo il tuo curriculum...",
+  },
+  about: {
+    title: "Chi siamo",
+    body: "Curriculuxe è un job-search copilot AI per l'Italia e l'Europa. Niente invio massivo di candidature, niente invenzioni di esperienza: preview, approvazione, salvataggio. Il Loop Discover, Assess, Tailor, Prepare, Track guida ogni opportunità come workspace persistente.",
+    contact: "Contatto:",
+    note: "Ispirato al modello ResuMax/Atlas, adattato al mercato italiano con 16 template ATS e negoziazione RAL.",
   },
 };
 
@@ -912,7 +929,7 @@ const en: Record<string, unknown> = {
     title: "Analyze your CV",
     subtitle: "Upload your CV and get a detailed analysis with ATS score, suggestions and AI rewrites.",
     uploadArea: "Drag your CV here or click to upload",
-    uploadFormats: "Supported formats: PDF, DOCX, TXT",
+    uploadFormats: "Supported formats: PDF, DOCX",
     jobDescription: "Job Description (optional)",
     jobDescriptionPlaceholder: "Paste the job description for the position you're applying for...",
     market: "Market",
@@ -952,6 +969,15 @@ const en: Record<string, unknown> = {
     templateAdvice: "ATS Advice",
     loginToUnlock: "Sign in to unlock all features",
     noCredits: "Insufficient credits. Top up to use AI analysis.",
+    errorGeneric: "Analysis error. Please try again.",
+    analyzingDesc: "This may take a few seconds.",
+    fallbackLabel: "Basic analysis (static rules)",
+    contentScore: "Content quality",
+    writingScore: "Writing",
+    readinessScore: "Application readiness",
+    detectedRole: "Detected role:",
+    exportLabel: "Export the analysis:",
+    formatLabel: "Format",
   },
   auth: {
     loginTitle: "Sign In",
@@ -1116,6 +1142,12 @@ const en: Record<string, unknown> = {
     certPlaceholder: "Certification - 2023...",
     generating: "Generating",
     generatingDesc: "Please wait while we create your CV...",
+  },
+  about: {
+    title: "About us",
+    body: "Curriculuxe is an AI job-search copilot for Italy and Europe. No mass applying, no invented experience: preview, approval, save. The Discover, Assess, Tailor, Prepare, Track loop guides every opportunity as a persistent workspace.",
+    contact: "Contact:",
+    note: "Inspired by the ResuMax/Atlas model, adapted to the Italian market with 16 ATS templates and salary negotiation.",
   },
 };
 

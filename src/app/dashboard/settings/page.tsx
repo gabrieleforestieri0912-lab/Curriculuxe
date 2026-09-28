@@ -59,7 +59,7 @@ export default function SettingsPage() {
                         : "bg-white/5 text-zinc-300 border border-white/10 hover:bg-white/10 hover:text-white"
                     }`}
                   >
-                    <span>{l.flag}</span>
+                    <span className="text-xs font-bold uppercase text-zinc-500">{l.flag}</span>
                     <span>{l.label}</span>
                     {lang === code && (
                       <svg className="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">

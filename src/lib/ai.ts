@@ -1,31 +1,31 @@
 import type { InterviewFeedback, BulletRewrite, SummaryResult } from "@/lib/supabase/types";
 
-// Groq espone un'API compatibile con OpenAI: una sola chiamata chat/completions
-// con output forzato in JSON, senza provider di fallback.
-const GROQ_API_URL =
-  process.env.GROQ_API_URL || "https://api.groq.com/openai/v1/chat/completions";
-const GROQ_MODEL = process.env.GROQ_MODEL || "llama-3.3-70b-versatile";
+// Provider AI: gateway compatibile con le API OpenAI (una sola chiamata
+// chat/completions con output forzato in JSON, senza provider di fallback).
+const AI_API_URL =
+  process.env.AI_API_URL || "https://api.xkiro.com/v1/chat/completions";
+const AI_MODEL = process.env.AI_MODEL || "qwen/qwen3.5-plus:free";
 
 const AI_TIMEOUT_MS = 30_000;
 
 async function callAI(prompt: string): Promise<string | null> {
-  const apiKey = process.env.GROQ_API_KEY;
+  const apiKey = process.env.AI_API_KEY;
   if (!apiKey) {
-    console.warn("GROQ_API_KEY non configurata: nessuna funzionalità AI attiva.");
+    console.warn("AI_API_KEY non configurata: nessuna funzionalità AI attiva.");
     return null;
   }
 
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), AI_TIMEOUT_MS);
   try {
-    const response = await fetch(GROQ_API_URL, {
+    const response = await fetch(AI_API_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model: GROQ_MODEL,
+        model: AI_MODEL,
         messages: [{ role: "user", content: prompt }],
         response_format: { type: "json_object" },
       }),
@@ -33,14 +33,14 @@ async function callAI(prompt: string): Promise<string | null> {
     });
 
     if (!response.ok) {
-      throw new Error(`Groq HTTP error! status: ${response.status}`);
+      throw new Error(`AI provider HTTP error! status: ${response.status}`);
     }
 
     const data = await response.json();
     const content = data?.choices?.[0]?.message?.content;
     return typeof content === "string" && content.trim() ? content : null;
   } catch (error) {
-    console.warn("Groq non disponibile:", error);
+    console.warn("AI provider non disponibile:", error);
     return null;
   } finally {
     clearTimeout(timeout);

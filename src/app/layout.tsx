@@ -52,12 +52,9 @@ export const metadata: Metadata = {
     },
   },
   icons: {
-    icon: [
-      { url: "/icon.png", type: "image/png", sizes: "512x512" },
-      { url: "/icon.svg", type: "image/svg+xml" },
-      { url: "/favicon.ico", sizes: "any" },
-    ],
-    apple: [{ url: "/icon.png", sizes: "180x180", type: "image/png" }],
+    icon: [{ url: "/curriculuxe.png", type: "image/png", sizes: "512x512" }],
+    apple: [{ url: "/curriculuxe.png", sizes: "512x512", type: "image/png" }],
+    shortcut: "/curriculuxe.png",
   },
   manifest: "/manifest.webmanifest",
   openGraph: {
@@ -70,7 +67,7 @@ export const metadata: Metadata = {
       "Analisi ATS, generazione CV con AI, riscrittura bullet e preparazione ai colloqui. Tutto in un'unica piattaforma.",
     images: [
       {
-        url: `${baseUrl}/icon.png`,
+        url: `${baseUrl}/curriculuxe.png`,
         width: 512,
         height: 512,
         alt: "Curriculuxe",
@@ -82,12 +79,12 @@ export const metadata: Metadata = {
     title: "Curriculuxe - Crea il Curriculum Perfetto con l'AI",
     description:
       "Analisi ATS, generazione CV con AI, riscrittura bullet e preparazione ai colloqui. Tutto in un'unica piattaforma.",
-    images: [`${baseUrl}/icon.png`],
+    images: [`${baseUrl}/curriculuxe.png`],
   },
 };
 
 export const viewport: Viewport = {
-  themeColor: "#000000",
+  themeColor: "#4c1d95",
   colorScheme: "dark",
 };
 
@@ -102,7 +99,7 @@ export default function RootLayout({
     "@id": `${baseUrl}/#organization`,
     name: "Curriculuxe",
     url: baseUrl,
-    logo: `${baseUrl}/icon.png`,
+    logo: `${baseUrl}/curriculuxe.png`,
     description:
       "Piattaforma AI-powered per creare, ottimizzare e monitorare curriculum professionali con analisi ATS e preparazione ai colloqui.",
     contactPoint: {

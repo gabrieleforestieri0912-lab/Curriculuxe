@@ -9,13 +9,22 @@ import { cvTemplates, getTemplateById } from "@/lib/templates/cvTemplates";
 import { getTemplateAdvice } from "@/lib/careerKit";
 import TemplatePreview from "@/components/TemplatePreview";
 
-const promptSuggestions = [
-  { id: "1", icon: "💻", label: "Sviluppatore Frontend", prompt: "Sviluppatore Frontend con 3 anni di esperienza in React, Next.js e TypeScript. Esperienza in UI/UX design, responsive design e integrazione API REST. Laurea in Informatica." },
-  { id: "2", icon: "⚙️", label: "Backend Engineer", prompt: "Backend Engineer con 5 anni di esperienza in Node.js e Python. Competenze in microservizi, API RESTful, database SQL/NoSQL e cloud AWS." },
-  { id: "3", icon: "📱", label: "Mobile Developer", prompt: "Mobile Developer con esperienza in React Native e Flutter. Ho pubblicato 3 app su App Store e Google Play con oltre 50k download." },
-  { id: "4", icon: "🎨", label: "UX/UI Designer", prompt: "UX/UI Designer con 4 anni di esperienza in progettazione di interfacce utente. Competenze in Figma, Adobe XD, design system e user research." },
-  { id: "5", icon: "📊", label: "Data Scientist", prompt: "Data Scientist con esperienza in machine learning, Python, SQL e visualizzazione dati. Ho sviluppato modelli predittivi per il settore finanziario." },
-  { id: "6", icon: "☁️", label: "DevOps Engineer", prompt: "DevOps Engineer con esperienza in Docker, Kubernetes, CI/CD, AWS/Azure e infrastruttura come codice con Terraform." },
+const promptSuggestionsIt = [
+  { id: "1", icon: "FE", label: "Sviluppatore Frontend", prompt: "Sviluppatore Frontend con 3 anni di esperienza in React, Next.js e TypeScript. Esperienza in UI/UX design, responsive design e integrazione API REST. Laurea in Informatica." },
+  { id: "2", icon: "BE", label: "Backend Engineer", prompt: "Backend Engineer con 5 anni di esperienza in Node.js e Python. Competenze in microservizi, API RESTful, database SQL/NoSQL e cloud AWS." },
+  { id: "3", icon: "MB", label: "Mobile Developer", prompt: "Mobile Developer con esperienza in React Native e Flutter. Ho pubblicato 3 app su App Store e Google Play con oltre 50k download." },
+  { id: "4", icon: "UX", label: "UX/UI Designer", prompt: "UX/UI Designer con 4 anni di esperienza in progettazione di interfacce utente. Competenze in Figma, Adobe XD, design system e user research." },
+  { id: "5", icon: "DS", label: "Data Scientist", prompt: "Data Scientist con esperienza in machine learning, Python, SQL e visualizzazione dati. Ho sviluppato modelli predittivi per il settore finanziario." },
+  { id: "6", icon: "DO", label: "DevOps Engineer", prompt: "DevOps Engineer con esperienza in Docker, Kubernetes, CI/CD, AWS/Azure e infrastruttura come codice con Terraform." },
+];
+
+const promptSuggestionsEn = [
+  { id: "1", icon: "FE", label: "Frontend Developer", prompt: "Frontend Developer with 3 years of experience in React, Next.js and TypeScript. Experience in UI/UX design, responsive design and REST API integration. BSc in Computer Science." },
+  { id: "2", icon: "BE", label: "Backend Engineer", prompt: "Backend Engineer with 5 years of experience in Node.js and Python. Skilled in microservices, RESTful APIs, SQL/NoSQL databases and AWS cloud." },
+  { id: "3", icon: "MB", label: "Mobile Developer", prompt: "Mobile Developer experienced in React Native and Flutter. Published 3 apps on the App Store and Google Play with over 50k downloads." },
+  { id: "4", icon: "UX", label: "UX/UI Designer", prompt: "UX/UI Designer with 4 years of experience in user interface design. Skilled in Figma, Adobe XD, design systems and user research." },
+  { id: "5", icon: "DS", label: "Data Scientist", prompt: "Data Scientist experienced in machine learning, Python, SQL and data visualization. Built predictive models for the finance industry." },
+  { id: "6", icon: "DO", label: "DevOps Engineer", prompt: "DevOps Engineer experienced in Docker, Kubernetes, CI/CD, AWS/Azure and infrastructure as code with Terraform." },
 ];
 
 const initialFormData = {
@@ -132,10 +141,11 @@ function CreateCVContent() {
     }
   };
 
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const _t = t as Record<string, Record<string, string>>;
   const tGen = _t.generate as Record<string, string>;
   const tCreate = _t.create as Record<string, string>;
+  const promptSuggestions = lang === "en" ? promptSuggestionsEn : promptSuggestionsIt;
 
   const handleGenerateAI = async () => {
     if (!prompt.trim()) { setError(tGen.errorPrompt); return; }
@@ -279,7 +289,7 @@ function CreateCVContent() {
                     <button key={s.id} onClick={() => handleSelectSuggestion(s)}
                       className="p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-indigo-500/50 transition-all text-left"
                     >
-                      <span className="text-xl mb-1 block">{s.icon}</span>
+                      <span className="mb-1 inline-flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-500/15 text-xs font-bold text-indigo-300">{s.icon}</span>
                       <span className="text-white text-sm font-medium">{s.label}</span>
                     </button>
                   ))}

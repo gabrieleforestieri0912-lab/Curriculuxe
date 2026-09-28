@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Image from "next/image";
 import Link from "next/link";
 import { useLanguage } from "@/context/LanguageContext";
 
@@ -46,7 +47,7 @@ export default function Footer() {
 
   return (
     <footer
-      className="py-16 px-6 border-t border-white/5 relative overflow-hidden bg-black/70"
+      className="py-16 px-6 border-t border-white/10 relative overflow-hidden bg-black/40 backdrop-blur-xl"
     >
       <div className="absolute inset-0 bg-gradient-to-t from-fuchsia-950/10 via-transparent to-transparent pointer-events-none" />
 
@@ -60,6 +61,13 @@ export default function Footer() {
             className="col-span-2 md:col-span-1"
           >
             <div className="flex items-center gap-2 mb-4">
+              <Image
+                src="/curriculuxe.png"
+                alt="Logo Curriculuxe"
+                width={26}
+                height={26}
+                className="rounded-lg shrink-0"
+              />
               <span className="text-lg font-bold text-white tracking-wide">Curriculuxe</span>
             </div>
             <p className="text-zinc-500 text-sm leading-relaxed max-w-xs">

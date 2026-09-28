@@ -23,7 +23,7 @@ export const projects = [
   { slug: "saas-billing", title: "SaaS Billing con Stripe", stack: "Next.js + Stripe", desc: "Abbonamenti, webhook e customer portal." },
   { slug: "ats-parser", title: "ATS Parser per CV", stack: "Python + regex", desc: "Estrae keyword e calcola score ATS." },
   { slug: "realtime-board", title: "Kanban Realtime", stack: "Supabase Realtime", desc: "Pipeline candidature con drag&drop." },
-  { slug: "cover-letter-ai", title: "Generatore Cover Letter", stack: "Groq API", desc: "Cover letter ancorate a esperienza reale." },
+  { slug: "cover-letter-ai", title: "Generatore Cover Letter", stack: "AI API", desc: "Cover letter ancorate a esperienza reale." },
 ];
 
 export const salaries = [

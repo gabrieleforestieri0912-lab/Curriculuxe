@@ -9,7 +9,7 @@ Piattaforma AI-powered per creare, ottimizzare e monitorare curriculum professio
 **Frontend:** Next.js 16 (App Router), React 19, Tailwind CSS, Framer Motion  
 **Backend:** Next.js API Routes (Node.js runtime)  
 **Database:** Supabase (PostgreSQL)  
-**AI:** Groq (Llama 3.3 70B, output JSON)  
+**AI:** Gateway compatibile OpenAI (chat/completions, output JSON)  
 **Auth:** Cookie httpOnly firmato (HMAC-SHA256) con Google OAuth via Supabase Auth  
 **Pagamenti:** Stripe Checkout (sessioni + webhook)  
 **Email:** Resend (notifiche feedback)
@@ -86,7 +86,7 @@ src/
     ├── apiAuth.ts              # Helper auth per API routes (cookie → utente)
     ├── rateLimit.ts            # Rate limiter in-memory + IP extraction
     ├── credits.ts              # Sistema crediti AI (consumo atomico)
-    ├── ai.ts                   # AI (Groq, con timeout)
+    ├── ai.ts                   # AI (gateway OpenAI-compatible, con timeout)
     ├── cvAnalysis.ts           # Analisi statica CV (regex + scoring)
     ├── careerKit.ts            # Cover letter, skills, market profiles
     ├── stripe.ts               # Client Stripe + piani
@@ -111,7 +111,7 @@ Carica un CV (PDF/DOCX/TXT) e ricevi:
 - **Bullet point riscritti** in formato Azione + Strumento + Risultato
 - **Metriche di leggibilità**
 
-L'analisi usa l'AI (Groq) se l'utente ha crediti; altrimenti fallback su analisi statica regex.
+L'analisi usa l'AI se l'utente ha crediti; altrimenti fallback su analisi statica regex.
 
 ### 2. Ottimizzazione per Job Description
 
@@ -238,10 +238,11 @@ Ogni cambio stato registra timestamp e note (storico consultabile via `GET /api/
 Configurabile in `.env`:
 
 ```bash
-# Groq (unico provider AI, richiede API key)
-GROQ_API_KEY=gsk_...
-# Modello adatto all'analisi/generazione CV (JSON output). Sovrascrivibile.
-GROQ_MODEL=llama-3.3-70b-versatile
+# AI provider (gateway compatibile OpenAI, richiede API key)
+AI_API_KEY=sk-xt_...
+# Endpoint OpenAI-compatible e modello (ID con prefisso vendor, es. qwen/qwen3.5-plus:free)
+AI_API_URL=https://api.xkiro.com/v1/chat/completions
+AI_MODEL=qwen/qwen3.5-plus:free
 ```
 
 L'AI viene usata per:
@@ -305,9 +306,10 @@ SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
 JWT_SECRET=your-secret-key
 NEXT_PUBLIC_URL=http://localhost:3000
 
-# Groq (provider AI)
-GROQ_API_KEY=gsk_...
-GROQ_MODEL=llama-3.3-70b-versatile
+# AI provider (gateway compatibile OpenAI)
+AI_API_KEY=sk-xt_...
+AI_API_URL=https://api.xkiro.com/v1/chat/completions
+AI_MODEL=qwen/qwen3.5-plus:free
 
 # Stripe
 STRIPE_SECRET_KEY=sk_test_...

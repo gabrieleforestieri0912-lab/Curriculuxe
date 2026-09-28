@@ -219,7 +219,7 @@ export default function Pricing() {
                     animate={{ opacity: 1, height: "auto" }}
                     className="text-emerald-400 text-xs font-semibold mb-1"
                   >
-                    🎉 {plan.savings}
+                    {plan.savings}
                   </motion.div>
                 )}
 
