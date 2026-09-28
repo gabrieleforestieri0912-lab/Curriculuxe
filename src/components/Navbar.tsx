@@ -6,17 +6,19 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  Menu, 
-  X, 
-  Sparkles, 
-  MessageSquare, 
-  LayoutTemplate, 
-  Cpu, 
-  LogOut, 
+import {
+  Menu,
+  X,
+  Sparkles,
+  MessageSquare,
+  LayoutTemplate,
+  Cpu,
+  LogOut,
   LayoutDashboard,
   FileText,
-  ChevronDown
+  ChevronDown,
+  Briefcase,
+  Award
 } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 
@@ -153,23 +155,20 @@ export default function Navbar() {
   const loginWithNext = (path: string) => `/login?next=${encodeURIComponent(path)}`;
 
   const navLinks: NavLink[] = [
-    { label: (tNav.careerMarket as string) || "Career Market", href: "/career-market" },
-    { label: (tNav.resumeScore as string) || "Resume Score", href: "/resume-score" },
     {
-      label: (tNav.resources as string) || "Risorse",
-      href: "/guides",
+      label: (tNav.tools as string) || "Strumenti",
+      href: user ? "/analyze" : loginWithNext("/analyze"),
+      badge: "AI",
+      icon: Cpu,
       children: [
-        { label: "Template CV", href: "/templates", icon: LayoutTemplate },
-        { label: "Roadmap", href: "/roadmaps", icon: FileText },
-        { label: "Guide", href: "/guides", icon: FileText },
-        { label: "Progetti", href: "/projects", icon: LayoutDashboard },
-        { label: "Salaries", href: "/salaries", icon: FileText },
-        { label: "Compare", href: "/compare", icon: FileText },
-        { label: "About", href: "/about", icon: FileText },
+        { label: tNav.aiAnalyze as string, href: user ? "/analyze" : loginWithNext("/analyze"), icon: Cpu },
+        { label: tNav.aiGenerate as string, href: user ? "/dashboard/create?mode=ai" : loginWithNext("/dashboard/create?mode=ai"), icon: Sparkles },
+        { label: tNav.aiInterview as string, href: user ? "/dashboard/interview" : loginWithNext("/dashboard/interview"), icon: MessageSquare },
+        { label: (tNav.careerMarket as string) || "Career Market", href: "/career-market", icon: Briefcase },
+        { label: (tNav.resumeScore as string) || "Resume Score", href: "/resume-score", icon: Award },
+        { label: (tNav.mcp as string) || "Connect AI", href: "/mcp", icon: Sparkles },
       ],
     },
-    { label: (tNav.mcp as string) || "Connect AI", href: "/mcp", badge: "MCP" },
-    { label: tNav.features as string, href: "/#features" },
     {
       label: tNav.templates as string,
       href: user ? "/dashboard/create" : loginWithNext("/dashboard/create"),
@@ -182,15 +181,15 @@ export default function Navbar() {
       ],
     },
     {
-      label: tNav.aiAnalyzer as string,
-      href: user ? "/analyze" : loginWithNext("/analyze"),
-      badge: "AI",
-      icon: Cpu,
+      label: (tNav.resources as string) || "Risorse",
+      href: "/guides",
       children: [
-        { label: tNav.aiAnalyze as string, href: user ? "/analyze" : loginWithNext("/analyze"), icon: Cpu },
-        { label: tNav.aiGenerate as string, href: user ? "/dashboard/create?mode=ai" : loginWithNext("/dashboard/create?mode=ai"), icon: Sparkles },
-        { label: tNav.aiInterview as string, href: user ? "/dashboard/interview" : loginWithNext("/dashboard/interview"), icon: MessageSquare },
-        { label: tNav.aiFeedback as string, href: user ? "/dashboard/feedback" : loginWithNext("/dashboard/feedback"), icon: MessageSquare },
+        { label: "Guide", href: "/guides", icon: FileText },
+        { label: "Roadmap", href: "/roadmaps", icon: FileText },
+        { label: "Progetti", href: "/projects", icon: LayoutDashboard },
+        { label: "Salaries", href: "/salaries", icon: FileText },
+        { label: "Compare", href: "/compare", icon: FileText },
+        { label: "About", href: "/about", icon: FileText },
       ],
     },
     { label: tNav.pricing as string, href: "/pricing" },
@@ -403,9 +402,6 @@ export default function Navbar() {
               </div>
             ) : (
               <div className="flex items-center gap-1.5 sm:gap-2">
-                <Link href="/login" className="hidden sm:block text-sm font-medium text-zinc-300 hover:text-white transition-colors px-4 py-2">
-                  {tNav.login as string}
-                </Link>
                 <Link href="/register" className="btn-primary text-xs sm:text-sm text-white px-4 sm:px-5 py-2.5 rounded-full font-bold shadow-lg shadow-fuchsia-500/20 hover:shadow-fuchsia-500/30 transition-all scale-100 hover:scale-[1.02]">
                   {tNav.register as string}
                 </Link>
@@ -418,7 +414,7 @@ export default function Navbar() {
               aria-expanded={isMobileOpen}
               aria-controls={isMobileOpen ? "mobile-menu" : undefined}
               aria-label={isMobileOpen ? "Chiudi menu" : "Apri menu"}
-              className="lg:hidden p-2 rounded-xl bg-white/5 border border-white/8 text-zinc-400 hover:text-white transition-all"
+              className="md:hidden p-2 rounded-xl bg-white/5 border border-white/8 text-zinc-400 hover:text-white transition-all"
             >
               {isMobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
@@ -426,7 +422,7 @@ export default function Navbar() {
         </div>
 
         {/* Mobile menu drawer */}
-        <div className="max-w-6xl mx-auto mt-2 lg:hidden">
+        <div className="max-w-7xl mx-auto mt-2 md:hidden">
           <AnimatePresence>
             {isMobileOpen && (
               <motion.div
@@ -557,14 +553,7 @@ export default function Navbar() {
                   </div>
                 )}
                 {!user && (
-                  <div className="border-t border-white/5 pt-4 mt-2 grid grid-cols-2 gap-2">
-                    <Link
-                      href="/login"
-                      onClick={() => setIsMobileOpen(false)}
-                      className="flex items-center justify-center p-3 rounded-xl bg-white/5 border border-white/10 text-sm font-semibold text-zinc-300 hover:text-white"
-                    >
-                      {tNav.login as string}
-                    </Link>
+                  <div className="border-t border-white/5 pt-4 mt-2">
                     <Link
                       href="/register"
                       onClick={() => setIsMobileOpen(false)}
