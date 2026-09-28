@@ -1,6 +1,9 @@
+export type FAQCategory = "product" | "pricing" | "ai" | "jobs";
+
 export interface FAQItem {
   q: string;
   a: string;
+  category: FAQCategory;
 }
 
 /**
@@ -10,54 +13,106 @@ export interface FAQItem {
  */
 export const faqIt: FAQItem[] = [
   {
-    q: "Cos'è Curriculuxe?",
-    a: "Curriculuxe è una piattaforma AI che crea, ottimizza e analizza curriculum professionali. Analizza la compatibilità ATS, riscrive i bullet point con metriche d'impatto e prepara alle domande di colloquio, in italiano e inglese.",
+    q: "Come funziona l'analisi del CV, in pratica?",
+    a: "Carichi il CV in PDF o DOCX e incolli la job description: l'AI restituisce uno score da 0 a 100 su 5 dimensioni (leggibilità ATS, qualità contenuti, scrittura, match con l'offerta, prontezza candidatura), le keyword trovate e mancanti, i bullet riscritti in formato Azione + Strumento + Risultato, più cover letter ed email di candidatura.",
+    category: "product",
   },
   {
-    q: "Come funziona l'analisi ATS del CV?",
-    a: "Carichi il tuo CV in PDF o DOCX e l'AI lo confronta con la job description: ottieni uno score ATS, le keyword mancanti e suggerimenti mirati per superare i filtri automatici dei recruiter.",
+    q: "Cosa significa uno score ATS di 87/100?",
+    a: "Sopra 80 il CV supera quasi tutti i filtri automatici; tra 60 e 80 è buon punto di partenza ma va ottimizzato su keyword e metriche; sotto 60 rischi lo scarto automatico. Ogni score è accompagnato da cosa sistemare e in quale sezione.",
+    category: "product",
   },
   {
-    q: "Come genera il CV con l'AI?",
-    a: "Incolla una job description o descrivi il tuo profilo una sola volta: l'AI costruisce un CV formattato con i template premium, adattato alle keyword dell'offerta e al tuo stile.",
+    q: "I template sono davvero sicuri per gli ATS?",
+    a: "Sì: i 16 template usano layout a colonna singola, font standard e sezioni etichettate che i parser leggono senza errori. Puoi esportare in PDF, DOC o TXT e verificare lo score prima dell'invio.",
+    category: "product",
   },
   {
-    q: "Curriculuxe è gratuito?",
-    a: "Sì, il piano gratuito include analisi base, score ATS e 5 crediti AI di prova. Per un uso intensivo ci sono i piani Starter (50 crediti al mese), Pro (500) ed Enterprise (2000), con rinnovo automatico.",
+    q: "Come funzionano i crediti AI?",
+    a: "Ogni funzione AI (analisi, generazione CV, riscrittura bullet, summary, simulazione colloqui, cover letter) consuma 1 credito. Il piano Free include 5 crediti di prova; Starter ne dà 50 al mese, Pro 500, Enterprise 2000. Esiste anche la ricarica una tantum da 10 crediti.",
+    category: "pricing",
   },
   {
-    q: "In quali lingue posso creare il curriculum?",
-    a: "Curriculuxe supporta la creazione di curriculum in italiano e inglese, con interfaccia bilingue e traduzione completa del sito tramite selettore di lingua.",
+    q: "Cosa succede se finisco i crediti?",
+    a: "Le funzioni AI si mettono in pausa e vedi un'analisi di base gratuita. I crediti degli abbonamenti si rinnovano a ogni ciclo di fatturazione; in alternativa puoi ricaricare o passare a un piano superiore in qualsiasi momento.",
+    category: "pricing",
   },
   {
-    q: "Quali formati di esportazione sono supportati?",
-    a: "Puoi esportare il tuo CV in PDF, DOCX e TXT, scegliendo tra 16 template professionali ottimizzati per i sistemi ATS.",
+    q: "Posso cancellare l'abbonamento? E i rimborsi?",
+    a: "Sì, quando vuoi dal portale Stripe: la disdetta vale dal ciclo successivo, senza penali. Per i consumatori si applicano le tutele del Codice del Consumo, con le eccezioni per i contenuti digitali già fruiti.",
+    category: "pricing",
+  },
+  {
+    q: "I dati del mio CV dove vanno a finire?",
+    a: "I tuoi dati sono salvati su database europeo (Supabase) e il testo inviato all'AI serve solo a produrre il risultato richiesto: non viene venduto né usato per addestrare modelli pubblici. Puoi chiedere accesso o cancellazione completa scrivendo a gabriele.forestieri0912@gmail.com.",
+    category: "ai",
+  },
+  {
+    q: "L'AI inventa esperienze false nel CV?",
+    a: "No: analisi, punteggi e riscritture sono ancorati ai contenuti reali del tuo CV e citano aziende, ruoli e skill effettivi. Se generi un CV da zero, verifica sempre nomi, date e risultati prima dell'invio: l'AI propone, tu approvi.",
+    category: "ai",
+  },
+  {
+    q: "La cover letter è un testo generico?",
+    a: "No: cita 2-3 risultati veri del tuo percorso e li collega ai requisiti dell'offerta, in massimo 200 parole con il tono del mercato scelto (Italia, Europa o USA). Ricevi anche una email di candidatura pronta da inviare.",
+    category: "jobs",
+  },
+  {
+    q: "Funziona anche per candidature all'estero?",
+    a: "Sì: puoi impostare il mercato target (Italia, Europa o USA) e l'interfaccia è completamente in inglese. Tono, formato e benchmark salariali si adattano al paese dell'offerta.",
+    category: "jobs",
   },
 ];
 
 export const faqEn: FAQItem[] = [
   {
-    q: "What is Curriculuxe?",
-    a: "Curriculuxe is an AI platform that creates, optimizes and analyzes professional CVs. It checks ATS compatibility, rewrites bullet points with impact metrics and prepares you for interview questions, in Italian and English.",
+    q: "How does the CV analysis actually work?",
+    a: "Upload your CV as PDF or DOCX and paste the job description: the AI returns a 0-100 score across 5 dimensions (ATS readability, content quality, writing, job match, application readiness), matched and missing keywords, bullets rewritten in Action + Tool + Result format, plus a cover letter and application email.",
+    category: "product",
   },
   {
-    q: "How does the ATS CV analysis work?",
-    a: "Upload your CV as PDF or DOCX and the AI compares it with the job description: you get an ATS score, the missing keywords and targeted suggestions to pass the recruiters' automated filters.",
+    q: "What does an ATS score of 87/100 mean?",
+    a: "Above 80 your CV passes almost every automated filter; 60-80 is a solid starting point that needs keyword and metrics optimization; below 60 you risk automatic rejection. Every score comes with what to fix and in which section.",
+    category: "product",
   },
   {
-    q: "How does the AI generate a CV?",
-    a: "Paste a job description or describe your profile once: the AI builds a formatted CV using premium templates, tailored to the posting's keywords and your style.",
+    q: "Are the templates really ATS-safe?",
+    a: "Yes: all 16 templates use single-column layouts, standard fonts and labeled sections that parsers read without errors. You can export to PDF, DOC or TXT and check the score before sending.",
+    category: "product",
   },
   {
-    q: "Is Curriculuxe free?",
-    a: "Yes, the free plan includes basic analysis, ATS score and 5 trial AI credits. For heavier use there are Starter (50 credits per month), Pro (500) and Enterprise (2000) plans with automatic renewal.",
+    q: "How do AI credits work?",
+    a: "Each AI feature (analysis, CV generation, bullet rewriting, summary, mock interviews, cover letter) costs 1 credit. The Free plan includes 5 trial credits; Starter gives 50 per month, Pro 500, Enterprise 2000. There is also a one-time 10-credit top-up.",
+    category: "pricing",
   },
   {
-    q: "Which languages can I create a CV in?",
-    a: "Curriculuxe supports creating CVs in Italian and English, with a bilingual interface and full site translation through the language switcher.",
+    q: "What happens when I run out of credits?",
+    a: "AI features pause and you still get a free basic analysis. Subscription credits renew every billing cycle; alternatively you can top up or upgrade at any time.",
+    category: "pricing",
   },
   {
-    q: "Which export formats are supported?",
-    a: "You can export your CV as PDF, DOCX and TXT, choosing from 16 professional templates optimized for ATS systems.",
+    q: "Can I cancel my subscription? What about refunds?",
+    a: "Yes, anytime from the Stripe portal: cancellation applies from the next cycle, with no penalties. Consumer protections apply as required by law, with the exceptions for digital content already used.",
+    category: "pricing",
+  },
+  {
+    q: "Where does my CV data go?",
+    a: "Your data is stored on a European database (Supabase) and text sent to the AI is used only to produce the requested result: it is never sold nor used to train public models. You can request access or full deletion at gabriele.forestieri0912@gmail.com.",
+    category: "ai",
+  },
+  {
+    q: "Does the AI invent fake experience?",
+    a: "No: analyses, scores and rewrites are anchored to your real CV content and cite actual companies, roles and skills. If you generate a CV from scratch, always verify names, dates and results before sending: the AI proposes, you approve.",
+    category: "ai",
+  },
+  {
+    q: "Is the cover letter generic copy?",
+    a: "No: it cites 2-3 real results from your background and ties them to the job requirements, in max 200 words with the tone of the chosen market (Italy, Europe or USA). You also get an application email ready to send.",
+    category: "jobs",
+  },
+  {
+    q: "Does it work for applications abroad?",
+    a: "Yes: set your target market (Italy, Europe or USA) and switch the whole interface to English. Tone, format and salary benchmarks adapt to the posting's country.",
+    category: "jobs",
   },
 ];
