@@ -7,6 +7,8 @@ interface LogoConfig {
   src: string;
   /** CSS filter applied to the logo (e.g. invert black logos for dark backgrounds) */
   filter?: string;
+  /** Light pill behind logos that contain near-black parts (invisible on dark bg) */
+  lightPill?: boolean;
 }
 
 /**
@@ -21,7 +23,7 @@ const LOGOS: Record<string, LogoConfig> = {
   Amazon: { src: "/logos/amazon.svg" },
   Meta: { src: "/logos/meta.svg" },
   Salesforce: { src: "/logos/salesforce.svg" },
-  Spotify: { src: "/logos/spotify.svg" },
+  Spotify: { src: "/logos/spotify.svg", lightPill: true },
   Airbnb: { src: "/logos/airbnb.svg" },
   GitHub: { src: "/logos/github.svg" },
   LinkedIn: { src: "/logos/linkedin.svg" },
@@ -35,18 +37,24 @@ export default function CompanyLogo({ name, height = 52 }: Props) {
   if (!logo) return null;
 
   return (
-    <img
-      src={logo.src}
-      alt={`${name} logo`}
-      loading="lazy"
-      className="opacity-80 hover:opacity-100 transition-opacity"
-      style={{
-        height,
-        width: "auto",
-        maxWidth: 160,
-        objectFit: "contain",
-        filter: logo.filter,
-      }}
-    />
+    <span
+      className={`inline-flex items-center transition-opacity opacity-80 hover:opacity-100 ${
+        logo.lightPill ? "rounded-xl bg-white px-3 py-1.5" : ""
+      }`}
+    >
+      <img
+        src={logo.src}
+        alt={`${name} logo`}
+        loading="lazy"
+        className="transition-opacity"
+        style={{
+          height,
+          width: "auto",
+          maxWidth: 160,
+          objectFit: "contain",
+          filter: logo.filter,
+        }}
+      />
+    </span>
   );
 }
