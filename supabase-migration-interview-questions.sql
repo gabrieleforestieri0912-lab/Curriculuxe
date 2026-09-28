@@ -66,8 +66,10 @@ ALTER TABLE companies ENABLE ROW LEVEL SECURITY;
 ALTER TABLE interview_questions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE mock_sessions ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "companies_public_read" ON companies;
 CREATE POLICY "companies_public_read" ON companies
   FOR SELECT USING (isPublished = true);
 
+DROP POLICY IF EXISTS "interview_questions_public_read" ON interview_questions;
 CREATE POLICY "interview_questions_public_read" ON interview_questions
   FOR SELECT USING (isPublished = true);
