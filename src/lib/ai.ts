@@ -8,7 +8,12 @@ const AI_MODEL = process.env.AI_MODEL || "qwen/qwen3.5-plus:free";
 
 const AI_TIMEOUT_MS = 30_000;
 
-async function callAI(prompt: string): Promise<string | null> {
+interface CallAIOptions {
+  maxTokens?: number;
+  temperature?: number;
+}
+
+async function callAI(prompt: string, opts?: CallAIOptions): Promise<string | null> {
   const apiKey = process.env.AI_API_KEY;
   if (!apiKey) {
     console.warn("AI_API_KEY non configurata: nessuna funzionalità AI attiva.");
@@ -28,6 +33,8 @@ async function callAI(prompt: string): Promise<string | null> {
         model: AI_MODEL,
         messages: [{ role: "user", content: prompt }],
         response_format: { type: "json_object" },
+        max_tokens: opts?.maxTokens ?? 2000,
+        temperature: opts?.temperature ?? 0.5,
       }),
       signal: controller.signal,
     });
@@ -75,7 +82,7 @@ Rispondi in formato JSON:
 }`;
 
   try {
-    const response = await callAI(prompt);
+    const response = await callAI(prompt, { maxTokens: 1500, temperature: 0.6 });
     if (!response) return null;
     return JSON.parse(response);
   } catch (error) {
@@ -112,7 +119,7 @@ Rispondi in formato JSON:
 }`;
 
   try {
-    const response = await callAI(prompt);
+    const response = await callAI(prompt, { maxTokens: 1200, temperature: 0.6 });
     if (!response) return null;
     return JSON.parse(response);
   } catch (error) {
@@ -148,7 +155,7 @@ Rispondi in formato JSON:
 }`;
 
   try {
-    const response = await callAI(prompt);
+    const response = await callAI(prompt, { maxTokens: 1200, temperature: 0.6 });
     if (!response) return null;
     return JSON.parse(response);
   } catch (error) {
@@ -157,38 +164,86 @@ Rispondi in formato JSON:
   }
 }
 
-export async function generateCVWithAI(prompt: string): Promise<Record<string, unknown> | null> {
-  const systemPrompt = `Sei un resume writer professionista. Genera un curriculum vitae strutturato in formato JSON basato sulla descrizione dell'utente.
+const CV_SYSTEM_PROMPT = `Sei un resume writer professionista. Generi curriculum vitae COMPLETI e SOSTANZIOSI in formato JSON: un CV deve riempire almeno un'intera pagina, mai poche righe.
+
+REQUISITI MINIMI OBBLIGATORI (se mancano, il CV è inaccettabile):
+- "summary": professional summary di 3-4 frasi (minimo 40 parole), con anni di esperienza, settore, competenze chiave e valore distintivo.
+- "experience": MINIMO 2 voci (3 se il profilo indica 5+ anni di esperienza). OGNI voce ha una "description" di 3-5 frasi (minimo 40 parole) con risultati MISURABILI (percentuali, numeri, budget, dimensioni team, utenti). Mai descrizioni generiche di una riga.
+- "education": almeno 1 voce completa (istituzione, titolo, anno ed eventuali dettagli).
+- "skills": MINIMO 10 skill pertinenti al ruolo, separate da virgola.
+- "languages": livello per ogni lingua citata (mai voci vuote).
+- "certifications": pertinenti al settore, oppure stringa vuota (mai placeholder tipo "Cert1").
+- TOTALE: il CV completo deve superare le 350 parole. Sii concreto e specifico, mai generico.
 
 Il JSON deve avere questa struttura ESATTA:
 {
   "personalInfo": { "name": "", "email": "", "phone": "", "city": "" },
-  "summary": "Un professional summary di 2-3 frasi",
+  "summary": "Professional summary di 3-4 frasi",
   "experience": [
-    { "company": "Nome Azienda", "role": "Ruolo", "period": "Mese Anno - Mese Anno", "description": "Descrizione con risultati misurabili" }
+    { "company": "Nome Azienda", "role": "Ruolo", "period": "Mese Anno - Mese Anno", "description": "3-5 frasi con risultati misurabili" }
   ],
   "education": [
     { "institution": "Università", "degree": "Titolo di Studio", "year": "Anno" }
   ],
-  "skills": "Skill1, Skill2, Skill3, ...",
+  "skills": "Skill1, Skill2, Skill3, ... (minimo 10)",
   "languages": "Italiano: Madrelingua, Inglese: ...",
   "certifications": "Cert1, Cert2, ..."
 }
 
 RISPONDI SOLO CON IL JSON. NESSUN ALTRO TESTO.`;
 
+function countWords(text: unknown): number {
+  if (typeof text !== "string") return 0;
+  return text.trim().split(/\s+/).filter(Boolean).length;
+}
+
+function cvWordCount(cv: Record<string, unknown>): number {
+  let total = countWords(cv.summary) + countWords(cv.skills);
+  for (const exp of (cv.experience as Array<Record<string, unknown>>) || []) {
+    total += countWords(exp?.description) + countWords(exp?.company) + countWords(exp?.role);
+  }
+  for (const edu of (cv.education as Array<Record<string, unknown>>) || []) {
+    total += countWords(edu?.institution) + countWords(edu?.degree);
+  }
+  return total;
+}
+
+/** Un CV è accettabile solo se sostanzioso: voci ed estensione minime. */
+export function isSubstantialCV(cv: Record<string, unknown> | null): boolean {
+  if (!cv || typeof cv !== "object") return false;
+  const experience = (cv.experience as Array<Record<string, unknown>>) || [];
+  if (experience.length < 2) return false;
+  if (!experience.every((e) => countWords(e?.description) >= 30)) return false;
+  if (countWords(cv.summary) < 35) return false;
+  const skills = typeof cv.skills === "string" ? cv.skills.split(",").map((s) => s.trim()).filter(Boolean) : [];
+  if (skills.length < 8) return false;
+  return cvWordCount(cv) >= 300;
+}
+
+export async function generateCVWithAI(prompt: string): Promise<Record<string, unknown> | null> {
   const userPrompt = `Descrizione del profilo: ${prompt}
 
-Genera un CV completo e professionale basato su questa descrizione. Includi:
-- Esperienze lavorative realistiche con descrizioni che includono risultati misurabili
-- Skill tecniche e soft skills pertinenti
-- Un summary professionale convincente
-- Istruzione appropriata`;
+Genera un CV completo e professionale basato su questa descrizione. Dedici gli anni di esperienza citati (se non indicati, ipotizza un percorso credibile con almeno 2 ruoli in progressione) e includi:
+- Esperienze lavorative dettagliate con descrizioni di 3-5 frasi che includono risultati misurabili
+- Almeno 10 skill tecniche e soft skills pertinenti
+- Un summary professionale convincente di 3-4 frasi
+- Istruzione appropriata e completa`;
 
   try {
-    const response = await callAI(`${systemPrompt}\n\n${userPrompt}`);
-    if (!response) return null;
-    return JSON.parse(response);
+    const first = await callAI(`${CV_SYSTEM_PROMPT}\n\n${userPrompt}`, { maxTokens: 4000, temperature: 0.7 });
+    if (first) {
+      const parsed = JSON.parse(first) as Record<string, unknown>;
+      if (isSubstantialCV(parsed)) return parsed;
+    }
+    // Retry: il primo tentativo era troppo stringato, chiedi esplicitamente di espandere.
+    console.warn("CV generato troppo stringato, retry con richiesta di espansione.");
+    const retry = await callAI(
+      `${CV_SYSTEM_PROMPT}\n\n${userPrompt}\n\nIMPORTANTE: la bozza precedente era troppo corta. ESPANDI ogni sezione fino ai minimi richiesti (350+ parole totali, descrizioni da 3-5 frasi con metriche, minimo 10 skill).`,
+      { maxTokens: 4000, temperature: 0.7 }
+    );
+    if (!retry) return null;
+    const parsedRetry = JSON.parse(retry) as Record<string, unknown>;
+    return isSubstantialCV(parsedRetry) ? parsedRetry : null;
   } catch (error) {
     console.error("Error generating CV with AI:", error);
     return null;
@@ -244,7 +299,7 @@ Rispondi SOLO in formato JSON:
 }`;
 
   try {
-    const response = await callAI(prompt);
+    const response = await callAI(prompt, { maxTokens: 1500, temperature: 0.6 });
     if (!response) return null;
     const parsed = JSON.parse(response);
     if (!parsed.coverLetter || !parsed.applicationEmail) return null;
@@ -315,7 +370,7 @@ Rispondi SOLO in formato JSON:
 }`;
 
   try {
-    const response = await callAI(prompt);
+    const response = await callAI(prompt, { maxTokens: 2000, temperature: 0.6 });
     if (!response) return null;
     const parsed = JSON.parse(response);
     if (!parsed.emailSubject || !parsed.emailBody) return null;
@@ -338,6 +393,13 @@ export async function analyzeCVWithAI(
 ): Promise<Record<string, unknown> | null> {
   const prompt = `Sei un esperto selezionatore IT (Tech Recruiter) e sistema ATS.
 Analizza questo CV rispetto a questa Job Description.
+
+REGOLE DI ACCURATEZZA (obbligatorie):
+- Ogni punto di forza e ogni miglioramento DEVONO riferirsi a contenuti REALI del CV (cita aziende, ruoli, skill o frasi presenti nel testo). Vietato generico ("migliora la formattazione" senza dire cosa e dove).
+- I punteggi devono essere coerenti tra loro e con il giudizio: un CV senza metriche non può superare 70 in atsScore; un CV senza keyword dell'offerta non può superare 60 in jobMatchScore.
+- "missingKeywords" deve contenere SOLO termini presenti nella Job Description e assenti nel CV.
+- "rewrittenBullets" devono riscrivere esperienze REALI del CV (stessa azienda/ruolo), mai inventarne di nuove.
+- Se non è fornita alcuna Job Description, valuta il CV in assoluto e metti jobMatchScore a null.
 
 Restituisci l'analisi ESCLUSIVAMENTE in formato JSON con questa esatta struttura:
 {
@@ -386,7 +448,7 @@ ${cvText.substring(0, 4000)}
 RISPONDI SOLO CON IL JSON. NESSUN ALTRO TESTO.`;
 
   try {
-    const response = await callAI(prompt);
+    const response = await callAI(prompt, { maxTokens: 3000, temperature: 0.3 });
     if (!response) return null;
     return JSON.parse(response);
   } catch (error) {

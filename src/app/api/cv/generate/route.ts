@@ -70,6 +70,58 @@ function extractInfoFromPrompt(prompt: string) {
   return data;
 }
 
+/**
+ * Fallback quando l'AI non risponde: costruisce comunque un CV SOSTANZIOSO
+ * (mai poche righe) da template, con 2-3 esperienze dettagliate derivate
+ * dagli anni citati nel prompt. I contenuti vanno poi verificati e
+ * personalizzati dall'utente.
+ */
+function buildFallbackCV(prompt: string, extractedInfo: Record<string, unknown>) {
+  const years = Math.max(2, (extractedInfo.yearsExperience as number) || 3);
+  const category = (extractedInfo.category as string) || "general";
+  const skills = (extractedInfo.skills as string) || "Comunicazione, Problem Solving, Lavoro di squadra, Gestione del tempo, Adattabilità, Leadership, Inglese tecnico, Excel, Presentazioni, Negoziazione";
+  const mainSkill = skills.split(",")[0]?.trim() || "settore di riferimento";
+  const now = new Date().getFullYear();
+
+  const levels = years >= 6
+    ? ["Senior", "Mid-Level", "Junior"]
+    : ["Mid-Level", "Junior"];
+  const experience = levels.map((level, i) => {
+    const end = i === 0 ? "Presente" : String(now - i * 2);
+    const start = String(now - (i + 1) * 2 - (i === levels.length - 1 ? years - levels.length * 2 : 0));
+    return {
+      company: `Azienda ${category === "general" ? "di Settore" : "partner del settore"}`,
+      role: `${level} ${/sviluppatore|developer|engineer|frontend|backend|full stack/i.test(prompt) ? "Developer" : "Professionista"}`,
+      period: `${start} - ${end}`,
+      description:
+        `Attività principali su ${mainSkill} con responsabilità crescenti su progetti seguiti end-to-end, dalla raccolta requisiti al rilascio. ` +
+        `Collaborazione quotidiana con team interfunzionali e stakeholder per rispettare tempi e qualità concordati. ` +
+        `Contributo misurabile ai risultati del team con miglioramento costante di efficienza e qualità del lavoro svolto. ` +
+        `Formazione continua e condivisione di best practice con i colleghi del reparto.`,
+    };
+  });
+
+  return {
+    category,
+    personalInfo: extractedInfo.personalInfo,
+    summary:
+      `Professionista con circa ${years} anni di esperienza, con competenze solide in ${mainSkill} e negli strumenti principali del settore. ` +
+      `Abituato a lavorare per obiettivi, con attenzione alla qualità e alla misurazione dei risultati ottenuti. ` +
+      `Cerca un contesto dinamico in cui mettere a frutto le competenze maturate e crescere professionalmente.`,
+    experience,
+    education: [
+      {
+        institution: "Università",
+        degree: "Laurea",
+        year: String(now - years - 3),
+      },
+    ],
+    skills,
+    languages: "Italiano: Madrelingua, Inglese: B2",
+    certifications: "",
+  };
+}
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json() as {
@@ -134,30 +186,19 @@ export async function POST(request: NextRequest) {
         };
       } else {
         const extractedInfo = extractInfoFromPrompt(prompt);
+        const fallback = buildFallbackCV(prompt, extractedInfo);
         cvData = {
           userId: userId || crypto.randomUUID(),
           template: template || "moderno",
           prompt: prompt,
-          category: extractedInfo.category || "general",
-          personalInfo: extractedInfo.personalInfo,
-          summary: extractedInfo.summary || "Professionista motivato e determinato.",
-          experience: [
-            {
-              company: "Azienda di Settore",
-              role: "Professionista",
-              period: "2021 - Presente",
-              description: "Esperienza rilevante nel settore con risultati dimostrabili."
-            }
-          ],
-          education: [
-            {
-              institution: "Università",
-              degree: "Laurea",
-              year: "2018"
-            }
-          ],
-          skills: (extractedInfo.skills as string) || "Competenze trasversali",
-          languages: "Italiano: Madrelingua, Inglese: B2",
+          category: fallback.category,
+          personalInfo: fallback.personalInfo,
+          summary: fallback.summary,
+          experience: fallback.experience,
+          education: fallback.education,
+          skills: fallback.skills,
+          languages: fallback.languages,
+          certifications: fallback.certifications,
           aiGenerated: true,
           applicationVersions: [],
           createdAt: new Date(),
