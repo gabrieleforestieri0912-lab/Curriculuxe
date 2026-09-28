@@ -46,6 +46,47 @@ CREATE TABLE IF NOT EXISTS mock_sessions (
 );
 
 -- ============================================================
+-- Normalizza eventuali colonne minuscole (vecchio script non
+-- quotato) ai nomi camelCase. Rieseguibile, preserva i dati.
+-- ============================================================
+DO $$
+DECLARE
+  mapping TEXT[][] := ARRAY[
+    ARRAY['companies', 'logourl', 'logoUrl'],
+    ARRAY['companies', 'ispublished', 'isPublished'],
+    ARRAY['companies', 'createdat', 'createdAt'],
+    ARRAY['interview_questions', 'companyid', 'companyId'],
+    ARRAY['interview_questions', 'questiontext', 'questionText'],
+    ARRAY['interview_questions', 'approachnotes', 'approachNotes'],
+    ARRAY['interview_questions', 'ispublished', 'isPublished'],
+    ARRAY['interview_questions', 'createdat', 'createdAt'],
+    ARRAY['mock_sessions', 'userid', 'userId'],
+    ARRAY['mock_sessions', 'questionid', 'questionId'],
+    ARRAY['mock_sessions', 'useranswer', 'userAnswer'],
+    ARRAY['mock_sessions', 'aifeedback', 'aiFeedback'],
+    ARRAY['mock_sessions', 'createdat', 'createdAt']
+  ];
+  m TEXT[];
+  old_exists BOOLEAN;
+  new_exists BOOLEAN;
+BEGIN
+  FOREACH m SLICE 1 IN ARRAY mapping
+  LOOP
+    SELECT EXISTS (
+      SELECT 1 FROM information_schema.columns
+      WHERE table_schema = 'public' AND table_name = m[1] AND column_name = m[2]
+    ) INTO old_exists;
+    SELECT EXISTS (
+      SELECT 1 FROM information_schema.columns
+      WHERE table_schema = 'public' AND table_name = m[1] AND column_name = m[3]
+    ) INTO new_exists;
+    IF old_exists AND NOT new_exists THEN
+      EXECUTE format('ALTER TABLE %I RENAME COLUMN %I TO %I', m[1], m[2], m[3]);
+    END IF;
+  END LOOP;
+END $$;
+
+-- ============================================================
 -- Indici
 -- ============================================================
 CREATE INDEX IF NOT EXISTS idx_companies_slug ON companies(slug);
