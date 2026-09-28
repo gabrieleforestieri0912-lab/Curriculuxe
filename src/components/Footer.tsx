@@ -47,10 +47,8 @@ export default function Footer() {
 
   return (
     <footer
-      className="py-16 px-6 border-t border-white/10 relative overflow-hidden bg-black/40 backdrop-blur-xl"
+      className="py-16 px-6 border-t border-white/10 relative overflow-hidden bg-black"
     >
-      <div className="absolute inset-0 bg-gradient-to-t from-fuchsia-950/10 via-transparent to-transparent pointer-events-none" />
-
       <div className="max-w-7xl mx-auto relative z-10">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-10 mb-16">
           <motion.div

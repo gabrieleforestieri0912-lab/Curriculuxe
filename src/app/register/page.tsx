@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useLanguage } from "@/context/LanguageContext";
+import AuthBackdrop from "@/components/AuthBackdrop";
 
 export default function Register() {
   const { t } = useLanguage();
@@ -97,7 +98,8 @@ export default function Register() {
   };
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-purple-900 to-indigo-900 text-white">
+    <div className="min-h-screen bg-[#07070d] text-white relative overflow-hidden">
+      <AuthBackdrop />
       <div className="absolute top-6 left-6 z-50">
         <Link
           href="/"
@@ -124,7 +126,7 @@ export default function Register() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
-        className="flex flex-col items-center justify-center min-h-screen"
+        className="flex flex-col items-center justify-center min-h-screen relative z-10"
       >
         <div className="glass-card rounded-xl p-8 shadow-lg w-full max-w-md mx-auto">
           <h1 className="text-3xl font-bold text-center mb-6">{tAuth.registerTitle}</h1>
@@ -238,7 +240,7 @@ export default function Register() {
               <div className="w-full border-t border-white/10" />
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="bg-purple-900 px-3 text-zinc-400">
+              <span className="bg-[#07070d] px-3 text-zinc-400">
                 o continua con
               </span>
             </div>
