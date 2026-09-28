@@ -3,7 +3,6 @@
 export default function DashboardSkeleton() {
   return (
     <section className="relative min-h-screen overflow-hidden">
-      <div className="absolute inset-0 subtle-grid opacity-40" />
       <div className="relative z-10 max-w-6xl mx-auto px-6 pt-32 pb-16">
         <div className="flex items-center justify-between mb-10">
           <div className="space-y-3">

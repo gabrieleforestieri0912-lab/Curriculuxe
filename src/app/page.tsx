@@ -49,8 +49,7 @@ const faqSchema = {
 export default function Home() {
   return (
     <div className="flex flex-col flex-1 min-h-screen overflow-x-clip gradient-bg relative">
-      {/* Sfondo viola esteso a tutta la landing */}
-      <div className="absolute inset-0 subtle-grid pointer-events-none" aria-hidden="true" />
+      {/* Sfondo viola esteso a tutta la landing (la griglia resta solo nella hero) */}
       <div
         className="absolute inset-0 pointer-events-none"
         aria-hidden="true"

@@ -266,7 +266,7 @@ export default function Navbar() {
   return (
     <>
       <nav className="fixed top-4 left-0 right-0 z-50 px-3 sm:px-6 transition-all duration-300">
-        <div className="max-w-6xl mx-auto rounded-full border border-white/10 bg-white/[0.04] backdrop-blur-xl shadow-lg shadow-black/30 px-4 sm:px-6 py-2.5 sm:py-3 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto rounded-full border border-white/10 bg-white/[0.04] backdrop-blur-xl shadow-lg shadow-black/30 px-5 sm:px-8 py-3 sm:py-3.5 flex items-center justify-between gap-3">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 group min-w-0">
             <Image
@@ -283,7 +283,7 @@ export default function Navbar() {
           </Link>
 
           {/* Center links */}
-          <div className="hidden lg:flex items-center gap-1 bg-white/5 border border-white/8 rounded-full p-1 backdrop-blur-md">
+          <div className="hidden md:flex items-center gap-1.5 bg-white/5 border border-white/8 rounded-full p-1.5 backdrop-blur-md">
             {navLinks.map((link) => {
               const Icon = link.icon;
               if (link.children?.length) {
@@ -298,7 +298,7 @@ export default function Navbar() {
                       onClick={() => setOpenDropdown(openDropdown === link.label ? null : link.label)}
                       aria-expanded={openDropdown === link.label}
                       aria-haspopup="menu"
-                      className="relative flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold text-zinc-400 hover:text-white transition-all hover:bg-white/5 group cursor-pointer"
+                      className="relative flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold text-zinc-400 hover:text-white transition-all hover:bg-white/5 group cursor-pointer"
                     >
                       {Icon && <Icon className="w-3.5 h-3.5 text-zinc-500 group-hover:text-fuchsia-400 transition-colors" />}
                       {link.label}
@@ -350,7 +350,7 @@ export default function Navbar() {
                 <Link
                   key={link.label}
                   href={link.href}
-                  className="relative flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold text-zinc-400 hover:text-white transition-all hover:bg-white/5 group"
+                  className="relative flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold text-zinc-400 hover:text-white transition-all hover:bg-white/5 group"
                 >
                   {Icon && <Icon className="w-3.5 h-3.5 text-zinc-500 group-hover:text-fuchsia-400 transition-colors" />}
                   {link.label}

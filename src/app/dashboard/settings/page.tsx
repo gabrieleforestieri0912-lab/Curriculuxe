@@ -18,7 +18,6 @@ export default function SettingsPage() {
 
   return (
     <section className="relative min-h-screen overflow-hidden">
-      <div className="absolute inset-0 subtle-grid opacity-35" />
       <div className="pt-28 pb-16 px-6">
         <div className="max-w-2xl mx-auto">
           <motion.h1

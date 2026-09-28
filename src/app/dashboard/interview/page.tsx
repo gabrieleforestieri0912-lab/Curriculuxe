@@ -114,7 +114,6 @@ export default function InterviewPage() {
 
   return (
     <section className="relative min-h-screen overflow-hidden">
-      <div className="absolute inset-0 subtle-grid opacity-35" />
       <div className="relative z-10 pt-28 pb-16 px-6">
         <div className="max-w-3xl mx-auto">
           {!started ? (

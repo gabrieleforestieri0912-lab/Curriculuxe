@@ -34,6 +34,7 @@ export default function Hero() {
 
   return (
     <section className="relative overflow-hidden pt-28 sm:pt-32 pb-16 sm:pb-20 bg-transparent">
+      <div className="absolute inset-0 subtle-grid pointer-events-none" aria-hidden="true" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_8%,rgba(232,121,249,0.18),transparent_34%)] pointer-events-none" />
 
       <div className="relative z-10 max-w-7xl mx-auto px-6 w-full">

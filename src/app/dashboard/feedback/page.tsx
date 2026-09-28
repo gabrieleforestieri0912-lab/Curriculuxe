@@ -38,7 +38,6 @@ export default function FeedbackPage() {
 
   return (
     <section className="relative min-h-screen overflow-hidden">
-      <div className="absolute inset-0 subtle-grid opacity-35" />
       <div className="relative z-10 pt-28 pb-16 px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

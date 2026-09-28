@@ -68,7 +68,6 @@ export default function DashboardLayout({
   if (!authReady) {
     return (
       <>
-        <div aria-hidden="true" className="fixed inset-0 subtle-grid opacity-35 pointer-events-none" />
         <div className="relative z-10">
           <DashboardLoading />
         </div>
@@ -78,7 +77,6 @@ export default function DashboardLayout({
 
   return (
     <>
-      <div aria-hidden="true" className="fixed inset-0 subtle-grid opacity-35 pointer-events-none" />
 
       <div className="relative z-10 flex flex-col min-h-screen">
         {/* Header della dashboard (fisso, al posto della navbar) */}
