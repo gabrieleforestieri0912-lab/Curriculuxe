@@ -1,20 +1,3 @@
--- Run this in Supabase SQL Editor to create the schema
--- IDEMPOTENTE: puoi eseguirlo più volte in sicurezza. Se le tabelle
--- esistono già, le salta; normalizza le colonne minuscole (vecchio
--- script) ai nomi camelCase; aggiunge solo le colonne mancanti.
--- Non cancella dati.
---
--- IMPORTANTE Postgres: gli identificatori camelCase sono sempre tra
--- doppie virgolette ("userId"), altrimenti Postgres li converte in
--- minuscolo (userid) e il codice non li trova (errore 42703).
---
--- Diagnostica (opzionale): mostra i nomi reali delle colonne
--- SELECT table_name, column_name
--- FROM information_schema.columns
--- WHERE table_schema = 'public'
---   AND table_name IN ('users', 'cvs', 'analyses', 'feedbacks', 'payments')
--- ORDER BY 1, 2;
-
 CREATE TABLE IF NOT EXISTS users (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   email TEXT UNIQUE NOT NULL,
@@ -228,10 +211,6 @@ ALTER TABLE payments ADD COLUMN IF NOT EXISTS status TEXT;
 ALTER TABLE payments ADD COLUMN IF NOT EXISTS error TEXT;
 ALTER TABLE payments ADD COLUMN IF NOT EXISTS "createdAt" TIMESTAMPTZ DEFAULT now();
 
--- ============================================================
--- Indici (dopo rinomina/allineamento: le colonne esistono già
--- con i nomi finali camelCase).
--- ============================================================
 CREATE INDEX IF NOT EXISTS idx_cvs_user_id ON cvs("userId");
 CREATE INDEX IF NOT EXISTS idx_analyses_user_id ON analyses("userId");
 CREATE INDEX IF NOT EXISTS idx_feedbacks_user_id ON feedbacks("userId");
