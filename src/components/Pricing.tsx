@@ -180,11 +180,11 @@ export default function Pricing() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-50px" }}
                 transition={{ duration: 0.5, delay: i * 0.15 }}
-                whileHover={{ y: -5 }}
-                className={`glass-card rounded-2xl p-8 relative flex flex-col h-full ${
+                whileHover={{ y: -8, transition: { duration: 0.25, ease: "easeOut" } }}
+                className={`glass-card rounded-2xl p-8 relative flex flex-col h-full transition-colors duration-300 ${
                   plan.popular
-                    ? "border-fuchsia-500/30 glow-magenta ring-2 ring-fuchsia-500/20 lg:scale-[1.03]"
-                    : "border-white/10"
+                    ? "border-fuchsia-500/30 glow-magenta ring-2 ring-fuchsia-500/20 hover:border-fuchsia-400/60"
+                    : "border-white/10 hover:border-white/25"
                 }`}
               >
                 {plan.badge && (

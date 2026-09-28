@@ -1,6 +1,7 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { useState } from "react";
+import { motion, useMotionValue, useTransform, useAnimationFrame } from "framer-motion";
 import { useLanguage } from "@/context/LanguageContext";
 import CompanyLogo from "./CompanyLogos";
 
@@ -23,29 +24,20 @@ const companyNames: string[] = [
 export default function CompaniesSection() {
   const { t } = useLanguage();
   const tCompanies = t.companies as Record<string, string>;
+
+  // Marquee guidato via rAF (non dipende dalle CSS animation): scorre
+  // da 0 a -50% in loop sulla lista duplicata e si mette in pausa on hover.
+  const x = useMotionValue(0);
+  const [paused, setPaused] = useState(false);
+  useAnimationFrame((_, delta) => {
+    if (!paused) x.set(x.get() - (delta / 1000) * 1.4);
+  });
+  const loopX = useTransform(x, (v) => `${-((((-v) % 50) + 50) % 50)}%`);
+
   return (
     <section
       className="py-24 overflow-hidden"
     >
-      <style>{`
-        @keyframes marquee {
-          0%   { transform: translateX(0); }
-          100% { transform: translateX(-50%); }
-        }
-        .marquee-track {
-          display: flex;
-          width: max-content;
-          animation: marquee 80s linear infinite;
-          will-change: transform;
-          animation-play-state: running !important;
-        }
-        .marquee-track:hover,
-        .marquee-track *:hover,
-        .marquee-track *:focus {
-          animation-play-state: running !important;
-        }
-      `}</style>
-
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -68,7 +60,12 @@ export default function CompaniesSection() {
           WebkitMaskImage: "linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%)",
         } as React.CSSProperties}
       >
-        <div className="marquee-track">
+        <motion.div
+          className="flex w-max will-change-transform"
+          style={{ x: loopX }}
+          onMouseEnter={() => setPaused(true)}
+          onMouseLeave={() => setPaused(false)}
+        >
             {[...companyNames, ...companyNames].map((name, i) => (
               <div
                 key={i}
@@ -77,7 +74,7 @@ export default function CompaniesSection() {
                 <CompanyLogo name={name} />
               </div>
             ))}
-          </div>
+          </motion.div>
         </div>
 
       <motion.div
