@@ -231,19 +231,7 @@ export default function Pricing() {
 
                 <p className="text-zinc-400 text-sm mb-6">{plan.description as string}</p>
 
-                <button
-                  onClick={() => handleSubscribe(plan.name, plan.planId)}
-                  disabled={loading === plan.planId}
-                  className={`w-full py-3.5 rounded-full text-white font-bold transition-all disabled:opacity-50 text-sm mb-6 ${
-                    plan.popular
-                      ? "btn-primary glow-border"
-                      : plan.monthlyPrice === 0
-                      ? "btn-secondary"
-                      : "bg-zinc-800 hover:bg-zinc-700 border border-zinc-700"
-                  }`}
-                >
-                  {loading === plan.planId ? "Caricamento..." : plan.buttonText as string}
-                </button>
+                <div className="border-t border-white/10 mb-6" aria-hidden="true" />
 
                 <ul className="space-y-3 flex-1">
                   {(plan.features as string[]).map((feature, j) => (
@@ -263,6 +251,20 @@ export default function Pricing() {
                     </li>
                   ))}
                 </ul>
+
+                <button
+                  onClick={() => handleSubscribe(plan.name, plan.planId)}
+                  disabled={loading === plan.planId}
+                  className={`w-full py-3.5 rounded-full text-white font-bold transition-all disabled:opacity-50 text-sm mt-6 ${
+                    plan.popular
+                      ? "btn-primary glow-border"
+                      : plan.monthlyPrice === 0
+                      ? "btn-secondary"
+                      : "bg-zinc-800 hover:bg-zinc-700 border border-zinc-700"
+                  }`}
+                >
+                  {loading === plan.planId ? "Caricamento..." : plan.buttonText as string}
+                </button>
               </motion.div>
             );
           })}

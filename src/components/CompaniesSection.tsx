@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { motion, useMotionValue, useTransform, useAnimationFrame } from "framer-motion";
 import { useLanguage } from "@/context/LanguageContext";
 import CompanyLogo from "./CompanyLogos";
@@ -25,12 +24,11 @@ export default function CompaniesSection() {
   const { t } = useLanguage();
   const tCompanies = t.companies as Record<string, string>;
 
-  // Marquee guidato via rAF (non dipende dalle CSS animation): scorre
-  // da 0 a -50% in loop sulla lista duplicata e si mette in pausa on hover.
+  // Marquee guidato via rAF (non dipende dalle CSS animation):
+  // scorre da 0 a -50% in loop sulla lista duplicata, senza mai fermarsi.
   const x = useMotionValue(0);
-  const [paused, setPaused] = useState(false);
   useAnimationFrame((_, delta) => {
-    if (!paused) x.set(x.get() - (delta / 1000) * 1.4);
+    x.set(x.get() - (delta / 1000) * 1.4);
   });
   const loopX = useTransform(x, (v) => `${-((((-v) % 50) + 50) % 50)}%`);
 
@@ -63,8 +61,6 @@ export default function CompaniesSection() {
         <motion.div
           className="flex w-max will-change-transform"
           style={{ x: loopX }}
-          onMouseEnter={() => setPaused(true)}
-          onMouseLeave={() => setPaused(false)}
         >
             {[...companyNames, ...companyNames].map((name, i) => (
               <div
