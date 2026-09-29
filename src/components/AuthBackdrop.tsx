@@ -2,98 +2,240 @@
 
 import { motion } from "framer-motion";
 
+interface MiniCVJob {
+  role: string;
+  company: string;
+  period: string;
+  bullets: [string, string];
+}
+
 interface MiniCVConfig {
   id: string;
   className: string;
   rotate: number;
-  score: string;
-  scoreClasses: string;
-  avatar: string;
-  bar: string;
-  barWidth: string;
   duration: number;
   delay: number;
   opacity: string;
+  name: string;
+  initials: string;
+  title: string;
+  contact: string;
+  score: string;
+  jobs: [MiniCVJob, MiniCVJob];
+  skills: string[];
+  education: string;
 }
 
 const CARDS: MiniCVConfig[] = [
   {
     id: "cv-1",
-    className: "left-[3%] top-[10%] w-44 sm:w-52",
+    className: "left-[3%] top-[10%] w-48 sm:w-60",
     rotate: -8,
-    score: "92",
-    scoreClasses: "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30",
-    avatar: "from-emerald-400 to-teal-600",
-    bar: "bg-emerald-400/70",
-    barWidth: "w-[92%]",
     duration: 7,
     delay: 0,
-    opacity: "opacity-70",
+    opacity: "opacity-90",
+    name: "Mario Rossi",
+    initials: "MR",
+    title: "Senior Frontend Developer",
+    contact: "m.rossi@email.com · +39 340 123 4567 · Milano",
+    score: "92",
+    jobs: [
+      {
+        role: "Senior Frontend Developer",
+        company: "TechCorp S.p.A. · 2022–oggi",
+        period: "",
+        bullets: [
+          "Piattaforma SaaS per 50.000 utenti in React e TypeScript.",
+          "Tempi di risposta ridotti del 40% con caching e code-splitting.",
+        ],
+      },
+      {
+        role: "Frontend Developer",
+        company: "WebStudio · 2019–2022",
+        period: "",
+        bullets: [
+          "Refactoring UI legacy e design system condiviso.",
+          "Conversioni landing +18% con test A/B continui.",
+        ],
+      },
+    ],
+    skills: ["React", "TypeScript", "Next.js", "Tailwind", "Node.js"],
+    education: "Laurea Informatica · Politecnico di Milano · 2019",
   },
   {
     id: "cv-2",
-    className: "right-[4%] top-[14%] w-44 sm:w-52 hidden md:block",
+    className: "right-[4%] top-[14%] w-48 sm:w-60 hidden md:block",
     rotate: 7,
-    score: "88",
-    scoreClasses: "bg-fuchsia-500/20 text-fuchsia-300 border border-fuchsia-500/30",
-    avatar: "from-fuchsia-400 to-purple-600",
-    bar: "bg-fuchsia-400/70",
-    barWidth: "w-[88%]",
     duration: 8,
     delay: 0.8,
-    opacity: "opacity-70",
+    opacity: "opacity-90",
+    name: "Laura Bianchi",
+    initials: "LB",
+    title: "UX/UI Designer",
+    contact: "l.bianchi@email.com · +39 333 987 6543 · Roma",
+    score: "88",
+    jobs: [
+      {
+        role: "Product Designer",
+        company: "Fintech Lab · 2021–oggi",
+        period: "",
+        bullets: [
+          "Design system per app bancaria da 200.000 utenti.",
+          "Onboarding ridisegnato: drop-off -25% in 3 mesi.",
+        ],
+      },
+      {
+        role: "UI Designer",
+        company: "Creative Agency · 2018–2021",
+        period: "",
+        bullets: [
+          "Interfacce e-commerce e prototipi ad alta fedeltà.",
+          "User test con 40+ partecipanti e report mensili.",
+        ],
+      },
+    ],
+    skills: ["Figma", "Design System", "Prototyping", "User Research", "Miro"],
+    education: "Laurea Design · Sapienza Roma · 2018",
   },
   {
     id: "cv-3",
-    className: "left-[7%] bottom-[9%] w-44 sm:w-52 hidden md:block",
+    className: "left-[7%] bottom-[9%] w-48 sm:w-60 hidden md:block",
     rotate: 6,
-    score: "95",
-    scoreClasses: "bg-indigo-500/20 text-indigo-300 border border-indigo-500/30",
-    avatar: "from-indigo-400 to-blue-600",
-    bar: "bg-indigo-400/70",
-    barWidth: "w-[95%]",
     duration: 9,
     delay: 0.4,
-    opacity: "opacity-60",
+    opacity: "opacity-80",
+    name: "Giuseppe Verdi",
+    initials: "GV",
+    title: "Backend Engineer",
+    contact: "g.verdi@email.com · +39 347 555 0132 · Torino",
+    score: "95",
+    jobs: [
+      {
+        role: "Backend Engineer",
+        company: "CloudSystems · 2020–oggi",
+        period: "",
+        bullets: [
+          "Microservizi Node.js e PostgreSQL su AWS EKS.",
+          "Throughput API +3x con code e cache Redis.",
+        ],
+      },
+      {
+        role: "Software Developer",
+        company: "DataFactory · 2017–2020",
+        period: "",
+        bullets: [
+          "ETL giornaliere per 10M+ record con Python.",
+          "Monitoraggio e alerting con Grafana e PagerDuty.",
+        ],
+      },
+    ],
+    skills: ["Node.js", "Python", "PostgreSQL", "AWS", "Docker"],
+    education: "Laurea Ingegneria · Politecnico di Torino · 2017",
   },
   {
     id: "cv-4",
-    className: "right-[8%] bottom-[12%] w-44 sm:w-52 hidden md:block",
+    className: "right-[8%] bottom-[12%] w-48 sm:w-60 hidden md:block",
     rotate: -6,
-    score: "81",
-    scoreClasses: "bg-amber-500/20 text-amber-300 border border-amber-500/30",
-    avatar: "from-amber-400 to-orange-600",
-    bar: "bg-amber-400/70",
-    barWidth: "w-[81%]",
     duration: 7.5,
     delay: 1.1,
-    opacity: "opacity-60",
+    opacity: "opacity-80",
+    name: "Anna Neri",
+    initials: "AN",
+    title: "Data Analyst",
+    contact: "a.neri@email.com · +39 349 222 8899 · Bologna",
+    score: "81",
+    jobs: [
+      {
+        role: "Data Analyst",
+        company: "Retail Group · 2022–oggi",
+        period: "",
+        bullets: [
+          "Dashboard vendite in Power BI per 30 store.",
+          "Forecast domanda con errore medio sotto il 7%.",
+        ],
+      },
+      {
+        role: "Junior Analyst",
+        company: "Marketing Hub · 2020–2022",
+        period: "",
+        bullets: [
+          "Report campagne e KPI settimanali in SQL.",
+          "Automazione report: -6 ore manuali a settimana.",
+        ],
+      },
+    ],
+    skills: ["SQL", "Power BI", "Python", "Excel", "GA4"],
+    education: "Laurea Statistica · Università di Bologna · 2020",
   },
   {
     id: "cv-5",
-    className: "left-[40%] top-[3%] w-40 hidden lg:block",
+    className: "left-[40%] top-[3%] w-44 hidden lg:block",
     rotate: -3,
-    score: "90",
-    scoreClasses: "bg-sky-500/20 text-sky-300 border border-sky-500/30",
-    avatar: "from-sky-400 to-cyan-600",
-    bar: "bg-sky-400/70",
-    barWidth: "w-[90%]",
     duration: 10,
     delay: 0.2,
-    opacity: "opacity-40",
+    opacity: "opacity-60",
+    name: "Marco Gialli",
+    initials: "MG",
+    title: "DevOps Engineer",
+    contact: "m.gialli@email.com · Napoli",
+    score: "90",
+    jobs: [
+      {
+        role: "DevOps Engineer",
+        company: "InfraTech · 2021–oggi",
+        period: "",
+        bullets: [
+          "Pipeline CI/CD e cluster Kubernetes gestiti.",
+          "Deploy passati da settimanali a giornalieri.",
+        ],
+      },
+      {
+        role: "SysAdmin",
+        company: "HostingPro · 2018–2021",
+        period: "",
+        bullets: [
+          "200+ server Linux e automazione Ansible.",
+          "Uptime garantito al 99,9% su tre anni.",
+        ],
+      },
+    ],
+    skills: ["Kubernetes", "Terraform", "CI/CD", "Linux", "AWS"],
+    education: "Diploma + certificazione CKA · 2021",
   },
   {
     id: "cv-6",
-    className: "right-[36%] bottom-[4%] w-40 hidden lg:block",
+    className: "right-[36%] bottom-[4%] w-44 hidden lg:block",
     rotate: 4,
-    score: "87",
-    scoreClasses: "bg-rose-500/20 text-rose-300 border border-rose-500/30",
-    avatar: "from-rose-400 to-pink-600",
-    bar: "bg-rose-400/70",
-    barWidth: "w-[87%]",
     duration: 9.5,
     delay: 1.4,
-    opacity: "opacity-40",
+    opacity: "opacity-60",
+    name: "Sara Blu",
+    initials: "SB",
+    title: "Project Manager",
+    contact: "s.blu@email.com · Firenze",
+    score: "87",
+    jobs: [
+      {
+        role: "Project Manager",
+        company: "Digital Agency · 2020–oggi",
+        period: "",
+        bullets: [
+          "12 progetti web con team fino a 8 persone.",
+          "Consegne puntuali al 96% con metodo Agile.",
+        ],
+      },
+      {
+        role: "Junior PM",
+        company: "Startup Lab · 2018–2020",
+        period: "",
+        bullets: [
+          "Backlog, sprint e reporting al management.",
+          "Budget progetti fino a 150.000 euro.",
+        ],
+      },
+    ],
+    skills: ["Agile", "Scrum", "Jira", "Budget", "Stakeholder"],
+    education: "Laurea Economia · Firenze · 2018",
   },
 ];
 
@@ -105,29 +247,50 @@ function MiniCV({ card }: { card: MiniCVConfig }) {
       transition={{ y: { duration: card.duration, repeat: Infinity, ease: "easeInOut", delay: card.delay }, opacity: { duration: 1, delay: card.delay } }}
       className={`absolute ${card.className} ${card.opacity}`}
     >
-      <div className="rounded-2xl border border-white/10 bg-white/[0.05] backdrop-blur-md p-4 shadow-2xl shadow-black/60 select-none">
-        <div className="flex items-center gap-2.5">
-          <div className={`h-9 w-9 shrink-0 rounded-full bg-gradient-to-br ${card.avatar}`} />
-          <div className="flex-1 space-y-1.5">
-            <div className="h-2 w-3/4 rounded-full bg-white/25" />
-            <div className="h-1.5 w-1/2 rounded-full bg-white/10" />
+      <div className="rounded-md bg-[#f8f7f4] text-zinc-800 shadow-2xl shadow-black/60 select-none overflow-hidden">
+        <div className="h-1.5 bg-gradient-to-r from-indigo-500 via-fuchsia-500 to-indigo-500" />
+        <div className="p-3.5">
+          <div className="flex items-start gap-2">
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 to-fuchsia-600 text-[9px] font-bold text-white">
+              {card.initials}
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-[11px] font-bold leading-tight text-zinc-900">{card.name}</p>
+              <p className="text-[7.5px] font-semibold leading-tight text-indigo-700">{card.title}</p>
+              <p className="text-[6px] leading-tight text-zinc-500 truncate">{card.contact}</p>
+            </div>
+            <div className="shrink-0 rounded bg-emerald-600 px-1.5 py-0.5 text-[8px] font-bold text-white leading-none">
+              ATS {card.score}
+            </div>
           </div>
-          <div className={`rounded-lg px-1.5 py-1 text-[10px] font-bold leading-none ${card.scoreClasses}`}>
-            {card.score}
+
+          <p className="mt-2.5 text-[6.5px] font-bold tracking-[0.14em] text-zinc-400">ESPERIENZA</p>
+          <div className="mt-1 space-y-1.5">
+            {card.jobs.map((job) => (
+              <div key={job.role}>
+                <p className="text-[7.5px] font-bold leading-tight text-zinc-900">
+                  {job.role} <span className="font-normal text-zinc-500">· {job.company}</span>
+                </p>
+                {job.bullets.map((b) => (
+                  <p key={b} className="text-[6.5px] leading-snug text-zinc-600">
+                    <span className="mr-1 text-indigo-600">•</span>{b}
+                  </p>
+                ))}
+              </div>
+            ))}
           </div>
-        </div>
-        <div className="mt-3 space-y-1.5">
-          <div className="h-1.5 w-full rounded-full bg-white/10" />
-          <div className="h-1.5 w-11/12 rounded-full bg-white/10" />
-          <div className="h-1.5 w-4/5 rounded-full bg-white/10" />
-        </div>
-        <div className="mt-3 flex gap-1.5">
-          <div className="h-4 w-12 rounded-full bg-white/10" />
-          <div className="h-4 w-10 rounded-full bg-white/10" />
-          <div className="h-4 w-14 rounded-full bg-white/10" />
-        </div>
-        <div className="mt-3 h-1.5 rounded-full bg-white/10 overflow-hidden">
-          <div className={`h-full rounded-full ${card.bar} ${card.barWidth}`} />
+
+          <p className="mt-2 text-[6.5px] font-bold tracking-[0.14em] text-zinc-400">SKILLS</p>
+          <div className="mt-1 flex flex-wrap gap-1">
+            {card.skills.map((s) => (
+              <span key={s} className="rounded-full bg-indigo-100 px-1.5 py-px text-[6px] font-semibold text-indigo-800">
+                {s}
+              </span>
+            ))}
+          </div>
+
+          <p className="mt-2 text-[6.5px] font-bold tracking-[0.14em] text-zinc-400">FORMAZIONE</p>
+          <p className="mt-0.5 text-[6.5px] leading-snug text-zinc-600">{card.education}</p>
         </div>
       </div>
     </motion.div>
@@ -135,8 +298,8 @@ function MiniCV({ card }: { card: MiniCVConfig }) {
 }
 
 /**
- * Sfondo animato per le pagine di accesso: mini-CV fluttuanti
- * su base scura con aloni viola. Non interattivo.
+ * Sfondo animato per le pagine di accesso: veri mini-CV cartacei
+ * fluttuanti su base scura con aloni viola. Non interattivo.
  */
 export default function AuthBackdrop() {
   return (
