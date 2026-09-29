@@ -451,34 +451,44 @@ export default function Analyze({ initialResult = null, embedded = false }: Anal
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: 0.25 }}
-                      className="md:col-span-2 grid sm:grid-cols-2 lg:grid-cols-5 gap-4"
+                      className="md:col-span-2 grid sm:grid-cols-2 lg:grid-cols-3 gap-4"
                     >
-                      <div className="bg-white/5 rounded-xl p-4 border border-white/10">
-                        <p className="text-zinc-500 text-xs mb-1">{tA.overallScore}</p>
-                        <p className="text-2xl font-bold text-white">{result.score}/100</p>
-                      </div>
-                      <div className="bg-white/5 rounded-xl p-4 border border-white/10">
-                        <p className="text-zinc-500 text-xs mb-1">{tA.atsScore}</p>
-                        <p className="text-2xl font-bold text-emerald-400">{result.atsScore}/100</p>
-                      </div>
-                      <div className="bg-white/5 rounded-xl p-4 border border-white/10">
-                        <p className="text-zinc-500 text-xs mb-1">{tA.contentScore}</p>
-                        <p className="text-2xl font-bold text-sky-400">{result.contentScore ?? "--"}/100</p>
-                      </div>
-                      <div className="bg-white/5 rounded-xl p-4 border border-white/10">
-                        <p className="text-zinc-500 text-xs mb-1">{tA.writingScore}</p>
-                        <p className="text-2xl font-bold text-amber-400">{result.writingScore ?? "--"}/100</p>
-                      </div>
-                      <div className="bg-white/5 rounded-xl p-4 border border-white/10">
-                        <p className="text-zinc-500 text-xs mb-1">{tA.jobMatchScore}</p>
-                        <p className="text-2xl font-bold text-indigo-300">
-                          {result.jobMatchScore ?? "--"}/100
-                        </p>
-                      </div>
-                      <div className="bg-white/5 rounded-xl p-4 border border-white/10">
-                        <p className="text-zinc-500 text-xs mb-1">{tA.readinessScore}</p>
-                        <p className="text-2xl font-bold text-fuchsia-300">{result.readinessScore ?? "--"}/100</p>
-                      </div>
+                      {[
+                        { label: String(tA.overallScore), value: result.score, fill: "from-white via-zinc-300 to-zinc-500", text: "text-white", glow: "shadow-[0_2px_12px_rgba(255,255,255,0.25)]" },
+                        { label: String(tA.atsScore), value: result.atsScore, fill: "from-emerald-300 via-emerald-500 to-emerald-700", text: "text-emerald-400", glow: "shadow-[0_2px_12px_rgba(52,211,153,0.45)]" },
+                        { label: String(tA.contentScore), value: result.contentScore, fill: "from-sky-300 via-sky-500 to-sky-700", text: "text-sky-400", glow: "shadow-[0_2px_12px_rgba(56,189,248,0.45)]" },
+                        { label: String(tA.writingScore), value: result.writingScore, fill: "from-amber-300 via-amber-500 to-amber-700", text: "text-amber-400", glow: "shadow-[0_2px_12px_rgba(251,191,36,0.45)]" },
+                        { label: String(tA.jobMatchScore), value: result.jobMatchScore, fill: "from-indigo-300 via-indigo-500 to-indigo-700", text: "text-indigo-300", glow: "shadow-[0_2px_12px_rgba(129,140,248,0.45)]" },
+                        { label: String(tA.readinessScore), value: result.readinessScore, fill: "from-fuchsia-300 via-fuchsia-500 to-fuchsia-700", text: "text-fuchsia-300", glow: "shadow-[0_2px_12px_rgba(232,121,249,0.45)]" },
+                      ].map((bar, bi) => {
+                        const pct = typeof bar.value === "number" ? Math.max(0, Math.min(100, bar.value)) : 0;
+                        return (
+                          <div key={bar.label} className="bg-white/5 rounded-xl p-4 border border-white/10">
+                            <div className="flex items-center justify-between gap-2 mb-2.5">
+                              <p className="text-zinc-400 text-xs font-medium">{bar.label}</p>
+                              <p className={`text-lg font-bold tabular-nums ${bar.text}`}>
+                                {typeof bar.value === "number" ? `${bar.value}` : "--"}
+                                <span className="text-xs text-zinc-500 font-medium">/100</span>
+                              </p>
+                            </div>
+                            <div className="h-3.5 rounded-full bg-black/50 border border-white/10 overflow-hidden shadow-[inset_0_2px_6px_rgba(0,0,0,0.7)]">
+                              <motion.div
+                                initial={{ width: 0 }}
+                                animate={{ width: `${pct}%` }}
+                                transition={{ duration: 1.4, ease: [0.22, 1, 0.36, 1], delay: 0.3 + bi * 0.12 }}
+                                className={`h-full rounded-full bg-gradient-to-b ${bar.fill} ${bar.glow} relative overflow-hidden`}
+                              >
+                                <div className="absolute inset-x-0 top-0 h-1/2 rounded-full bg-gradient-to-b from-white/50 to-white/0" />
+                                <motion.div
+                                  animate={{ x: ["-120%", "520%"] }}
+                                  transition={{ duration: 2.4, repeat: Infinity, ease: "linear", delay: bi * 0.3 }}
+                                  className="absolute inset-y-0 left-0 w-1/4 bg-gradient-to-r from-transparent via-white/50 to-transparent"
+                                />
+                              </motion.div>
+                            </div>
+                          </div>
+                        );
+                      })}
                     </motion.div>
 
                     <motion.div
