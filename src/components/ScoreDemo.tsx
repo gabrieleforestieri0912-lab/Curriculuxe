@@ -129,11 +129,11 @@ export default function ScoreDemo() {
               {tHowItWorks.title as string}
             </span>
             <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
-              Quattro passi verso il{" "}
-              <span className="text-gradient">CV perfetto</span>
+              {tScoreDemo.stepsTitle as string}{" "}
+              <span className="text-gradient">{tScoreDemo.stepsTitleHighlight as string}</span>
             </h2>
             <p className="text-zinc-400 max-w-xl mx-auto">
-              In meno di due minuti il tuo curriculum è pronto per passare qualsiasi sistema ATS.
+              {tScoreDemo.stepsSubtitle as string}
             </p>
           </motion.div>
 
@@ -182,10 +182,10 @@ export default function ScoreDemo() {
             className="text-center mb-16"
           >
             <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
-              Come <span className="text-gradient">analizziamo</span> il tuo CV
+              {tScoreDemo.analyzeTitle as string} <span className="text-gradient">{tScoreDemo.analyzeTitleHighlight as string}</span> {tScoreDemo.analyzeTitleRest as string}
             </h2>
             <p className="text-zinc-400 text-lg max-w-xl mx-auto">
-              Un processo intelligente che valuta e migliora ogni aspetto del tuo curriculum
+              {tScoreDemo.analyzeSubtitle as string}
             </p>
           </motion.div>
 
@@ -305,7 +305,7 @@ export default function ScoreDemo() {
               transition={{ duration: 0.5, delay: 0.2 }}
               className="space-y-4"
             >
-              <h3 className="text-xl font-semibold text-white mb-6">Cosa analizziamo</h3>
+              <h3 className="text-xl font-semibold text-white mb-6">{tScoreDemo.analyzingTitle as string}</h3>
               {phases.map((p, i) => (
                 <motion.div
                   key={i}

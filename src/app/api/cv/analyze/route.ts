@@ -48,6 +48,7 @@ async function extractTextFromFile(file: File) {
 }
 
 export async function POST(request: NextRequest) {
+  let lang: "it" | "en" = "it";
   try {
     const contentType = request.headers.get("content-type") || "";
     let text = "";
@@ -63,6 +64,7 @@ export async function POST(request: NextRequest) {
       jobDescription = formData.get("jobDescription")?.toString() || "";
       template = formData.get("template")?.toString() || "ats";
       market = formData.get("market")?.toString() || "italia";
+      lang = formData.get("lang")?.toString() === "en" ? "en" : "it";
       text = await extractTextFromFile(file as File);
     } else {
       const body = await request.json() as {
@@ -71,21 +73,27 @@ export async function POST(request: NextRequest) {
         template?: string;
         market?: string;
         fileName?: string;
+        lang?: string;
       };
       text = body.text || "";
       jobDescription = body.jobDescription || "";
       template = body.template || "ats";
       market = body.market || "italia";
       fileName = body.fileName || "";
+      lang = body.lang === "en" ? "en" : "it";
     }
+
+    const errMsg = (it: string, en: string) => (lang === "en" ? en : it);
 
     const cleanText = normalizeText(text);
 
     if (cleanText.length < 80) {
       return NextResponse.json(
         {
-          error:
+          error: errMsg(
             "Non sono riuscito a leggere abbastanza testo dal CV. Se il PDF è scannerizzato, esportalo come DOCX o incolla il testo del CV.",
+            "Could not read enough text from the CV. If the PDF is scanned, export it as DOCX or paste the CV text."
+          ),
           extractedLength: cleanText.length,
           fileName,
         },
@@ -126,7 +134,7 @@ export async function POST(request: NextRequest) {
 
     if (!userObj && !ipLimit.allowed) {
       return NextResponse.json(
-        { error: "Hai raggiunto il limite di analisi gratuite. Registrati per continuare." },
+        { error: errMsg("Hai raggiunto il limite di analisi gratuite. Registrati per continuare.", "You reached the free analysis limit. Sign up to continue.") },
         { status: 429 }
       );
     }
@@ -204,7 +212,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error("Error analyzing CV:", error);
     return NextResponse.json(
-      { error: "Errore durante l'analisi del curriculum" },
+      { error: lang === "en" ? "Error while analyzing the CV" : "Errore durante l'analisi del curriculum" },
       { status: 500 }
     );
   }

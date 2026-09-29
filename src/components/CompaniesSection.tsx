@@ -80,9 +80,9 @@ export default function CompaniesSection() {
         transition={{ delay: 0.3 }}
         className="mt-10 text-center px-6"
       >
-        <p className="text-zinc-500 text-sm">
-          +5000 candidati assunti con il nostro curriculum negli ultimi 12 mesi
-        </p>
+          <p className="text-zinc-500 text-sm">
+            {tCompanies.statLine as string}
+          </p>
         <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-10 mt-4">
           {[tCompanies.atsBadge, tCompanies.multiLangBadge, tCompanies.seoBadge].map((label) => (
             <div key={label} className="flex items-center gap-2">

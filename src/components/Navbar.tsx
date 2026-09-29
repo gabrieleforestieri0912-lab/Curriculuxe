@@ -55,8 +55,16 @@ export default function Navbar() {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [openMobile, setOpenMobile] = useState<string | null>(null);
+  const [scrolled, setScrolled] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 24);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -265,7 +273,11 @@ export default function Navbar() {
   return (
     <>
       <nav className="fixed top-4 left-0 right-0 z-50 px-3 sm:px-6 transition-all duration-300">
-        <div className="max-w-7xl mx-auto rounded-full border border-white/10 bg-white/[0.04] backdrop-blur-xl shadow-lg shadow-black/30 px-5 sm:px-8 py-3 sm:py-3.5 flex items-center justify-between gap-3">
+        <div className={`max-w-7xl mx-auto rounded-2xl border backdrop-blur-xl px-5 sm:px-8 flex items-center justify-between gap-3 transition-all duration-300 ${
+          scrolled
+            ? "border-white/20 bg-black/70 shadow-xl shadow-black/50 py-2 sm:py-2.5"
+            : "border-white/10 bg-white/[0.04] shadow-lg shadow-black/30 py-3 sm:py-3.5"
+        }`}>
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 group min-w-0">
             <Image
@@ -282,7 +294,7 @@ export default function Navbar() {
           </Link>
 
           {/* Center links */}
-          <div className="hidden md:flex items-center gap-1.5 bg-white/5 border border-white/8 rounded-full p-1.5 backdrop-blur-md">
+          <div className="hidden md:flex items-center gap-1.5 bg-white/5 border border-white/8 rounded-xl p-1.5 backdrop-blur-md">
             {navLinks.map((link) => {
               const Icon = link.icon;
               if (link.children?.length) {
@@ -430,7 +442,7 @@ export default function Navbar() {
                 initial={{ opacity: 0, y: -8, height: 0 }}
                 animate={{ opacity: 1, y: 0, height: "auto" }}
                 exit={{ opacity: 0, y: -8, height: 0 }}
-                className="rounded-3xl border border-white/10 bg-white/[0.04] backdrop-blur-xl shadow-lg shadow-black/30 overflow-hidden"
+                className="rounded-2xl border border-white/10 bg-white/[0.04] backdrop-blur-xl shadow-lg shadow-black/30 overflow-hidden"
               >
               <div className="px-6 py-6 space-y-4">
                 <div className="space-y-1">

@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useLanguage } from "@/context/LanguageContext";
 
 interface MiniCVJob {
   role: string;
@@ -240,6 +241,10 @@ const CARDS: MiniCVConfig[] = [
 ];
 
 function MiniCV({ card }: { card: MiniCVConfig }) {
+  const { lang } = useLanguage();
+  const experienceLabel = lang === "en" ? "EXPERIENCE" : "ESPERIENZA";
+  const skillsLabel = "SKILLS";
+  const educationLabel = lang === "en" ? "EDUCATION" : "FORMAZIONE";
   return (
     <motion.div
       initial={{ y: 0, rotate: card.rotate, opacity: 0 }}
@@ -264,7 +269,7 @@ function MiniCV({ card }: { card: MiniCVConfig }) {
             </div>
           </div>
 
-          <p className="mt-2.5 text-[6.5px] font-bold tracking-[0.14em] text-zinc-400">ESPERIENZA</p>
+          <p className="mt-2.5 text-[6.5px] font-bold tracking-[0.14em] text-zinc-400">{experienceLabel}</p>
           <div className="mt-1 space-y-1.5">
             {card.jobs.map((job) => (
               <div key={job.role}>
@@ -280,7 +285,7 @@ function MiniCV({ card }: { card: MiniCVConfig }) {
             ))}
           </div>
 
-          <p className="mt-2 text-[6.5px] font-bold tracking-[0.14em] text-zinc-400">SKILLS</p>
+          <p className="mt-2 text-[6.5px] font-bold tracking-[0.14em] text-zinc-400">{skillsLabel}</p>
           <div className="mt-1 flex flex-wrap gap-1">
             {card.skills.map((s) => (
               <span key={s} className="rounded-full bg-indigo-100 px-1.5 py-px text-[6px] font-semibold text-indigo-800">
@@ -289,7 +294,7 @@ function MiniCV({ card }: { card: MiniCVConfig }) {
             ))}
           </div>
 
-          <p className="mt-2 text-[6.5px] font-bold tracking-[0.14em] text-zinc-400">FORMAZIONE</p>
+          <p className="mt-2 text-[6.5px] font-bold tracking-[0.14em] text-zinc-400">{educationLabel}</p>
           <p className="mt-0.5 text-[6.5px] leading-snug text-zinc-600">{card.education}</p>
         </div>
       </div>

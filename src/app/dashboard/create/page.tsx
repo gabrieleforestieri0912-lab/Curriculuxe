@@ -331,7 +331,7 @@ function CreateCVContent() {
                 <h2 className="text-xl font-bold text-white mb-4">{tGen.chooseTemplate}</h2>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                   {cvTemplates.map((tpl: { id: string; name: string }) => {
-                    const advice = getTemplateAdvice(tpl);
+                    const advice = getTemplateAdvice(tpl, lang);
                     return (
                       <button key={tpl.id} onClick={() => setSelectedTemplate(tpl.id)}
                         className={`rounded-xl overflow-hidden transition-all ${selectedTemplate === tpl.id ? "ring-2 ring-indigo-500 shadow-lg shadow-indigo-500/20" : "hover:ring-1 hover:ring-white/20"}`}
@@ -439,23 +439,23 @@ function CreateCVContent() {
                     <motion.div key="experience" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="glass-card rounded-2xl p-6">
                       <div className="flex items-center justify-between mb-6">
                         <h2 className="text-xl font-bold text-white">{tCreate.experience}</h2>
-                        <button onClick={addExperience} className="btn-secondary px-4 py-2 rounded-lg text-sm font-medium">+ Aggiungi</button>
+                        <button onClick={addExperience} className="btn-secondary px-4 py-2 rounded-lg text-sm font-medium">{tCreate.addButton}</button>
                       </div>
                       {formData.experience.length === 0 && (
-                        <p className="text-zinc-500 text-center py-8">Nessuna esperienza. Clicca &quot;+ Aggiungi&quot; per iniziare.</p>
+                        <p className="text-zinc-500 text-center py-8">{tCreate.emptyExperience}</p>
                       )}
                       <div className="space-y-4">
                         {formData.experience.map((exp, i) => (
                           <div key={i} className="rounded-xl bg-white/5 border border-white/10 p-4">
                             <div className="flex justify-between items-center mb-3">
-                              <span className="text-sm text-zinc-400">Esperienza #{i + 1}</span>
+                              <span className="text-sm text-zinc-400">{tCreate.experienceItem} #{i + 1}</span>
                               <button onClick={() => removeExperience(i)} className="text-red-400 hover:text-red-300"><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg></button>
                             </div>
                             <div className="grid md:grid-cols-2 gap-3">
                               <div><label className="block text-xs text-zinc-400 mb-1">{tCreate.company}</label><input value={exp.company} onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateExperience(i, "company", e.target.value)} className="w-full bg-black/25 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-indigo-500" /></div>
                               <div><label className="block text-xs text-zinc-400 mb-1">{tCreate.role}</label><input value={exp.role} onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateExperience(i, "role", e.target.value)} className="w-full bg-black/25 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-indigo-500" /></div>
-                              <div><label className="block text-xs text-zinc-400 mb-1">Periodo</label><input value={exp.period} onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateExperience(i, "period", e.target.value)} placeholder="2021 - Presente" className="w-full bg-black/25 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-indigo-500" /></div>
-                              <div className="md:col-span-2"><label className="block text-xs text-zinc-400 mb-1">Descrizione</label><textarea value={exp.description} onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => updateExperience(i, "description", e.target.value)} rows={2} className="w-full bg-black/25 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-indigo-500 resize-none" /></div>
+                              <div><label className="block text-xs text-zinc-400 mb-1">{tCreate.period}</label><input value={exp.period} onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateExperience(i, "period", e.target.value)} placeholder="2021 - Presente" className="w-full bg-black/25 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-indigo-500" /></div>
+                              <div className="md:col-span-2"><label className="block text-xs text-zinc-400 mb-1">{tCreate.description}</label><textarea value={exp.description} onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => updateExperience(i, "description", e.target.value)} rows={2} className="w-full bg-black/25 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-indigo-500 resize-none" /></div>
                             </div>
                           </div>
                         ))}
@@ -467,22 +467,22 @@ function CreateCVContent() {
                     <motion.div key="education" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="glass-card rounded-2xl p-6">
                       <div className="flex items-center justify-between mb-6">
                         <h2 className="text-xl font-bold text-white">{tCreate.education}</h2>
-                        <button onClick={addEducation} className="btn-secondary px-4 py-2 rounded-lg text-sm font-medium">+ Aggiungi</button>
+                        <button onClick={addEducation} className="btn-secondary px-4 py-2 rounded-lg text-sm font-medium">{tCreate.addButton}</button>
                       </div>
                       {formData.education.length === 0 && (
-                        <p className="text-zinc-500 text-center py-8">Nessuna formazione. Clicca &quot;+ Aggiungi&quot; per iniziare.</p>
+                        <p className="text-zinc-500 text-center py-8">{tCreate.emptyEducation}</p>
                       )}
                       <div className="space-y-4">
                         {formData.education.map((edu, i) => (
                           <div key={i} className="rounded-xl bg-white/5 border border-white/10 p-4">
                             <div className="flex justify-between items-center mb-3">
-                              <span className="text-sm text-zinc-400">Formazione #{i + 1}</span>
+                              <span className="text-sm text-zinc-400">{tCreate.educationItem} #{i + 1}</span>
                               <button onClick={() => removeEducation(i)} className="text-red-400 hover:text-red-300"><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg></button>
                             </div>
                             <div className="grid md:grid-cols-3 gap-3">
                               <div className="md:col-span-2"><label className="block text-xs text-zinc-400 mb-1">{tCreate.institution}</label><input value={edu.institution} onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateEducation(i, "institution", e.target.value)} className="w-full bg-black/25 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-indigo-500" /></div>
                               <div><label className="block text-xs text-zinc-400 mb-1">{tCreate.degree}</label><input value={edu.degree} onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateEducation(i, "degree", e.target.value)} className="w-full bg-black/25 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-indigo-500" /></div>
-                              <div><label className="block text-xs text-zinc-400 mb-1">Anno</label><input value={edu.year} onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateEducation(i, "year", e.target.value)} placeholder="2018" className="w-full bg-black/25 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-indigo-500" /></div>
+                              <div><label className="block text-xs text-zinc-400 mb-1">{tCreate.year}</label><input value={edu.year} onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateEducation(i, "year", e.target.value)} placeholder="2018" className="w-full bg-black/25 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-indigo-500" /></div>
                             </div>
                           </div>
                         ))}
@@ -525,13 +525,13 @@ function CreateCVContent() {
                       disabled={currentSection === sections[0].id}
                       className="btn-secondary px-6 py-3 rounded-xl font-semibold disabled:opacity-30 w-full sm:w-auto"
                     >
-                      Precedente
+                      {tCreate.prevStep}
                     </button>
                     <button onClick={() => setCurrentSection(sections[Math.min(sections.length - 1, sections.findIndex(s => s.id === currentSection) + 1)].id)}
                       disabled={currentSection === sections[sections.length - 1].id}
                       className="btn-secondary px-6 py-3 rounded-xl font-semibold disabled:opacity-30 w-full sm:w-auto"
                     >
-                      Successivo
+                      {tCreate.nextStep}
                     </button>
                     <button onClick={handleSaveManual} disabled={saving}
                       className="btn-primary px-8 py-3 rounded-xl font-bold disabled:opacity-50 w-full sm:w-auto"

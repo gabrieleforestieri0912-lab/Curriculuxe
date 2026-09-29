@@ -161,38 +161,47 @@ export function buildTailoredCV({
   };
 }
 
-export function getTemplateAdvice(template: { id?: string; layout?: string } = {}): TemplateAdvice {
+export function getTemplateAdvice(template: { id?: string; layout?: string } = {}, lang = "it"): TemplateAdvice {
   const atsSafeIds = new Set(["ats", "minimal", "harvard", "stanford", "mit"]);
   const creativeIds = new Set(["creativo", "moderno", "tech"]);
   const academicIds = new Set(["accademico", "harvard", "oxford", "cambridge", "yale", "princeton"]);
+  const en = lang === "en";
 
   if (atsSafeIds.has(template.id!)) {
     return {
       label: "ATS-safe",
       category: "ATS Standard",
-      warning: "Consigliato per candidature tramite portali e sistemi ATS.",
+      warning: en
+        ? "Recommended for applications via portals and ATS systems."
+        : "Consigliato per candidature tramite portali e sistemi ATS.",
     };
   }
 
   if (creativeIds.has(template.id!)) {
     return {
-      label: "Creativo",
-      category: template.id === "tech" ? "Tech" : "Creativo",
-      warning: "Ottimo per impatto visivo, meno prudente per ATS rigidi.",
+      label: en ? "Creative" : "Creativo",
+      category: template.id === "tech" ? "Tech" : en ? "Creative" : "Creativo",
+      warning: en
+        ? "Great visual impact, less safe for strict ATS."
+        : "Ottimo per impatto visivo, meno prudente per ATS rigidi.",
     };
   }
 
   if (academicIds.has(template.id!)) {
     return {
-      label: "Accademico",
-      category: template.id === "accademico" ? "Accademico" : "Executive",
-      warning: "Adatto a profili senior, accademici o istituzionali.",
+      label: en ? "Academic" : "Accademico",
+      category: template.id === "accademico" ? en ? "Academic" : "Accademico" : "Executive",
+      warning: en
+        ? "Suited to senior, academic or institutional profiles."
+        : "Adatto a profili senior, accademici o istituzionali.",
     };
   }
 
   return {
     label: "Standard",
     category: "Standard",
-    warning: template.layout === "two-column" ? "Layout elegante, ma verifica compatibilita ATS." : "Template generale.",
+    warning: template.layout === "two-column"
+      ? en ? "Elegant layout, but check ATS compatibility." : "Layout elegante, ma verifica compatibilita ATS."
+      : en ? "General-purpose template." : "Template generale.",
   };
 }

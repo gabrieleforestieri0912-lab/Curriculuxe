@@ -161,6 +161,7 @@ export default function Analyze({ initialResult = null, embedded = false }: Anal
       formData.append("jobDescription", jobDescription);
       formData.append("template", selectedTemplate);
       formData.append("market", targetMarket);
+      formData.append("lang", lang);
 
       const res = await fetch("/api/cv/analyze", {
         method: "POST",
@@ -391,7 +392,7 @@ export default function Analyze({ initialResult = null, embedded = false }: Anal
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-6">
                     <h2 className="text-xl font-bold text-white">{tA.results}</h2>
                     <span className="text-sm text-zinc-500">
-                      {result.isFallback ? String(tA.fallbackLabel) : "Powered by AI"}
+                      {result.isFallback ? String(tA.fallbackLabel) : String(tA.poweredBy)}
                     </span>
                   </div>
 

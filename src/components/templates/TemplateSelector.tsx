@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { cvTemplates, getTemplateById } from "@/lib/templates/cvTemplates";
 import { getTemplateAdvice } from "@/lib/careerKit";
 import TemplatePreview from "@/components/TemplatePreview";
+import { useLanguage } from "@/context/LanguageContext";
 
 interface TemplateSelectorProps {
   selectedTemplate: string;
@@ -13,18 +14,20 @@ interface TemplateSelectorProps {
 }
 
 export default function TemplateSelector({ selectedTemplate, onSelect, showDetails = true, size = "md" }: TemplateSelectorProps) {
+  const { t, lang } = useLanguage();
+  const tTemplates = t.templates as Record<string, string>;
   return (
     <div className="space-y-4">
       {showDetails && (
         <div className="mb-4">
-          <h3 className="text-lg font-semibold text-white mb-1">Scegli un Template</h3>
-          <p className="text-zinc-400 text-sm">Seleziona il layout per il tuo curriculum</p>
+          <h3 className="text-lg font-semibold text-white mb-1">{tTemplates.chooseTitle}</h3>
+          <p className="text-zinc-400 text-sm">{tTemplates.chooseDesc}</p>
         </div>
       )}
 
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
         {cvTemplates.map((template, index: number) => {
-          const advice = getTemplateAdvice(template);
+          const advice = getTemplateAdvice(template, lang);
           return (
             <motion.button
               key={template.id as string}
@@ -96,7 +99,7 @@ export default function TemplateSelector({ selectedTemplate, onSelect, showDetai
               <p className="text-white font-medium">{(getTemplateById(selectedTemplate) as unknown as Record<string, unknown>).name as string}</p>
               <p className="text-zinc-400 text-sm">{(getTemplateById(selectedTemplate) as unknown as Record<string, unknown>).description as string}</p>
               <p className="text-zinc-500 text-xs mt-1">
-                {getTemplateAdvice(getTemplateById(selectedTemplate)).warning}
+                {getTemplateAdvice(getTemplateById(selectedTemplate), lang).warning}
               </p>
             </div>
           </div>
