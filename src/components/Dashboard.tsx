@@ -2,6 +2,7 @@
 
 import { useMemo, useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Play } from "lucide-react";
 import AnimatedCounter from "@/components/AnimatedCounter";
@@ -12,6 +13,7 @@ import { getTranslations } from "@/lib/i18n";
 import { useLanguage } from "@/context/LanguageContext";
 
 export default function Dashboard() {
+  const router = useRouter();
   const { t, lang } = useLanguage();
   const tDash = t.dashboard as Record<string, string>;
   const tTour = (t.dashboard as Record<string, unknown>).tour as Record<string, unknown>;
@@ -68,12 +70,32 @@ export default function Dashboard() {
             localStorage.setItem("user", JSON.stringify(data.user));
             setUser(data.user);
             window.dispatchEvent(new Event("user-updated"));
+            // Onboarding: al primo accesso senza profilo completato si va al wizard.
+            checkOnboarding(String(data.user.id));
           }
         }
       } catch {
         console.log("Auth check failed");
       } finally {
         setLoading(false);
+      }
+    };
+
+    const checkOnboarding = async (userId: string) => {
+      try {
+        const raw = localStorage.getItem(`curriculuxe:onboarding:${userId}`);
+        if (raw && JSON.parse(raw).completed) return;
+      } catch {
+        // si verifica lato server
+      }
+      try {
+        const res = await fetch("/api/onboarding/status");
+        if (res.ok) {
+          const data = await res.json();
+          if (!data.completed) router.push("/dashboard/onboarding");
+        }
+      } catch {
+        // offline: resta in dashboard
       }
     };
 

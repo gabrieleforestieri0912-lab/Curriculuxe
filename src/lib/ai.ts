@@ -387,6 +387,89 @@ Rispondi SOLO in formato JSON:
   }
 }
 
+export interface OnboardingPlan {
+  headline: string;
+  profileSummary: string;
+  skillGap: Array<{ skill: string; action: string }>;
+  roadmap: Array<{ phase: string; weeks: string; goal: string; actions: string[] }>;
+  cvTips: string[];
+  interviewPrep: string[];
+  salaryBenchmark: string;
+  nextActions: Array<{ label: string; href: string }>;
+}
+
+export async function generateOnboardingPlan({
+  answers,
+  lang = "it",
+}: {
+  answers: Record<string, unknown>;
+  lang?: string;
+}): Promise<OnboardingPlan | null> {
+  const en = lang === "en";
+  const prompt = en
+    ? `You are a senior tech career coach specialized in IT hiring (frontend, backend, data, AI, DevOps, UX).
+Candidate data (JSON): ${JSON.stringify(answers)}
+
+Build a DETAILED, PERSONALIZED plan for tech/IT companies:
+1. "headline": one motivating sentence naming target role and goal.
+2. "profileSummary": 2-3 sentences assessing starting point vs goal.
+3. "skillGap": 3-5 entries { skill, action } — missing skills for the target role with a concrete action each.
+4. "roadmap": exactly 3 phases { phase, weeks (e.g. "1-2"), goal, actions (3-4 concrete actions each) }.
+5. "cvTips": 3-4 specific CV fixes for this profile.
+6. "interviewPrep": 3-4 interview preparation points (STAR, live coding, system design as relevant).
+7. "salaryBenchmark": one realistic salary range line for role/market/seniority.
+8. "nextActions": exactly 3 entries { label, href } using ONLY these hrefs: "/dashboard/create?mode=ai", "/analyze", "/dashboard/interview", "/dashboard/discover", "/dashboard/job-search".
+
+Be specific and grounded in the candidate's data. No generic filler.
+Reply ONLY with JSON in this exact shape:
+{
+  "headline": "...",
+  "profileSummary": "...",
+  "skillGap": [{ "skill": "...", "action": "..." }],
+  "roadmap": [{ "phase": "...", "weeks": "...", "goal": "...", "actions": ["...", "..."] }],
+  "cvTips": ["...", "..."],
+  "interviewPrep": ["...", "..."],
+  "salaryBenchmark": "...",
+  "nextActions": [{ "label": "...", "href": "..." }]
+}`
+    : `Sei un career coach senior specializzato in assunzioni tech/IT (frontend, backend, data, AI, DevOps, UX).
+Dati del candidato (JSON): ${JSON.stringify(answers)}
+
+Costruisci un piano DETTAGLIATO e PERSONALIZZATO per aziende tech/informatiche:
+1. "headline": una frase motivante che nomina ruolo target e obiettivo.
+2. "profileSummary": 2-3 frasi che valutano punto di partenza vs obiettivo.
+3. "skillGap": 3-5 voci { skill, action } — skill mancanti per il ruolo con azione concreta ciascuna.
+4. "roadmap": esattamente 3 fasi { phase, weeks (es. "1-2"), goal, actions (3-4 azioni concrete ciascuna) }.
+5. "cvTips": 3-4 correzioni specifiche al CV per questo profilo.
+6. "interviewPrep": 3-4 punti di preparazione colloqui (STAR, live coding, system design secondo il ruolo).
+7. "salaryBenchmark": una riga con range salariale realistico per ruolo/mercato/seniority.
+8. "nextActions": esattamente 3 voci { label, href } usando SOLO questi href: "/dashboard/create?mode=ai", "/analyze", "/dashboard/interview", "/dashboard/discover", "/dashboard/job-search".
+
+Sii specifico e ancorato ai dati del candidato. Niente riempitivo generico.
+Rispondi SOLO con il JSON in questa forma esatta:
+{
+  "headline": "...",
+  "profileSummary": "...",
+  "skillGap": [{ "skill": "...", "action": "..." }],
+  "roadmap": [{ "phase": "...", "weeks": "...", "goal": "...", "actions": ["...", "..."] }],
+  "cvTips": ["...", "..."],
+  "interviewPrep": ["...", "..."],
+  "salaryBenchmark": "...",
+  "nextActions": [{ "label": "...", "href": "..." }]
+}`;
+
+  try {
+    const response = await callAI(prompt, { maxTokens: 3500, temperature: 0.6 });
+    if (!response) return null;
+    const parsed = JSON.parse(response) as OnboardingPlan;
+    if (!parsed.headline || !Array.isArray(parsed.roadmap) || parsed.roadmap.length === 0) return null;
+    return parsed;
+  } catch (error) {
+    console.error("Error generating onboarding plan:", error);
+    return null;
+  }
+}
+
 export async function analyzeCVWithAI(
   cvText: string,
   jobDescription?: string
