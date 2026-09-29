@@ -511,6 +511,103 @@ Rispondi SOLO con il JSON in questa forma esatta:
   }
 }
 
+export interface TargetQuestion {
+  q: string;
+  area: "code" | "experience" | "skills";
+}
+
+export async function generateTargetQuestions({
+  company,
+  role,
+  stack,
+  lang = "it",
+}: {
+  company: string;
+  role: string;
+  stack: string[];
+  lang?: string;
+}): Promise<TargetQuestion[] | null> {
+  const en = lang === "en";
+  const prompt = en
+    ? `You are a tech hiring expert. Company: "${company}". Target role: "${role}". Known stack: ${stack.join(", ") || "generalist"}.
+Write EXACTLY 5 assessment questions as JSON: 2 hands-on coding questions ("code") adapted to stack and role, 2 on real experience ("experience"), 1 on skills/tools ("skills"). Concrete, role-appropriate, no trivia. Language: English.
+Reply ONLY with JSON: { "questions": [{ "q": "...", "area": "code" }] }. Area must be one of: code, experience, skills.`
+    : `Sei un esperto di hiring tech. Azienda: "${company}". Ruolo target: "${role}". Stack noto: ${stack.join(", ") || "generalista"}.
+Scrivi ESATTAMENTE 5 domande di valutazione in JSON: 2 pratiche di codice ("code") su stack e ruolo, 2 su esperienza reale ("experience"), 1 su skill/strumenti ("skills"). Concrete e adeguate al ruolo, niente quiz nozionistici. Lingua: italiano.
+Rispondi SOLO con il JSON: { "questions": [{ "q": "...", "area": "code" }] }. Area solo: code, experience, skills.`;
+
+  try {
+    const response = await callAI(prompt, { maxTokens: 1500, temperature: 0.6 });
+    if (!response) return null;
+    const parsed = JSON.parse(response) as { questions: TargetQuestion[] };
+    if (!Array.isArray(parsed.questions) || parsed.questions.length === 0) return null;
+    return parsed.questions.slice(0, 6).filter((q) => q.q);
+  } catch (error) {
+    console.error("Error generating target questions:", error);
+    return null;
+  }
+}
+
+export interface TargetPlan {
+  fitSummary: string;
+  fitScore: number;
+  gaps: Array<{ area: string; why: string; action: string }>;
+  prepPlan: Array<{ week: string; focus: string; actions: string[] }>;
+  interviewProcess: string[];
+  expectedQuestions: string[];
+  resources: Array<{ label: string; href: string }>;
+}
+
+export async function generateTargetPlan({
+  company,
+  role,
+  companyContext,
+  profile,
+  qa,
+  lang = "it",
+}: {
+  company: string;
+  role: string;
+  companyContext: Record<string, unknown>;
+  profile: Record<string, unknown>;
+  qa: Array<{ q: string; a: string }>;
+  lang?: string;
+}): Promise<TargetPlan | null> {
+  const en = lang === "en";
+  const prompt = en
+    ? `You are an honest tech career coach. Build an ENTRY PLAN for this candidate at "${company}" as "${role}".
+COMPANY (verified catalog data when verified=true, otherwise AI knowledge — if not verified, say so in fitSummary and advise checking the official careers site):
+${JSON.stringify(companyContext).slice(0, 3000)}
+CANDIDATE (real data only): ${JSON.stringify(profile).slice(0, 4000)}
+ASSESSMENT ANSWERS: ${JSON.stringify(qa).slice(0, 4000)}
+
+HONESTY RULES (mandatory): ground every claim in the data above; never invent candidate experience, company steps beyond the typical process given, or salary numbers not in context. fitScore must reflect real gaps (weak answers or missing stack = score below 60). If data is thin, say what is missing instead of guessing.
+Build: 1. "fitSummary": 2-3 honest sentences. 2. "fitScore": 0-100. 3. "gaps": 3-4 { area, why, action }. 4. "prepPlan": 4 weeks { week ("1".."4"), focus, actions (3 each) }. 5. "interviewProcess": steps for this company type. 6. "expectedQuestions": 4-5 likely questions. 7. "resources": exactly 3 { label, href } using ONLY: "/dashboard/create?mode=ai", "/analyze", "/dashboard/interview", "/dashboard/discover", "/dashboard/assistant".
+Reply ONLY with JSON in this exact shape:
+{ "fitSummary": "...", "fitScore": 0, "gaps": [{ "area": "...", "why": "...", "action": "..." }], "prepPlan": [{ "week": "1", "focus": "...", "actions": ["..."] }], "interviewProcess": ["..."], "expectedQuestions": ["..."], "resources": [{ "label": "...", "href": "..." }] }`
+    : `Sei un career coach tech onesto. Costruisci un PIANO DI INGRESSO per questo candidato in "${company}" come "${role}".
+AZIENDA (dati verificati dal catalogo quando verified=true, altrimenti conoscenza AI — se non verificata, dillo in fitSummary e invita a controllare il sito carriere ufficiale):
+${JSON.stringify(companyContext).slice(0, 3000)}
+CANDIDATO (solo dati reali): ${JSON.stringify(profile).slice(0, 4000)}
+RISPOSTE AL QUESTIONARIO: ${JSON.stringify(qa).slice(0, 4000)}
+
+REGOLE DI ONESTÀ (obbligatorie): ogni affermazione ancorata ai dati sopra; mai inventare esperienze del candidato, step aziendali oltre il processo tipico fornito, o numeri salariali non presenti. fitScore coerente con i gap reali (risposte deboli o stack mancante = sotto 60). Se i dati sono pochi, dichiara cosa manca invece di indovinare.
+Costruisci: 1. "fitSummary": 2-3 frasi oneste. 2. "fitScore": 0-100. 3. "gaps": 3-4 { area, why, action }. 4. "prepPlan": 4 settimane { week ("1".."4"), focus, actions (3 ciascuna) }. 5. "interviewProcess": step per questa tipologia. 6. "expectedQuestions": 4-5 domande probabili. 7. "resources": esattamente 3 { label, href } usando SOLO: "/dashboard/create?mode=ai", "/analyze", "/dashboard/interview", "/dashboard/discover", "/dashboard/assistant".
+Rispondi SOLO con il JSON in questa forma esatta:
+{ "fitSummary": "...", "fitScore": 0, "gaps": [{ "area": "...", "why": "...", "action": "..." }], "prepPlan": [{ "week": "1", "focus": "...", "actions": ["..."] }], "interviewProcess": ["..."], "expectedQuestions": ["..."], "resources": [{ "label": "...", "href": "..." }] }`;
+
+  try {
+    const response = await callAI(prompt, { maxTokens: 3500, temperature: 0.5 });
+    if (!response) return null;
+    const parsed = JSON.parse(response) as TargetPlan;
+    if (!parsed.fitSummary || !Array.isArray(parsed.prepPlan) || parsed.prepPlan.length === 0) return null;
+    return parsed;
+  } catch (error) {
+    console.error("Error generating target plan:", error);
+    return null;
+  }
+}
+
 export async function analyzeCVWithAI(
   cvText: string,
   jobDescription?: string

@@ -21,6 +21,7 @@ export default function DashboardSidebar({ onNavigate }: DashboardSidebarProps) 
     { label: tDash.interview as string, href: "/dashboard/interview", match: (p: string) => p.startsWith("/dashboard/interview") },
     { label: tDash.discover as string, href: "/dashboard/discover", match: (p: string) => p.startsWith("/dashboard/discover") },
     { label: tDash.jobSearch as string, href: "/dashboard/job-search", match: (p: string) => p.startsWith("/dashboard/job-search") },
+    { label: tDash.targets as string, href: "/dashboard/targets", match: (p: string) => p.startsWith("/dashboard/targets") },
     { label: tDash.assistant as string, href: "/dashboard/assistant", match: (p: string) => p.startsWith("/dashboard/assistant") },
     { label: tDash.feedback as string, href: "/dashboard/feedback", match: (p: string) => p.startsWith("/dashboard/feedback") },
   ];
