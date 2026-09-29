@@ -49,13 +49,14 @@ const faqSchema = {
 export default function Home() {
   return (
     <div className="flex flex-col flex-1 min-h-screen overflow-x-clip bg-[#07070d] relative">
-      {/* Alone viola morbidi su base scura unificata */}
+      {/* Stesso stile della hero su tutta la landing: griglia + aloni viola morbidi */}
+      <div className="absolute inset-0 subtle-grid pointer-events-none" aria-hidden="true" />
       <div
         className="absolute inset-0 pointer-events-none"
         aria-hidden="true"
         style={{
           background:
-            "radial-gradient(circle at 50% 6%, rgba(232,121,249,0.12), transparent 36%), radial-gradient(circle at 85% 40%, rgba(129,140,248,0.08), transparent 30%), radial-gradient(circle at 12% 65%, rgba(168,85,247,0.08), transparent 32%)",
+            "radial-gradient(circle at 50% 6%, rgba(232,121,249,0.16), transparent 36%), radial-gradient(circle at 85% 40%, rgba(129,140,248,0.10), transparent 30%), radial-gradient(circle at 12% 65%, rgba(168,85,247,0.10), transparent 32%)",
         }}
       />
       <div className="relative z-10 flex flex-col flex-1">
