@@ -133,7 +133,7 @@ export default function Login() {
         transition={{ duration: 0.4 }}
         className="flex flex-col items-center justify-center min-h-screen relative z-10"
       >
-        <div className="glass-card rounded-xl p-8 shadow-lg w-full max-w-md mx-auto">
+        <div className="rounded-xl p-8 shadow-2xl shadow-black/60 w-full max-w-md mx-auto bg-[#0c0c15] border border-white/10">
           <h1 className="text-3xl font-bold text-center mb-6">{tAuth.loginTitle}</h1>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
