@@ -207,14 +207,30 @@ export default function DashboardHeader({
   const sectionTitle = (() => {
     const tDash = t.dashboard as Record<string, string>;
     if (pathname === "/dashboard") return (tDash.overview as string) || "Dashboard";
-    if (pathname?.startsWith("/dashboard/cvs")) return (tDash.myCVs as string) || "CV";
+    if (pathname?.startsWith("/dashboard/cvs") || pathname?.startsWith("/dashboard/cv/"))
+      return (tDash.myCVs as string) || "CV";
     if (pathname?.startsWith("/dashboard/analyze")) return (tDash.analyze as string) || "Analizza";
     if (pathname?.startsWith("/dashboard/create") || pathname?.startsWith("/dashboard/generate"))
       return (tDash.generate as string) || "Genera";
     if (pathname?.startsWith("/dashboard/interview")) return (tDash.interview as string) || "Colloqui";
+    if (pathname?.startsWith("/dashboard/discover")) return (tDash.discover as string) || "Discover";
+    if (pathname?.startsWith("/dashboard/targets")) return (tDash.targets as string) || "Aziende target";
+    if (pathname?.startsWith("/dashboard/assistant")) return (tDash.assistant as string) || "Assistente AI";
     if (pathname?.startsWith("/dashboard/job-search")) return (tDash.jobSearch as string) || "Job Search";
     if (pathname?.startsWith("/dashboard/feedback")) return (tDash.feedback as string) || "Feedback";
     if (pathname?.startsWith("/dashboard/settings")) return (tNav.settings as string) || "Impostazioni";
+
+    // Risorse: raggiungibili anche dalla sidebar, quindi il titolo deve
+    // restare coerente quando si naviga fuori dal /dashboard.
+    if (pathname?.startsWith("/career-market")) return (tNav.careerMarket as string) || "Career Market";
+    if (pathname?.startsWith("/templates")) return (tNav.templates as string) || "Template CV";
+    if (pathname?.startsWith("/guides")) return "Guide";
+    if (pathname?.startsWith("/roadmaps")) return "Roadmap";
+    if (pathname?.startsWith("/projects")) return "Progetti";
+    if (pathname?.startsWith("/salaries")) return "Salaries";
+    if (pathname?.startsWith("/compare")) return (tNav.compare as string) || "Confronta";
+    if (pathname?.startsWith("/mcp")) return (tNav.mcp as string) || "Connect AI";
+
     return "Dashboard";
   })();
 

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getJobById, formatSalary } from "@/lib/jobs";
+import ResourceShell from "@/components/ResourceShell";
 
 export async function generateStaticParams() {
   const { jobCatalog } = await import("@/lib/jobs");
@@ -27,7 +28,7 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
   const baseUrl = process.env.NEXT_PUBLIC_URL || "https://curriculuxe.vercel.app";
 
   return (
-    <div className="pt-20 pb-16 px-4">
+    <ResourceShell>
       <div className="max-w-3xl mx-auto">
         <Link href="/career-market" className="text-sm text-zinc-500 hover:text-white">← Torna al Career Market</Link>
         <h1 className="text-3xl font-bold text-white mt-4">{job.role}</h1>
@@ -83,6 +84,6 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
           }}
         />
       </div>
-    </div>
+    </ResourceShell>
   );
 }

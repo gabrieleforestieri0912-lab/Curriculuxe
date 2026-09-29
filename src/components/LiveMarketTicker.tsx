@@ -26,8 +26,8 @@ export default function LiveMarketTicker() {
             Esplora il Career Market →
           </Link>
         </div>
-        <div className="relative overflow-hidden rounded-xl border border-white/5 bg-black/30">
-          <div className="flex animate-[marquee_40s_linear_infinite] hover:[animation-play-state:paused]">
+        <div className="marquee-viewport rounded-xl border border-white/5 bg-black/30">
+          <div className="marquee-track" style={{ "--marquee-duration": "55s" } as React.CSSProperties}>
             {[...items, ...items].map((job, i) => (
               <Link
                 key={`${job.id}-${i}`}
@@ -43,7 +43,6 @@ export default function LiveMarketTicker() {
         </div>
         <p className="text-[11px] text-zinc-600">Mai ranking sponsorizzati · Deduplica su azienda+titolo+location · Filtri condivisibili via link</p>
       </div>
-      <style>{`@keyframes marquee { 0% { transform: translateX(0) } 100% { transform: translateX(-50%) } }`}</style>
     </section>
   );
 }

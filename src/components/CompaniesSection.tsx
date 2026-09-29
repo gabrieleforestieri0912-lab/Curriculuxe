@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, useMotionValue, useTransform, useAnimationFrame } from "framer-motion";
+import { motion } from "framer-motion";
 import { useLanguage } from "@/context/LanguageContext";
 import CompanyLogo from "./CompanyLogos";
 
@@ -24,24 +24,14 @@ export default function CompaniesSection() {
   const { t } = useLanguage();
   const tCompanies = t.companies as Record<string, string>;
 
-  // Marquee guidato via rAF (non dipende dalle CSS animation):
-  // scorre da 0 a -50% in loop sulla lista duplicata, senza mai fermarsi.
-  const x = useMotionValue(0);
-  useAnimationFrame((_, delta) => {
-    x.set(x.get() - (delta / 1000) * 1.4);
-  });
-  const loopX = useTransform(x, (v) => `${-((((-v) % 50) + 50) % 50)}%`);
-
   return (
-    <section
-      className="py-12 sm:py-14 overflow-hidden"
-    >
+    <section className="py-16 sm:py-20 overflow-hidden">
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.5 }}
-        className="text-center mb-12 px-6"
+        className="text-center mb-10 px-6"
       >
         <h2 className="text-2xl sm:text-3xl font-bold text-white mb-3">
           {tCompanies.title as string}
@@ -52,33 +42,27 @@ export default function CompaniesSection() {
       </motion.div>
 
       <div
-        className="overflow-hidden"
+        className="marquee-viewport"
         style={{
-          maskImage: "linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%)",
-          WebkitMaskImage: "linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%)",
+          maskImage: "linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%)",
+          WebkitMaskImage: "linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%)",
         } as React.CSSProperties}
       >
-        <motion.div
-          className="flex w-max will-change-transform"
-          style={{ x: loopX }}
-        >
-            {[...companyNames, ...companyNames].map((name, i) => (
-              <div
-                key={i}
-                className="flex items-center px-16 py-6"
-              >
-                <CompanyLogo name={name} />
-              </div>
-            ))}
-          </motion.div>
+        <div className="marquee-track" style={{ "--marquee-duration": "45s" } as React.CSSProperties}>
+          {[...companyNames, ...companyNames].map((name, i) => (
+            <div key={i} className="flex items-center px-14 sm:px-16 py-4">
+              <CompanyLogo name={name} />
+            </div>
+          ))}
         </div>
+      </div>
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ delay: 0.3 }}
-        className="mt-10 text-center px-6"
+        className="mt-8 text-center px-6"
       >
           <p className="text-zinc-500 text-sm">
             {tCompanies.statLine as string}

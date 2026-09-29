@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { guides } from "@/lib/guides";
+import ResourceShell from "@/components/ResourceShell";
 
 export const metadata: Metadata = {
   title: "Guide — CV, Cover Letter, Colloqui | Curriculuxe",
@@ -11,7 +12,7 @@ export const metadata: Metadata = {
 
 export default function GuidesPage() {
   return (
-    <div className="pt-28 pb-16 px-4 sm:px-6">
+    <ResourceShell>
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-12">
           <span className="inline-block text-xs font-bold uppercase tracking-widest text-fuchsia-400 mb-3 px-3 py-1 rounded-full border border-fuchsia-500/30 bg-fuchsia-500/10">
@@ -43,6 +44,6 @@ export default function GuidesPage() {
         </div>
         <p className="text-sm text-zinc-500 mt-8 text-center">Vuoi un feedback sul tuo CV? <Link href="/resume-score" className="text-fuchsia-400 hover:text-fuchsia-300">Prova il Resume Score</Link>.</p>
       </div>
-    </div>
+    </ResourceShell>
   );
 }

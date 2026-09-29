@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import ResourceShell from "@/components/ResourceShell";
 
 export const metadata: Metadata = {
   title: "Connect AI — MCP per ChatGPT & Claude | Curriculuxe",
@@ -10,7 +11,7 @@ export const metadata: Metadata = {
 export default function McpPage() {
   const baseUrl = process.env.NEXT_PUBLIC_URL || "https://curriculuxe.vercel.app";
   return (
-    <div className="pt-20 pb-16 px-4">
+    <ResourceShell>
       <div className="max-w-4xl mx-auto">
         <h1 className="text-3xl font-bold text-white">Connect AI — MCP</h1>
         <p className="text-zinc-400 mt-2">Il tuo career agent dentro l&apos;AI che già usi. Endpoint: <code className="px-2 py-1 rounded bg-white/10 text-fuchsia-300">{baseUrl}/api/mcp</code></p>
@@ -67,6 +68,6 @@ export default function McpPage() {
           ))}
         </div>
       </div>
-    </div>
+    </ResourceShell>
   );
 }

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, Map } from "lucide-react";
 import { roadmaps } from "@/lib/seoData";
+import ResourceShell from "@/components/ResourceShell";
 
 export const metadata: Metadata = {
   title: "Roadmap di Carriera — Frontend, Backend, Data, PM | Curriculuxe",
@@ -11,7 +12,7 @@ export const metadata: Metadata = {
 
 export default function RoadmapsPage() {
   return (
-    <div className="pt-28 pb-16 px-4 sm:px-6">
+    <ResourceShell>
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-12">
           <span className="inline-block text-xs font-bold uppercase tracking-widest text-fuchsia-400 mb-3 px-3 py-1 rounded-full border border-fuchsia-500/30 bg-fuchsia-500/10">
@@ -58,6 +59,6 @@ export default function RoadmapsPage() {
           </Link>
         </div>
       </div>
-    </div>
+    </ResourceShell>
   );
 }

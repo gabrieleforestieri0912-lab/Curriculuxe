@@ -93,7 +93,7 @@ export default function DashboardLayout({
               data-tour="sidebar"
               className={`${
                 sidebarCollapsed ? "lg:hidden" : "hidden lg:block"
-              } lg:w-64 shrink-0 pt-24 px-5 pb-8 border-r border-white/10 bg-white/[0.02] transition-all`}
+              } lg:w-64 shrink-0 pt-24 px-5 pb-8 border-r border-white/10 bg-white/[0.02] transition-all lg:sticky lg:top-0 lg:h-screen lg:overflow-y-auto`}
             >
               <p className="text-zinc-500 text-xs uppercase tracking-wider mb-4">
                 {tDash.workspace as string}

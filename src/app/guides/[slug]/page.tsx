@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowRight, CheckCircle2, ClipboardList } from "lucide-react";
 import { guides, getGuide } from "@/lib/guides";
+import ResourceShell from "@/components/ResourceShell";
 
 const baseUrl = process.env.NEXT_PUBLIC_URL || "https://curriculuxe.vercel.app";
 
@@ -31,7 +32,7 @@ export default async function GuidePage({ params }: { params: Promise<{ slug: st
   const next = guides[index + 1];
 
   return (
-    <div className="pt-28 pb-16 px-4 sm:px-6">
+    <ResourceShell>
       <div className="max-w-3xl mx-auto">
         <Link href="/guides" className="inline-flex items-center gap-2 text-sm text-zinc-400 hover:text-white transition-colors mb-8">
           <ArrowLeft className="w-4 h-4" />
@@ -121,6 +122,6 @@ export default async function GuidePage({ params }: { params: Promise<{ slug: st
           )}
         </div>
       </div>
-    </div>
+    </ResourceShell>
   );
 }

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { jobCatalog, formatSalary } from "@/lib/jobs";
+import ResourceShell from "@/components/ResourceShell";
 
 export const metadata: Metadata = {
   title: "Career Market — Offerte verificate senza login | Curriculuxe",
@@ -31,7 +32,7 @@ export default function CareerMarketPage({
   });
 
   return (
-    <div className="pt-20 pb-16 px-4">
+    <ResourceShell>
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-wrap items-end justify-between gap-4 mb-6">
           <div>
@@ -126,6 +127,6 @@ export default function CareerMarketPage({
           }}
         />
       </div>
-    </div>
+    </ResourceShell>
   );
 }
