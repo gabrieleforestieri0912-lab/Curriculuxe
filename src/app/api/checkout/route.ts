@@ -40,8 +40,9 @@ export async function POST(request: NextRequest) {
     }
 
     // I piani in abbonamento (starter/pro/enterprise) usano checkout ricorrente.
+    // YEARLY_PRICES è il prezzo mensile equivalente: l'addebito annuale è x12.
     if (plan === "starter" || plan === "pro" || plan === "enterprise") {
-      const amount = cycle === "yearly" ? YEARLY_PRICES[plan] : PRICES[plan];
+      const amount = cycle === "yearly" ? YEARLY_PRICES[plan] * 12 : PRICES[plan];
       const interval = cycle === "yearly" ? "year" : "month";
       const session = await createSubscriptionCheckout(
         amount,

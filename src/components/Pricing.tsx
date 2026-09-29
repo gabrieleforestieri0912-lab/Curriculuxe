@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Shield, Zap, X, HeadphonesIcon } from "lucide-react";
@@ -9,6 +9,7 @@ import { useLanguage } from "@/context/LanguageContext";
 export default function Pricing() {
   const router = useRouter();
   const [loading, setLoading] = useState<string | null>(null);
+  const [checkoutError, setCheckoutError] = useState<string | null>(null);
   const [billingCycle, setBillingCycle] = useState<string>("monthly");
   const { t } = useLanguage();
   const tPricing = t.pricing as Record<string, unknown>;
@@ -72,21 +73,37 @@ export default function Pricing() {
   ];
 
   const handleSubscribe = async (plan: string, planId: string) => {
+    setCheckoutError(null);
     const userData = localStorage.getItem("user");
 
     if (planId === "free") {
       if (userData) {
         router.push("/dashboard/create");
       } else {
-        router.push("/login");
+        router.push("/login?next=" + encodeURIComponent("/dashboard/create"));
       }
       return;
     }
 
-    const user = JSON.parse(userData!);
-
     if (plan === "Enterprise") {
       window.location.href = "mailto:gabriele.forestieri0912@gmail.com?subject=Piano Enterprise Curriculuxe";
+      return;
+    }
+
+    if (!userData) {
+      router.push("/login?next=" + encodeURIComponent("/#pricing"));
+      return;
+    }
+
+    let user: { _id?: string; id?: string; email?: string };
+    try {
+      user = JSON.parse(userData);
+    } catch {
+      router.push("/login?next=" + encodeURIComponent("/#pricing"));
+      return;
+    }
+    if (!user?.email) {
+      router.push("/login?next=" + encodeURIComponent("/#pricing"));
       return;
     }
 
@@ -103,13 +120,17 @@ export default function Pricing() {
         }),
       });
       const data = await res.json();
+      if (res.status === 401) {
+        router.push("/login?next=" + encodeURIComponent("/#pricing"));
+        return;
+      }
       if (data.url) {
         window.location.href = data.url;
       } else {
-        alert(data.error || "Errore durante il checkout");
+        setCheckoutError(data.error || "Errore durante il checkout");
       }
     } catch {
-      alert("Errore durante il checkout");
+      setCheckoutError("Errore durante il checkout");
     } finally {
       setLoading(null);
     }
@@ -161,6 +182,27 @@ export default function Pricing() {
             </button>
           </div>
         </motion.div>
+
+        <AnimatePresence>
+          {checkoutError && (
+            <motion.div
+              role="alert"
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              className="max-w-2xl mx-auto mb-8 flex items-center justify-between gap-3 rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-200"
+            >
+              <span>{checkoutError}</span>
+              <button
+                onClick={() => setCheckoutError(null)}
+                aria-label="Chiudi errore"
+                className="rounded-lg p-1 hover:bg-white/10 transition-colors shrink-0"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8 items-stretch">
           {plans.map((plan, i) => {
