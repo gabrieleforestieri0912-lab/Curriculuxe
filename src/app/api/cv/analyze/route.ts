@@ -5,7 +5,6 @@ import { generateCoverAssets, suggestSkills } from "@/lib/careerKit";
 import { analyzeCVWithAI } from "@/lib/ai";
 import { verifyUserToken } from "@/lib/auth";
 import { consumeCredit, getCreditsInfo } from "@/lib/credits";
-import { checkRateLimit, getClientIp } from "@/lib/rateLimit";
 import { supabase } from "@/lib/supabase/client";
 
 export const runtime = "nodejs";
@@ -108,35 +107,35 @@ export async function POST(request: NextRequest) {
     const userCookie = request.cookies.get("user");
     let userObj: Record<string, unknown> | null = null;
 
-    // Limite per utenti anonimi: 5 analisi / 15 minuti per IP.
-    const ipLimit = checkRateLimit(`analyze-anon:${getClientIp(request)}`, 5, 15 * 60 * 1000);
-
-    if (userCookie && userCookie.value) {
+    if (userCookie?.value) {
       userObj = verifyUserToken(userCookie.value);
-      if (!userObj) {
-        userObj = null;
-      }
-      try {
-        const creditInfo = await getCreditsInfo(userObj.id as string);
-
-        // Tutti i piani sono a crediti: l'analisi AI richiede almeno 1 credito.
-        if (creditInfo.credits > 0) {
-          analysis = await analyzeCVWithAI(cleanText, jobDescription);
-          if (analysis) {
-            isFallback = false;
-            await consumeCredit(userObj.id as string);
-          }
-        }
-      } catch (err) {
-        console.error("DB Error during AI check", err);
-      }
+      if (!userObj) userObj = null;
     }
 
-    if (!userObj && !ipLimit.allowed) {
+    // Tutte le funzionalità CV richiedono registrazione.
+    if (!userObj) {
       return NextResponse.json(
-        { error: errMsg("Hai raggiunto il limite di analisi gratuite. Registrati per continuare.", "You reached the free analysis limit. Sign up to continue.") },
-        { status: 429 }
+        {
+          error: errMsg("Accedi o registrati gratis per analizzare il tuo CV.", "Sign in or sign up free to analyze your CV."),
+          loginRequired: true,
+        },
+        { status: 401 }
       );
+    }
+
+    try {
+      const creditInfo = await getCreditsInfo(userObj.id as string);
+
+      // Tutti i piani sono a crediti: l'analisi AI richiede almeno 1 credito.
+      if (creditInfo.credits > 0) {
+        analysis = await analyzeCVWithAI(cleanText, jobDescription);
+        if (analysis) {
+          isFallback = false;
+          await consumeCredit(userObj.id as string);
+        }
+      }
+    } catch (err) {
+      console.error("DB Error during AI check", err);
     }
 
     if (analysis) {

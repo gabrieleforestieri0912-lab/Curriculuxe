@@ -249,6 +249,31 @@ export default function Analyze({ initialResult = null, embedded = false }: Anal
             </p>
           </motion.div>
 
+          {!user ? (
+            <motion.div
+              key="gate"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4 }}
+              className="glass-card rounded-2xl p-8 sm:p-12 glow-border text-center max-w-2xl mx-auto"
+            >
+              <div className="w-16 h-16 mx-auto mb-5 rounded-full bg-indigo-500/15 border border-indigo-500/30 flex items-center justify-center">
+                <svg className="w-8 h-8 text-indigo-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+              </div>
+              <h2 className="text-2xl font-bold text-white mb-2">{tA.loginToUnlock}</h2>
+              <p className="text-zinc-400 text-sm sm:text-base mb-7">{tA.subtitle}</p>
+              <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                <Link href="/register" className="btn-primary px-8 py-3 rounded-full font-semibold text-white text-sm">
+                  {tNav.register}
+                </Link>
+                <Link href="/login" className="btn-secondary px-8 py-3 rounded-full font-medium text-white text-sm">
+                  {tNav.login}
+                </Link>
+              </div>
+            </motion.div>
+          ) : (
           <AnimatePresence mode="wait">
             {!result && !analyzing && (
               <motion.div
@@ -810,6 +835,7 @@ export default function Analyze({ initialResult = null, embedded = false }: Anal
               </motion.div>
             )}
           </AnimatePresence>
+          )}
         </div>
       </div>
     </section>

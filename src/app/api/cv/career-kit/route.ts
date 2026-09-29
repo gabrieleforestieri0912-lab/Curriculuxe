@@ -1,8 +1,14 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { generateCoverAssets, suggestSkills } from "@/lib/careerKit";
+import { getRequestUser } from "@/lib/apiAuth";
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
+    const user = getRequestUser(request);
+    if (!user) {
+      return NextResponse.json({ error: "Non autorizzato" }, { status: 401 });
+    }
+
     const { cv = {}, jobDescription = "", market = "italia", company = "", role = "" } = await request.json() as {
       cv?: Record<string, unknown>;
       jobDescription?: string;
