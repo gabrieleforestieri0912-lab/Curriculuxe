@@ -262,7 +262,7 @@ Se l'AI non è disponibile o l'utente non ha crediti, il sistema usa analisi sta
 
 | Piano | Tipo | Prezzo | Crediti AI |
 |-------|------|--------|------------|
-| `free` | Gratuito | €0 | 5 crediti di prova alla registrazione |
+| `free` | Gratuito | €0 | 3 crediti di prova alla registrazione |
 | `starter` | Abbonamento ricorrente | €4.99/mese (€3.99/anno) | 50 crediti/mese |
 | `pro` | Abbonamento ricorrente | €6.99/mese (€4.99/anno) | 500 crediti/mese |
 | `enterprise` | Abbonamento ricorrente | €9.99/mese (€6.99/anno) | 2000 crediti/mese |
@@ -271,11 +271,22 @@ Se l'AI non è disponibile o l'utente non ha crediti, il sistema usa analisi sta
 ### Sistema crediti
 
 - Ogni funzionalità AI (analisi CV, generazione CV, riscrittura bullet, summary, feedback colloqui) consuma **1 credito** per gli utenti autenticati, su **tutti** i piani.
-- Gli utenti `free` ricevono 5 crediti alla registrazione; una volta esauriti devono ricaricare o sottoscrivere un piano.
+- Gli utenti `free` ricevono 3 crediti alla registrazione; una volta esauriti devono ricaricare o sottoscrivere un piano.
 - Ogni piano in abbonamento (`starter`/`pro`/`enterprise`) accredita i crediti mensili al checkout e a ogni rinnovo automatico della subscription Stripe (`invoice.paid`).
 - La disdetta della subscription (`customer.subscription.deleted`) riporta l'utente al piano free.
 - Checkout session → webhook → aggiornamento crediti su DB
 - Webhook protetto con signing secret (`STRIPE_WEBHOOK_SECRET`)
+
+### Limiti mensili per piano (enforced via `usage_counters`)
+
+Oltre ai crediti, ogni piano ha quote mensili per funzione (verifica con `checkPlanLimit`, incremento con `incrementUsage`; 402 + `upgradeRequired` se esaurite):
+
+| Piano | tailoring | cover_letter | review | atlas_turn/gg | behavioral | system_design | negotiation |
+|-------|-----------|--------------|--------|---------------|------------|---------------|-------------|
+| `free` | 2 | 1 | 3 | 0 | 0 | 0 | 1 |
+| `starter` | 30 | 30 | 25 | 50 | 50 | 8 | 10 |
+| `pro` | 150 | 150 | 100 | 200 | 200 | 30 | 50 |
+| `enterprise` | 500 | 500 | 300 | 500 | 500 | 100 | 200 |
 
 ### Configurazione Stripe
 

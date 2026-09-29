@@ -29,7 +29,7 @@ export const faqIt: FAQItem[] = [
   },
   {
     q: "Come funzionano i crediti AI?",
-    a: "Ogni funzione AI (analisi, generazione CV, riscrittura bullet, summary, simulazione colloqui, cover letter) consuma 1 credito. Il piano Free include 5 crediti di prova; Starter ne dà 50 al mese, Pro 500, Enterprise 2000. Esiste anche la ricarica una tantum da 10 crediti.",
+    a: "Ogni funzione AI (analisi, generazione CV, riscrittura bullet, summary, simulazione colloqui, cover letter) consuma 1 credito. Il piano Free include 3 crediti di prova; Starter ne dà 50 al mese, Pro 500, Enterprise 2000. Esiste anche la ricarica una tantum da 10 crediti.",
     category: "pricing",
   },
   {
@@ -82,7 +82,7 @@ export const faqEn: FAQItem[] = [
   },
   {
     q: "How do AI credits work?",
-    a: "Each AI feature (analysis, CV generation, bullet rewriting, summary, mock interviews, cover letter) costs 1 credit. The Free plan includes 5 trial credits; Starter gives 50 per month, Pro 500, Enterprise 2000. There is also a one-time 10-credit top-up.",
+    a: "Each AI feature (analysis, CV generation, bullet rewriting, summary, mock interviews, cover letter) costs 1 credit. The Free plan includes 3 trial credits; Starter gives 50 per month, Pro 500, Enterprise 2000. There is also a one-time 10-credit top-up.",
     category: "pricing",
   },
   {

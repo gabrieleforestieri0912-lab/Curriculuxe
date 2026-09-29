@@ -51,6 +51,44 @@ const GOAL_ICONS: Record<string, typeof Code> = {
 
 const STEPS = ["situation", "role", "goal", "skills", "experience", "constraints", "review"] as const;
 
+const PHASE_STYLES = [
+  {
+    badge: "from-fuchsia-500 to-pink-600",
+    card: "border-fuchsia-500/30",
+    text: "text-fuchsia-300",
+    bar: "from-fuchsia-300 via-fuchsia-500 to-pink-600",
+    glow: "shadow-[0_2px_12px_rgba(232,121,249,0.45)]",
+  },
+  {
+    badge: "from-indigo-500 to-blue-600",
+    card: "border-indigo-500/30",
+    text: "text-indigo-300",
+    bar: "from-indigo-300 via-indigo-500 to-blue-600",
+    glow: "shadow-[0_2px_12px_rgba(129,140,248,0.45)]",
+  },
+  {
+    badge: "from-emerald-500 to-teal-600",
+    card: "border-emerald-500/30",
+    text: "text-emerald-300",
+    bar: "from-emerald-300 via-emerald-500 to-teal-600",
+    glow: "shadow-[0_2px_12px_rgba(52,211,153,0.45)]",
+  },
+  {
+    badge: "from-amber-500 to-orange-600",
+    card: "border-amber-500/30",
+    text: "text-amber-300",
+    bar: "from-amber-300 via-amber-500 to-orange-600",
+    glow: "shadow-[0_2px_12px_rgba(251,191,36,0.45)]",
+  },
+  {
+    badge: "from-sky-500 to-cyan-600",
+    card: "border-sky-500/30",
+    text: "text-sky-300",
+    bar: "from-sky-300 via-sky-500 to-cyan-600",
+    glow: "shadow-[0_2px_12px_rgba(56,189,248,0.45)]",
+  },
+];
+
 interface Answers {
   situation: string;
   situationLabel: string;
@@ -88,6 +126,31 @@ export default function OnboardingPage() {
   const [plan, setPlan] = useState<OnboardingPlan | null>(null);
   const [noCredits, setNoCredits] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
+  const [doneActions, setDoneActions] = useState<Record<string, boolean>>({});
+
+  const progressStorageKey = (uid: string | null, headline: string) =>
+    `curriculuxe:plan-progress:${uid || "anon"}:${headline.slice(0, 40)}`;
+
+  // Carica i check salvati quando arriva (o cambia) il piano.
+  useEffect(() => {
+    if (!plan) return;
+    try {
+      const raw = localStorage.getItem(progressStorageKey(userId, plan.headline));
+      setDoneActions(raw ? JSON.parse(raw) : {});
+    } catch {
+      setDoneActions({});
+    }
+  }, [plan, userId]);
+
+  const toggleAction = (key: string) => {
+    setDoneActions((prev) => {
+      const next = { ...prev, [key]: !prev[key] };
+      try {
+        if (plan) localStorage.setItem(progressStorageKey(userId, plan.headline), JSON.stringify(next));
+      } catch { /* ignore */ }
+      return next;
+    });
+  };
 
   const situations = (ob.situations as Array<{ id: string; label: string }>) || [];
   const goals = (ob.goals as Array<{ id: string; label: string }>) || [];
@@ -266,32 +329,72 @@ export default function OnboardingPage() {
             </section>
 
             <section className="glass-card rounded-2xl p-6 border border-white/10">
-              <h2 className="flex items-center gap-2 text-lg font-bold text-white mb-4">
+              <h2 className="flex items-center gap-2 text-lg font-bold text-white mb-5">
                 <RouteIcon className="w-5 h-5 text-indigo-400" />
                 {T("planRoadmap")}
               </h2>
               <div className="space-y-5">
-                {(plan.roadmap || []).map((phase, i) => (
-                  <div key={i} className="relative pl-8">
-                    <div className="absolute left-2 top-1 bottom-1 w-px bg-white/10" />
-                    <div className="absolute left-0 top-1 w-4 h-4 rounded-full bg-gradient-to-br from-indigo-500 to-fuchsia-500 flex items-center justify-center">
-                      <span className="text-[9px] font-bold text-white">{i + 1}</span>
+                {(plan.roadmap || []).map((phase, i) => {
+                  const st = PHASE_STYLES[i % PHASE_STYLES.length];
+                  const total = (phase.actions || []).length;
+                  const done = (phase.actions || []).filter((_, j) => doneActions[`${i}:${j}`]).length;
+                  const pct = total ? Math.round((done / total) * 100) : 0;
+                  return (
+                    <div key={i} className={`rounded-2xl border ${st.card} bg-white/[0.03] p-5`}>
+                      <div className="flex items-center gap-3 mb-1.5">
+                        <div className={`w-8 h-8 rounded-xl bg-gradient-to-br ${st.badge} flex items-center justify-center shrink-0 shadow-lg`}>
+                          <span className="text-sm font-bold text-white">{i + 1}</span>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-white font-bold leading-tight">{phase.phase}</p>
+                          <p className="text-xs text-zinc-500">
+                            {phase.weeks} {T("planWeeks")}
+                          </p>
+                        </div>
+                        <span className={`text-sm font-bold tabular-nums ${st.text}`}>{pct}%</span>
+                      </div>
+                      <p className="text-zinc-400 text-sm mb-3">{phase.goal}</p>
+                      <div className="h-3 rounded-full bg-black/50 border border-white/10 overflow-hidden shadow-[inset_0_2px_6px_rgba(0,0,0,0.7)] mb-4">
+                        <motion.div
+                          initial={{ width: 0 }}
+                          animate={{ width: `${pct}%` }}
+                          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+                          className={`h-full rounded-full bg-gradient-to-b ${st.bar} ${st.glow} relative overflow-hidden`}
+                        >
+                          <div className="absolute inset-x-0 top-0 h-1/2 rounded-full bg-gradient-to-b from-white/50 to-white/0" />
+                        </motion.div>
+                      </div>
+                      <ul className="space-y-2">
+                        {(phase.actions || []).map((a, j) => {
+                          const key = `${i}:${j}`;
+                          const checked = !!doneActions[key];
+                          return (
+                            <li key={key}>
+                              <button
+                                onClick={() => toggleAction(key)}
+                                aria-pressed={checked}
+                                className={`w-full flex items-start gap-3 rounded-xl border px-3.5 py-2.5 text-left text-sm transition-all ${
+                                  checked
+                                    ? `${st.card} bg-white/[0.06]`
+                                    : "border-white/10 bg-white/[0.02] hover:border-white/25"
+                                }`}
+                              >
+                                <span
+                                  className={`mt-0.5 flex w-5 h-5 shrink-0 items-center justify-center rounded-md border transition-all ${
+                                    checked ? `bg-gradient-to-br ${st.badge} border-transparent` : "border-white/25 bg-black/30"
+                                  }`}
+                                >
+                                  {checked && <Check className="w-3.5 h-3.5 text-white" />}
+                                </span>
+                                <span className={checked ? "text-zinc-500 line-through" : "text-zinc-200"}>{a}</span>
+                              </button>
+                            </li>
+                          );
+                        })}
+                      </ul>
                     </div>
-                    <p className="text-white font-semibold">
-                      {phase.phase}{" "}
-                      <span className="text-xs font-medium text-zinc-500">· {phase.weeks} {T("planWeeks")}</span>
-                    </p>
-                    <p className="text-zinc-400 text-sm mt-0.5">{phase.goal}</p>
-                    <ul className="mt-2 space-y-1.5">
-                      {(phase.actions || []).map((a) => (
-                        <li key={a} className="flex items-start gap-2 text-sm text-zinc-300">
-                          <Check className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-                          {a}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </section>
 

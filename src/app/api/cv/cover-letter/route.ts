@@ -3,6 +3,7 @@ import { generateCoverLetterWithAI } from "@/lib/ai";
 import { generateCoverAssets } from "@/lib/careerKit";
 import { getRequestUser } from "@/lib/apiAuth";
 import { consumeCredit } from "@/lib/credits";
+import { checkPlanLimit, incrementUsage, planLimitResponse } from "@/lib/usage";
 
 export async function POST(request: NextRequest) {
   try {
@@ -22,6 +23,9 @@ export async function POST(request: NextRequest) {
     if (!cv || Object.keys(cv).length === 0) {
       return NextResponse.json({ error: "Dati CV mancanti" }, { status: 400 });
     }
+
+    const limit = await checkPlanLimit(user.id, "cover_letter");
+    if (!limit.allowed) return planLimitResponse(limit);
 
     const credit = await consumeCredit(user.id);
     if (!credit.ok) {
@@ -43,6 +47,7 @@ export async function POST(request: NextRequest) {
     });
 
     if (aiResult) {
+      await incrementUsage(user.id, "cover_letter");
       return NextResponse.json({ ...aiResult, source: "ai" });
     }
 
@@ -54,6 +59,7 @@ export async function POST(request: NextRequest) {
       role,
     });
 
+    await incrementUsage(user.id, "cover_letter");
     return NextResponse.json({
       coverLetter: fallback.coverLetter,
       applicationEmail: fallback.applicationEmail,

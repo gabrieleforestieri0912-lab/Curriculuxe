@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { rewriteBulletWithAI } from "@/lib/ai";
 import { getRequestUser } from "@/lib/apiAuth";
 import { consumeCredit } from "@/lib/credits";
+import { checkPlanLimit, incrementUsage, planLimitResponse } from "@/lib/usage";
 
 export async function POST(request: NextRequest) {
   try {
@@ -24,7 +25,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // La riscrittura bullet consuma 1 credito.
+    // La riscrittura bullet consuma 1 credito e conta nella quota mensile piano.
+    const limit = await checkPlanLimit(user.id, "review");
+    if (!limit.allowed) return planLimitResponse(limit);
+
     const credit = await consumeCredit(user.id);
     if (!credit.ok) {
       return NextResponse.json(
@@ -36,6 +40,7 @@ export async function POST(request: NextRequest) {
     const result = await rewriteBulletWithAI(bullet, role, jobDescription);
 
     if (!result) {
+      await incrementUsage(user.id, "review");
       return NextResponse.json({
         original: bullet,
         rewritten: `${bullet} [Aggiungi: con quale risultato misurabile? Es: "riducendo i tempi del 30%"]`,
@@ -45,6 +50,7 @@ export async function POST(request: NextRequest) {
       });
     }
 
+    await incrementUsage(user.id, "review");
     return NextResponse.json(result);
   } catch (error) {
     console.error("Bullet rewrite error:", error);

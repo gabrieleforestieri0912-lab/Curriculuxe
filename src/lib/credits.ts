@@ -1,7 +1,7 @@
 import { supabase } from "@/lib/supabase/client";
 
 /** Crediti AI gratuiti assegnati alla registrazione di un nuovo utente. */
-export const SIGNUP_CREDITS = 5;
+export const SIGNUP_CREDITS = 3;
 
 export async function getCreditsInfo(userId: string) {
   const { data } = await supabase

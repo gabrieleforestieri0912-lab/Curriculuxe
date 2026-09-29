@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getInterviewFeedback } from "@/lib/ai";
 import { getRequestUser } from "@/lib/apiAuth";
 import { consumeCredit } from "@/lib/credits";
+import { checkPlanLimit, incrementUsage, planLimitResponse } from "@/lib/usage";
 
 export async function POST(request: NextRequest) {
   try {
@@ -24,7 +25,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Il feedback colloquio consuma 1 credito.
+    // Il feedback colloquio consuma 1 credito e conta nella quota mensile piano.
+    const limit = await checkPlanLimit(user.id, "behavioral");
+    if (!limit.allowed) return planLimitResponse(limit);
+
     const credit = await consumeCredit(user.id);
     if (!credit.ok) {
       return NextResponse.json(
@@ -36,6 +40,7 @@ export async function POST(request: NextRequest) {
     const feedback = await getInterviewFeedback(question, answer, role);
 
     if (!feedback) {
+      await incrementUsage(user.id, "behavioral");
       return NextResponse.json({
         score: 6,
         strengths: ["Hai fornito una risposta strutturata", "Dimostri conoscenza del ruolo", "Comunichi con chiarezza"],
@@ -45,6 +50,7 @@ export async function POST(request: NextRequest) {
       });
     }
 
+    await incrementUsage(user.id, "behavioral");
     return NextResponse.json(feedback);
   } catch (error) {
     console.error("Interview feedback error:", error);

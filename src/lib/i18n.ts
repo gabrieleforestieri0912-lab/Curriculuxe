@@ -264,7 +264,7 @@ const it: Record<string, unknown> = {
     monthly: "Mensile",
     yearly: "Annuale",
     plans: [
-      { name: "Free", price: "0", desc: "Per iniziare", features: ["Analisi base CV", "Score ATS", "1 template", "5 crediti AI di prova", "Export PDF", "1 CV attivo", "Supporto via email"], cta: "Inizia Gratis" },
+      { name: "Free", price: "0", desc: "Per iniziare", features: ["Analisi base CV", "Score ATS", "1 template", "3 crediti AI di prova", "Export PDF", "1 CV attivo", "Supporto via email"], cta: "Inizia Gratis" },
       { name: "Starter", price: "4.99", desc: "Per chi vuole usare l'AI", features: ["50 crediti AI al mese", "Analisi CV con AI", "Generazione CV con AI", "Riscrittura bullet point", "Simulazione colloqui", "Tutti i 16 template", "Export PDF/DOC/TXT"], priceYearly: "3.99", cta: "Sottoscrivi" },
       { name: "Pro", price: "6.99", desc: "Per professionisti", features: ["500 crediti AI al mese", "Tutti i 16 template", "Career kit completo", "Export PDF/DOC/TXT", "Priorità supporto", "Versioni CV per offerta illimitate", "Riscrittura bullet con AI"], priceYearly: "4.99", cta: "Passa a Pro" },
       { name: "Enterprise", price: "9.99", desc: "Per team e aziende", features: ["2000 crediti AI al mese", "Tutto del piano Pro", "API access", "CV illimitati per team", "Admin dashboard", "Supporto dedicato", "Integrazione ATS aziendale"], priceYearly: "6.99", cta: "Contatta Vendite" },
@@ -955,7 +955,7 @@ const en: Record<string, unknown> = {
     monthly: "Monthly",
     yearly: "Yearly",
     plans: [
-      { name: "Free", price: "0", desc: "To get started", features: ["Basic CV analysis", "ATS Score", "1 template", "5 trial AI credits", "PDF export", "1 active CV", "Email support"], cta: "Start Free" },
+      { name: "Free", price: "0", desc: "To get started", features: ["Basic CV analysis", "ATS Score", "1 template", "3 trial AI credits", "PDF export", "1 active CV", "Email support"], cta: "Start Free" },
       { name: "Starter", price: "4.99", desc: "For AI beginners", features: ["50 AI credits per month", "AI CV analysis", "AI CV generation", "Bullet point rewriting", "Interview simulation", "All 16 templates", "PDF/DOC/TXT export"], priceYearly: "3.99", cta: "Subscribe" },
       { name: "Pro", price: "6.99", desc: "For professionals", features: ["500 AI credits per month", "All 16 templates", "Full career kit", "PDF/DOC/TXT export", "Priority support", "Unlimited CV versions per offer", "AI bullet rewriting"], priceYearly: "4.99", cta: "Go Pro" },
       { name: "Enterprise", price: "9.99", desc: "For teams & companies", features: ["2000 AI credits per month", "Everything in Pro", "API access", "Unlimited team CVs", "Admin dashboard", "Dedicated support", "Corporate ATS integration"], priceYearly: "6.99", cta: "Contact Sales" },

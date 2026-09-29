@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { negotiateOfferWithAI } from "@/lib/ai";
 import { getRequestUser } from "@/lib/apiAuth";
 import { consumeCredit } from "@/lib/credits";
+import { checkPlanLimit, incrementUsage, planLimitResponse } from "@/lib/usage";
 import { cvToText } from "@/lib/cvAnalysis";
 import { supabase } from "@/lib/supabase/client";
 
@@ -29,6 +30,9 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
+
+    const limit = await checkPlanLimit(user.id, "negotiation");
+    if (!limit.allowed) return planLimitResponse(limit);
 
     const credit = await consumeCredit(user.id);
     if (!credit.ok) {
@@ -60,6 +64,7 @@ export async function POST(request: NextRequest) {
     });
 
     if (!result) {
+      await incrementUsage(user.id, "negotiation");
       return NextResponse.json({
         emailSubject: `Negoziazione Offerta - ${role}`,
         emailBody: `Gentile [Nome Hiring Manager],\n\nLa ringrazio per l'offerta per il ruolo di ${role}${company ? ` presso ${company}` : ""}. Sono molto interessato e vorrei discutere alcuni aspetti del pacchetto.\n\nBasandomi sulle mie competenze ed esperienze, e considerando i benchmark di mercato per posizioni simili, proporrei un compenso nel range di [Range] e valuterei anche bonus, benefit e modalità di lavoro.\n\nSono certo che possiamo trovare un accordo che soddisfi entrambi. Resto a disposizione per approfondire.\n\nCordiali saluti,\n[Tuo Nome]`,
@@ -80,6 +85,7 @@ export async function POST(request: NextRequest) {
       });
     }
 
+    await incrementUsage(user.id, "negotiation");
     return NextResponse.json({ ...result, source: "ai" });
   } catch (error) {
     console.error("Negotiation error:", error);

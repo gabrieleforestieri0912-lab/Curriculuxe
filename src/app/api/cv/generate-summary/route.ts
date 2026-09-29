@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { generateSummaryWithAI } from "@/lib/ai";
 import { getRequestUser } from "@/lib/apiAuth";
 import { consumeCredit } from "@/lib/credits";
+import { checkPlanLimit, incrementUsage, planLimitResponse } from "@/lib/usage";
 
 export async function POST(request: NextRequest) {
   try {
@@ -25,7 +26,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // La generazione summary consuma 1 credito.
+    // La generazione summary consuma 1 credito e conta nella quota mensile piano.
+    const limit = await checkPlanLimit(user.id, "review");
+    if (!limit.allowed) return planLimitResponse(limit);
+
     const credit = await consumeCredit(user.id);
     if (!credit.ok) {
       return NextResponse.json(
@@ -37,6 +41,7 @@ export async function POST(request: NextRequest) {
     const result = await generateSummaryWithAI(experiences, skills, targetRole, tone);
 
     if (!result) {
+      await incrementUsage(user.id, "review");
       const yearCount = experiences?.length || 0;
       return NextResponse.json({
         summary: `Professionista con ${Math.max(yearCount, 3)}+ anni di esperienza nel settore${targetRole ? `, specializzato come ${targetRole}` : ""}. Combino competenze tecniche e capacità di problem-solving per generare risultati misurabili. Appassionato di innovazione e miglioramento continuo, cerco una sfida stimolante in un ambiente dinamico.`,
@@ -45,6 +50,7 @@ export async function POST(request: NextRequest) {
       });
     }
 
+    await incrementUsage(user.id, "review");
     return NextResponse.json(result);
   } catch (error) {
     console.error("Summary generation error:", error);

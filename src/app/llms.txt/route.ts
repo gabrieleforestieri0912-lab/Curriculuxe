@@ -21,7 +21,7 @@ Curriculuxe è un'applicazione web che aiuta a creare, ottimizzare e monitorare 
 Interfaccia bilingue: italiano e inglese. Curriculum creabili in entrambe le lingue.
 
 ## Piano prezzi
- - Free: analisi base + 5 crediti AI di prova
+ - Free: analisi base + 3 crediti AI di prova
   - Starter: 4,99 €/mese — 50 crediti AI al mese (3,99€/anno)
   - Pro: 6,99 €/mese — 500 crediti AI al mese (4,99€/anno)
   - Enterprise: 9,99 €/mese — 2000 crediti AI al mese (6,99€/anno)

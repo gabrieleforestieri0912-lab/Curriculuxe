@@ -3,6 +3,7 @@ import { supabase } from "@/lib/supabase/client";
 import { analyzeResume } from "@/lib/cvAnalysis";
 import { generateCoverAssets, suggestSkills, buildTailoredCV } from "@/lib/careerKit";
 import { getRequestUser } from "@/lib/apiAuth";
+import { checkPlanLimit, incrementUsage, planLimitResponse } from "@/lib/usage";
 
 export async function POST(
   request: NextRequest,
@@ -42,6 +43,9 @@ export async function POST(
     if ((cv as { userId?: string }).userId !== user.id) {
       return NextResponse.json({ error: "Non autorizzato" }, { status: 403 });
     }
+
+    const limit = await checkPlanLimit(user.id, "tailoring");
+    if (!limit.allowed) return planLimitResponse(limit);
 
     const analysis = analyzeResume({
       cv,
@@ -103,6 +107,7 @@ export async function POST(
 
     if (updateError) throw updateError;
 
+    await incrementUsage(user.id, "tailoring");
     return NextResponse.json({ version, analysis });
   } catch (error) {
     console.error("Error creating CV version:", error);
