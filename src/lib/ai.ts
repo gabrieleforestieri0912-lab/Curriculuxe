@@ -13,6 +13,47 @@ interface CallAIOptions {
   temperature?: number;
 }
 
+/** Chiamata free-text (senza response_format JSON): per chat e contenuti liberi. */
+export async function callAIText(prompt: string, opts?: CallAIOptions): Promise<string | null> {
+  const apiKey = process.env.AI_API_KEY;
+  if (!apiKey) {
+    console.warn("AI_API_KEY non configurata: nessuna funzionalità AI attiva.");
+    return null;
+  }
+
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), AI_TIMEOUT_MS);
+  try {
+    const response = await fetch(AI_API_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        model: AI_MODEL,
+        messages: [{ role: "user", content: prompt }],
+        max_tokens: opts?.maxTokens ?? 1500,
+        temperature: opts?.temperature ?? 0.7,
+      }),
+      signal: controller.signal,
+    });
+
+    if (!response.ok) {
+      throw new Error(`AI provider HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    const content = data?.choices?.[0]?.message?.content;
+    return typeof content === "string" && content.trim() ? content : null;
+  } catch (error) {
+    console.warn("AI provider non disponibile:", error);
+    return null;
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
 async function callAI(prompt: string, opts?: CallAIOptions): Promise<string | null> {
   const apiKey = process.env.AI_API_KEY;
   if (!apiKey) {
@@ -418,7 +459,7 @@ Build a DETAILED, PERSONALIZED plan for tech/IT companies:
 5. "cvTips": 3-4 specific CV fixes for this profile.
 6. "interviewPrep": 3-4 interview preparation points (STAR, live coding, system design as relevant).
 7. "salaryBenchmark": one realistic salary range line for role/market/seniority.
-8. "nextActions": exactly 3 entries { label, href } using ONLY these hrefs: "/dashboard/create?mode=ai", "/analyze", "/dashboard/interview", "/dashboard/discover", "/dashboard/job-search".
+8. "nextActions": exactly 3 entries { label, href } using ONLY these hrefs: "/dashboard/create?mode=ai", "/analyze", "/dashboard/interview", "/dashboard/discover", "/dashboard/job-search", "/dashboard/assistant".
 
 Be specific and grounded in the candidate's data. No generic filler.
 Reply ONLY with JSON in this exact shape:
@@ -443,7 +484,7 @@ Costruisci un piano DETTAGLIATO e PERSONALIZZATO per aziende tech/informatiche:
 5. "cvTips": 3-4 correzioni specifiche al CV per questo profilo.
 6. "interviewPrep": 3-4 punti di preparazione colloqui (STAR, live coding, system design secondo il ruolo).
 7. "salaryBenchmark": una riga con range salariale realistico per ruolo/mercato/seniority.
-8. "nextActions": esattamente 3 voci { label, href } usando SOLO questi href: "/dashboard/create?mode=ai", "/analyze", "/dashboard/interview", "/dashboard/discover", "/dashboard/job-search".
+8. "nextActions": esattamente 3 voci { label, href } usando SOLO questi href: "/dashboard/create?mode=ai", "/analyze", "/dashboard/interview", "/dashboard/discover", "/dashboard/job-search", "/dashboard/assistant".
 
 Sii specifico e ancorato ai dati del candidato. Niente riempitivo generico.
 Rispondi SOLO con il JSON in questa forma esatta:
