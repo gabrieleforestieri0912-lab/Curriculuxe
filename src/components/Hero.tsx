@@ -4,7 +4,9 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
+import { Paperclip, ArrowUp, ChevronDown, X, FileText } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
+import { cvTemplates } from "@/lib/templates/cvTemplates";
 
 const highlights = [
   { value: "91/100", label: "Score ATS medio", tone: "text-emerald-300" },
@@ -19,17 +21,44 @@ export default function Hero() {
   const { t } = useLanguage();
   const tHero = t.hero as Record<string, string>;
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [jobText, setJobText] = useState("");
-  const [selectedFileName, setSelectedFileName] = useState("");
+  const [composerText, setComposerText] = useState("");
+  const [composerMode, setComposerMode] = useState<"analyze" | "generate" | "interview">("analyze");
+  const [composerTemplate, setComposerTemplate] = useState("moderno");
+  const [attachedFiles, setAttachedFiles] = useState<Array<{ name: string; size: number }>>([]);
 
-  const handleAnalyze = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleAttach = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files || []).slice(0, 3);
+    if (files.length === 0) return;
+    setAttachedFiles((prev) =>
+      [...prev, ...files.map((f) => ({ name: f.name, size: f.size }))].slice(0, 3)
+    );
+    event.target.value = "";
+  };
+
+  const removeAttached = (name: string) => {
+    setAttachedFiles((prev) => prev.filter((f) => f.name !== name));
+  };
+
+  const handleComposerSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    const text = composerText.trim();
+    if (!text && attachedFiles.length === 0) return;
 
-    if (jobText.trim()) {
-      sessionStorage.setItem("curriculuxe:jobDescription", jobText.trim());
+    try {
+      if (text) {
+        sessionStorage.setItem("curriculuxe:composerText", text);
+        sessionStorage.setItem("curriculuxe:jobDescription", text);
+        sessionStorage.setItem("curriculuxe:interviewRole", text);
+      }
+      sessionStorage.setItem("curriculuxe:template", composerTemplate);
+      sessionStorage.setItem("curriculuxe:attachedFiles", JSON.stringify(attachedFiles.map((f) => f.name)));
+    } catch {
+      // storage non disponibile: si prosegue senza prefill
     }
 
-    router.push("/analyze");
+    if (composerMode === "generate") router.push("/dashboard/create?mode=ai");
+    else if (composerMode === "interview") router.push("/dashboard/interview");
+    else router.push("/analyze");
   };
 
   return (
@@ -88,48 +117,108 @@ export default function Hero() {
           </motion.ul>
 
           <motion.form
-            onSubmit={handleAnalyze}
+            onSubmit={handleComposerSubmit}
             initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.24 }}
-            className="glass-card rounded-2xl p-3 mb-8 border border-white/10 max-w-4xl mx-auto text-left"
+            className="glass-card rounded-3xl p-3 sm:p-4 mb-8 border border-white/10 max-w-4xl mx-auto text-left shadow-2xl shadow-black/40"
           >
-            <div className="grid md:grid-cols-[1fr_auto] gap-3">
-              <textarea
-                value={jobText}
-                onChange={(event: React.ChangeEvent<HTMLTextAreaElement>) => setJobText(event.target.value)}
-                placeholder={tHero.jobMatchDesc as string}
-                className="min-h-24 rounded-xl bg-black/25 border border-white/10 px-4 py-3 text-left text-white placeholder:text-zinc-500 outline-none focus:border-indigo-400 resize-none"
-              />
-              <div className="flex flex-col sm:flex-row md:flex-col gap-3">
-                <button
-                  type="button"
-                  onClick={() => fileInputRef.current?.click()}
-                  className="btn-secondary flex-1 md:flex-none text-white px-5 py-3 rounded-xl font-medium"
-                >
-                  {selectedFileName ? "CV" : tHero.ctaDemo as string}
-                </button>
-                <button type="submit" className="btn-primary flex-1 md:flex-none text-white px-6 py-3 rounded-xl font-semibold">
-                  {tHero.ctaAnalyze as string}
-                </button>
+            <textarea
+              value={composerText}
+              onChange={(event: React.ChangeEvent<HTMLTextAreaElement>) => setComposerText(event.target.value)}
+              placeholder={tHero.composerPlaceholder as string}
+              rows={3}
+              className="w-full min-h-28 rounded-2xl bg-black/25 border border-transparent px-4 py-3 text-left text-white placeholder:text-zinc-500 outline-none focus:border-indigo-400/60 resize-none text-sm sm:text-base"
+            />
+
+            {attachedFiles.length > 0 && (
+              <div className="flex flex-wrap gap-2 px-1 pt-2">
+                {attachedFiles.map((file) => (
+                  <span
+                    key={file.name}
+                    className="inline-flex items-center gap-1.5 max-w-full rounded-full bg-indigo-500/15 border border-indigo-500/30 pl-2.5 pr-1.5 py-1 text-xs text-indigo-200"
+                  >
+                    <FileText className="w-3.5 h-3.5 shrink-0" />
+                    <span className="truncate max-w-[160px] sm:max-w-[220px]">{file.name}</span>
+                    <span className="text-indigo-300/70">{Math.max(1, Math.round(file.size / 1024))} KB</span>
+                    <button
+                      type="button"
+                      onClick={() => removeAttached(file.name)}
+                      aria-label={`Rimuovi ${file.name}`}
+                      className="rounded-full p-0.5 hover:bg-white/10 transition-colors"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  </span>
+                ))}
               </div>
+            )}
+
+            <div className="flex items-center gap-2 px-1 pt-2.5 flex-wrap">
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                className="inline-flex items-center gap-1.5 rounded-full bg-white/5 border border-white/10 px-3 py-2 text-xs font-medium text-zinc-300 hover:text-white hover:border-white/25 transition-all"
+              >
+                <Paperclip className="w-4 h-4" />
+                <span className="hidden sm:inline">{tHero.composerAttach as string}</span>
+              </button>
+
+              <div className="relative">
+                <select
+                  value={composerMode}
+                  onChange={(event: React.ChangeEvent<HTMLSelectElement>) =>
+                    setComposerMode(event.target.value as "analyze" | "generate" | "interview")
+                  }
+                  aria-label={tHero.composerMode as string}
+                  className="appearance-none rounded-full bg-white/5 border border-white/10 pl-3 pr-8 py-2 text-xs font-medium text-zinc-200 outline-none focus:border-indigo-400/60 cursor-pointer"
+                >
+                  <option value="analyze" className="bg-zinc-900">{tHero.composerModeAnalyze as string}</option>
+                  <option value="generate" className="bg-zinc-900">{tHero.composerModeGenerate as string}</option>
+                  <option value="interview" className="bg-zinc-900">{tHero.composerModeInterview as string}</option>
+                </select>
+                <ChevronDown className="w-3.5 h-3.5 text-zinc-500 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+              </div>
+
+              <div className="relative">
+                <select
+                  value={composerTemplate}
+                  onChange={(event: React.ChangeEvent<HTMLSelectElement>) => setComposerTemplate(event.target.value)}
+                  aria-label={tHero.composerTemplate as string}
+                  className="appearance-none rounded-full bg-white/5 border border-white/10 pl-3 pr-8 py-2 text-xs font-medium text-zinc-200 outline-none focus:border-indigo-400/60 cursor-pointer max-w-[140px] sm:max-w-none"
+                >
+                  {cvTemplates.map((tpl) => (
+                    <option key={tpl.id} value={tpl.id} className="bg-zinc-900">
+                      {tpl.name}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown className="w-3.5 h-3.5 text-zinc-500 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+              </div>
+
+              <div className="flex-1" />
+
+              <button
+                type="submit"
+                disabled={!composerText.trim() && attachedFiles.length === 0}
+                aria-label={tHero.composerSend as string}
+                className="flex items-center justify-center w-10 h-10 rounded-full btn-primary text-white glow-border transition-all hover:scale-105 disabled:opacity-40 disabled:hover:scale-100 disabled:cursor-not-allowed"
+              >
+                <ArrowUp className="w-5 h-5" />
+              </button>
             </div>
+
             <input
               ref={fileInputRef}
               type="file"
-              accept=".pdf,.docx"
+              accept=".pdf,.docx,.txt"
+              multiple
               className="hidden"
-              onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                const file = event.target.files?.[0];
-                if (!file) return;
-                setSelectedFileName(file.name);
-                sessionStorage.setItem("curriculuxe:selectedFileName", file.name);
-                router.push("/analyze");
-              }}
+              onChange={handleAttach}
             />
-            {selectedFileName && (
+            {attachedFiles.length > 0 && (
               <p className="text-zinc-500 text-xs text-left mt-2 px-1">
-                File scelto: {selectedFileName}. Per motivi di sicurezza il browser richiederà di ricaricarlo nella pagina analisi.
+                {tHero.composerAttachedNote as string}
               </p>
             )}
           </motion.form>

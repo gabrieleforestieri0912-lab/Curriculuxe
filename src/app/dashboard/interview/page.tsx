@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage } from "@/context/LanguageContext";
@@ -48,6 +48,18 @@ export default function InterviewPage() {
   const [history, setHistory] = useState<Array<{ q: string; a: string }>>([]);
   const [showTips, setShowTips] = useState(false);
   const [creditsError, setCreditsError] = useState(false);
+
+  useEffect(() => {
+    try {
+      const savedRole = sessionStorage.getItem("curriculuxe:interviewRole");
+      if (savedRole) {
+        setRole(savedRole);
+        sessionStorage.removeItem("curriculuxe:interviewRole");
+      }
+    } catch {
+      // storage non disponibile: si prosegue con campo vuoto
+    }
+  }, []);
 
   const questions = commonQuestions[lang] || commonQuestions.it;
 

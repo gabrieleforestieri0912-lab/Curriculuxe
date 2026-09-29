@@ -77,6 +77,20 @@ function CreateCVContent() {
     const m = searchParams.get("mode");
     if (m === "ai") setMode("ai");
     else if (m === "manual") setMode("manual");
+    try {
+      const savedPrompt = sessionStorage.getItem("curriculuxe:composerText");
+      if (savedPrompt) {
+        setPrompt(savedPrompt);
+        sessionStorage.removeItem("curriculuxe:composerText");
+      }
+      const savedTemplate = sessionStorage.getItem("curriculuxe:template");
+      if (savedTemplate) {
+        setSelectedTemplate(savedTemplate);
+        sessionStorage.removeItem("curriculuxe:template");
+      }
+    } catch {
+      // storage non disponibile: si prosegue con i default
+    }
   }, [searchParams]);
 
   const handleSelectSuggestion = (s: { prompt: string }) => setPrompt(s.prompt);
