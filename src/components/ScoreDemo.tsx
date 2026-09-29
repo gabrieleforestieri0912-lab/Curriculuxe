@@ -391,16 +391,24 @@ export default function ScoreDemo() {
                   e campagne lifecycle che hanno aumentato l&apos;attivazione del 22%.
                 </p>
                 <p className="text-xs font-bold uppercase text-slate-400 mb-1.5">Esperienza — prima dell&apos;ottimizzazione</p>
-                <p className="text-sm mb-4 rounded-lg bg-red-50 border border-red-200 p-3">
+                <p className="text-sm mb-3 rounded-lg bg-red-50 border border-red-200 p-3">
                   &ldquo;Mi sono occupata del lancio di nuove funzionalità e della creazione di contenuti.&rdquo;
                 </p>
+                <p className="text-xs font-bold uppercase text-slate-400 mb-1.5">Esperienza 2 — prima dell&apos;ottimizzazione</p>
+                <p className="text-sm mb-4 rounded-lg bg-red-50 border border-red-200 p-3">
+                  &ldquo;Ho seguito le campagne email e i social aziendali, con buoni risultati.&rdquo;
+                </p>
                 <div className="flex flex-wrap gap-2">
-                  {["Posizionamento", "Sales enablement", "HubSpot", "GA4", "SEO"].map((skill) => (
+                  {["Posizionamento", "Sales enablement", "HubSpot", "GA4", "SEO", "Copywriting", "Lifecycle"].map((skill) => (
                     <span key={skill} className="rounded-full bg-indigo-50 text-indigo-700 px-2.5 py-1 text-xs font-medium">
                       {skill}
                     </span>
                   ))}
                 </div>
+                <p className="text-xs font-bold uppercase text-slate-400 mt-4 mb-1">Formazione</p>
+                <p className="text-sm">
+                  Laurea in Comunicazione d&apos;impresa · Università degli Studi di Milano · 2020
+                </p>
               </div>
 
               <div className="glass-card rounded-2xl p-5 sm:p-6 border border-white/10">
@@ -463,6 +471,19 @@ export default function ScoreDemo() {
                 </div>
               </div>
 
+              <div className="grid grid-cols-3 gap-3 mb-6">
+                {[
+                  { label: "Contenuti", value: "82", tone: "text-sky-300" },
+                  { label: "Scrittura", value: "79", tone: "text-amber-300" },
+                  { label: "Readiness", value: "85", tone: "text-fuchsia-300" },
+                ].map((m) => (
+                  <div key={m.label} className="rounded-xl bg-white/5 border border-white/10 p-2.5 text-center">
+                    <p className="text-zinc-500 text-[10px] uppercase tracking-wide">{m.label}</p>
+                    <p className={`${m.tone} text-lg font-bold`}>{m.value}</p>
+                  </div>
+                ))}
+              </div>
+
               <div className="grid sm:grid-cols-2 gap-4 mb-6">
                 <div className="rounded-xl bg-emerald-500/10 border border-emerald-500/25 p-4">
                   <p className="text-emerald-300 text-xs font-bold uppercase tracking-wide mb-2">Punti di forza</p>
@@ -470,6 +491,7 @@ export default function ScoreDemo() {
                     <li>· Lanci SaaS con metriche (+22% attivazione)</li>
                     <li>· Formato ATS-compatibile, zero tabelle</li>
                     <li>· Skill core già allineate (SEO, HubSpot)</li>
+                    <li>· 4 anni di esperienza nel SaaS B2B</li>
                   </ul>
                 </div>
                 <div className="rounded-xl bg-amber-500/10 border border-amber-500/25 p-4">
@@ -477,6 +499,7 @@ export default function ScoreDemo() {
                   <ul className="space-y-1.5 text-sm text-zinc-200">
                     <li>· Bullet generici senza numeri</li>
                     <li>· Mancano: pricing, win/loss, A/B test</li>
+                    <li>· Profilo prolisso: tagliare il superfluo</li>
                   </ul>
                 </div>
               </div>
@@ -494,13 +517,24 @@ export default function ScoreDemo() {
                 </p>
               </div>
 
-              <div className="flex flex-wrap items-center gap-2 mb-7">
+              <div className="flex flex-wrap items-center gap-2 mb-6">
                 <span className="text-zinc-500 text-xs mr-1">Keyword da aggiungere:</span>
                 {["A/B test", "Pricing", "Win/loss"].map((keyword) => (
                   <span key={keyword} className="rounded-full bg-red-500/15 text-red-300 px-2.5 py-1 text-xs font-medium">
                     {keyword}
                   </span>
                 ))}
+              </div>
+
+              <div className="rounded-xl bg-indigo-500/10 border border-indigo-500/25 p-4 mb-7">
+                <p className="text-xs font-bold uppercase tracking-wide text-indigo-300 mb-2">
+                  Cover letter generata
+                </p>
+                <p className="text-zinc-300 text-sm leading-relaxed italic">
+                  &ldquo;Gentile team, in 4 anni nel SaaS B2B ho lanciato 3 funzionalità che hanno
+                  alzato l&apos;attivazione del 22% su 12.000 utenti. Porto messaggistica per buyer
+                  persona e kit sales-enablement: esattamente ciò che cercate per questo ruolo.&rdquo;
+                </p>
               </div>
 
               <div className="flex flex-col sm:flex-row gap-3">
