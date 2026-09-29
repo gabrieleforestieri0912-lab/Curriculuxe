@@ -245,7 +245,14 @@ export default function DashboardHeader({
               )}
             </button>
             <Link href="/dashboard" className="flex items-center gap-2 group shrink-0">
-              <span className="text-lg font-bold text-white tracking-wide transition-all group-hover:text-fuchsia-400">
+              <Image
+                src="/curriculuxe.png"
+                alt="Logo Curriculuxe"
+                width={34}
+                height={34}
+                className="rounded-xl shrink-0"
+              />
+              <span className="text-xl font-bold text-white tracking-wide transition-all group-hover:text-fuchsia-400">
                 Curriculuxe
               </span>
             </Link>

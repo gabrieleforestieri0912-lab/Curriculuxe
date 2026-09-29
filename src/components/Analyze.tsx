@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { cvTemplates, getTemplateById } from "@/lib/templates/cvTemplates";
 import TemplatePreview from "@/components/TemplatePreview";
@@ -213,7 +214,14 @@ export default function Analyze({ initialResult = null, embedded = false }: Anal
         <nav className="fixed top-0 left-0 right-0 z-50 glass-card">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between gap-3">
             <Link href="/" className="flex items-center gap-2">
-              <span className="text-lg font-bold text-white">Curriculuxe</span>
+              <Image
+                src="/curriculuxe.png"
+                alt="Logo Curriculuxe"
+                width={34}
+                height={34}
+                className="rounded-xl shrink-0"
+              />
+              <span className="text-xl font-bold text-white">Curriculuxe</span>
             </Link>
             <div className="flex items-center gap-3">
               <Link href="/register" className="btn-primary text-sm text-white px-5 py-2.5 rounded-full font-medium">

@@ -62,11 +62,11 @@ export default function Footer() {
               <Image
                 src="/curriculuxe.png"
                 alt="Logo Curriculuxe"
-                width={26}
-                height={26}
-                className="rounded-lg shrink-0"
+                width={34}
+                height={34}
+                className="rounded-xl shrink-0"
               />
-              <span className="text-lg font-bold text-white tracking-wide">Curriculuxe</span>
+              <span className="text-xl font-bold text-white tracking-wide">Curriculuxe</span>
             </div>
             <p className="text-zinc-500 text-sm leading-relaxed max-w-xs">
               {tFooter.description as string}

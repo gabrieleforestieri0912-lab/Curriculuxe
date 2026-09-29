@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useLanguage } from "@/context/LanguageContext";
+import { supabase } from "@/lib/supabase/client";
 import AuthBackdrop from "@/components/AuthBackdrop";
 
 export default function Register() {
@@ -37,14 +38,16 @@ export default function Register() {
     setError("");
     setGoogleLoading(true);
     try {
-      const next = getNext();
-      const res = await fetch(`/api/auth/supabase-google?next=${encodeURIComponent(next)}`);
-      const data = await res.json();
-      if (data.url) {
-        window.location.href = data.url;
-      } else {
-        throw new Error("URL OAuth non ricevuto");
-      }
+      // Flusso OAuth diretto dal browser: il verifier PKCE resta nello
+      // stesso contesto (niente cookie intermedi lato server che causano
+      // mismatch al callback). Supabase reindirizza in automatico a Google.
+      const callbackUrl = new URL("/api/auth/supabase-callback", window.location.origin);
+      callbackUrl.searchParams.set("next", getNext());
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: { redirectTo: callbackUrl.toString() },
+      });
+      if (error) throw error;
     } catch (err) {
       setError((err as Error).message);
       setGoogleLoading(false);
@@ -96,6 +99,15 @@ export default function Register() {
       setFieldErrors((prev) => ({ ...prev, [e.target.name]: undefined }));
     }
   };
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("error") === "auth_failed") {
+      setError(tAuth.errorGeneric as string);
+      window.history.replaceState(null, "", window.location.pathname);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className="min-h-screen bg-[#07070d] text-white relative overflow-hidden">

@@ -271,12 +271,12 @@ export default function Navbar() {
             <Image
               src="/curriculuxe.png"
               alt="Logo Curriculuxe"
-              width={28}
-              height={28}
-              className="rounded-lg shrink-0 shadow-md shadow-fuchsia-500/20"
+              width={40}
+              height={40}
+              className="rounded-xl shrink-0 shadow-md shadow-fuchsia-500/20"
               priority
             />
-            <span className="text-lg sm:text-xl font-bold text-white tracking-wide transition-all group-hover:text-fuchsia-400">
+            <span className="text-xl sm:text-2xl font-bold text-white tracking-wide transition-all group-hover:text-fuchsia-400">
               Curriculuxe
             </span>
           </Link>
