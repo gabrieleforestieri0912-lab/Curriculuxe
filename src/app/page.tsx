@@ -64,12 +64,12 @@ export default function Home() {
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
         <Navbar />
         <Hero />
+        <CompaniesSection />
         <LiveMarketTicker />
         <ScoreDemo />
         <LoopSection />
         <Features />
         <ProductShowcase />
-        <CompaniesSection />
         <Pricing />
         <FAQ />
         <CTA />

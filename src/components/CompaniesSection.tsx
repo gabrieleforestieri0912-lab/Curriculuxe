@@ -34,7 +34,7 @@ export default function CompaniesSection() {
 
   return (
     <section
-      className="py-24 overflow-hidden"
+      className="py-12 sm:py-14 overflow-hidden"
     >
       <motion.div
         initial={{ opacity: 0, y: 30 }}
