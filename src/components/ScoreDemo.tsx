@@ -36,17 +36,19 @@ export default function ScoreDemo() {
     },
     {
       label: tScoreDemo.exportPhase as string,
-      icon: "M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.241-.652 3.42 3.42 0 014.618 3.383 3.42 3.42 0 00-.652 1.241 3.42 3.42 0 01-3.383 3.618 3.42 3.42 0 01-1.241-.652 3.42 3.42 0 01-3.383-3.618 3.42 3.42 0 00.652-1.241 3.42 3.42 0 013.383-3.383z",
+      icon: "M12 3v12m0 0l-4-4m4 4l4-4M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2",
       desc: tScoreDemo.exportPhaseDesc as string,
     },
   ];
 
+  // Rampa unica indigo -> violet -> purple -> fuchsia: le cinque barre si
+  // distinguono per intensita' senza introdurre colori fuori dal brand.
   const criteria = [
-    { label: tScoreDemo.scoreLabel as string, color: "from-violet-500 to-fuchsia-500" },
-    { label: tScoreDemo.atsLabel as string, color: "from-indigo-500 to-blue-500" },
-    { label: tScoreDemo.jobMatchLabel as string, color: "from-emerald-500 to-teal-500" },
-    { label: tScoreDemo.strengths as string, color: "from-orange-500 to-amber-500" },
-    { label: tScoreDemo.improvements as string, color: "from-pink-500 to-rose-500" },
+    { label: tScoreDemo.scoreLabel as string, color: "from-indigo-400 via-indigo-500 to-violet-600", glow: "rgba(129,140,248,0.35)" },
+    { label: tScoreDemo.atsLabel as string, color: "from-violet-400 via-violet-500 to-purple-600", glow: "rgba(167,139,250,0.35)" },
+    { label: tScoreDemo.jobMatchLabel as string, color: "from-purple-400 via-purple-500 to-fuchsia-600", glow: "rgba(192,132,252,0.35)" },
+    { label: tScoreDemo.strengths as string, color: "from-fuchsia-400 via-fuchsia-500 to-pink-600", glow: "rgba(232,121,249,0.35)" },
+    { label: tScoreDemo.improvements as string, color: "from-pink-400 via-pink-500 to-fuchsia-500", glow: "rgba(244,114,182,0.35)" },
   ];
 
   const steps = [
@@ -75,8 +77,8 @@ export default function ScoreDemo() {
       icon: Download,
       title: tScoreDemo.exportPhase as string,
       desc: tScoreDemo.exportPhaseDesc as string,
-      color: "from-emerald-500 to-teal-600",
-      glow: "rgba(16,185,129,0.25)",
+      color: "from-fuchsia-500 to-pink-600",
+      glow: "rgba(232,121,249,0.25)",
     },
   ];
 
@@ -274,24 +276,29 @@ export default function ScoreDemo() {
                 {criteria.map((item, i) => (
                   <div key={item.label} className="flex items-center gap-4">
                     <span className="text-zinc-400 text-sm w-24 shrink-0">{item.label}</span>
-                    <div className="flex-1 h-3 rounded-full bg-gradient-to-b from-white/[0.08] to-white/[0.02] border border-white/10 shadow-[inset_0_1px_4px_rgba(0,0,0,0.55)] overflow-hidden">
+                  <div className="flex-1 h-3 rounded-full bg-gradient-to-b from-white/[0.08] to-white/[0.02] border border-white/10 shadow-[inset_0_1px_4px_rgba(0,0,0,0.55)] overflow-hidden">
+                    <motion.div
+                      className="relative h-full rounded-full overflow-hidden"
+                      animate={{ width: `${criteriaScores[i]}%` }}
+                      transition={{ type: "spring", stiffness: 70, damping: 20, mass: 1 }}
+                    >
+                      {/* Alone del brand dietro il criterio */}
+                      <div
+                        className="absolute -inset-y-1 blur-md"
+                        style={{ backgroundColor: item.glow } as React.CSSProperties}
+                      />
+                      {/* Colore del criterio */}
+                      <div className={`absolute inset-0 bg-gradient-to-r ${item.color}`} />
+                      {/* Ombreggiatura cilindrica 3D */}
+                      <div className="absolute inset-0 bg-gradient-to-b from-white/35 via-white/5 to-black/40" />
+                      {/* Riflesso scorrevole */}
                       <motion.div
-                        className="relative h-full rounded-full overflow-hidden"
-                        animate={{ width: `${criteriaScores[i]}%` }}
-                        transition={{ type: "spring", stiffness: 70, damping: 20, mass: 1 }}
-                      >
-                        {/* Colore del criterio */}
-                        <div className={`absolute inset-0 bg-gradient-to-r ${item.color}`} />
-                        {/* Ombreggiatura cilindrica 3D */}
-                        <div className="absolute inset-0 bg-gradient-to-b from-white/35 via-white/5 to-black/40" />
-                        {/* Riflesso scorrevole */}
-                        <motion.div
-                          className="absolute top-0 bottom-0 w-1/2 bg-gradient-to-r from-transparent via-white/40 to-transparent"
-                          animate={{ x: ["-100%", "300%"] }}
-                          transition={{ duration: 2.4, repeat: Infinity, repeatDelay: 0.9, ease: "easeInOut" }}
-                        />
-                      </motion.div>
-                    </div>
+                        className="absolute top-0 bottom-0 w-1/2 bg-gradient-to-r from-transparent via-white/40 to-transparent"
+                        animate={{ x: ["-100%", "300%"] }}
+                        transition={{ duration: 2.4, repeat: Infinity, repeatDelay: 0.9, ease: "easeInOut" }}
+                      />
+                    </motion.div>
+                  </div>
                     <span className="text-white text-sm w-8 text-right">{criteriaScores[i]}</span>
                   </div>
                 ))}
