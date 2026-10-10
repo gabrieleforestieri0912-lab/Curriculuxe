@@ -55,16 +55,8 @@ export default function Navbar() {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [openMobile, setOpenMobile] = useState<string | null>(null);
-  const [scrolled, setScrolled] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 24);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -272,12 +264,11 @@ export default function Navbar() {
 
   return (
     <>
-      <nav className="fixed top-4 left-0 right-0 z-50 px-3 sm:px-6 transition-all duration-300">
-        <div className={`max-w-7xl mx-auto rounded-2xl border backdrop-blur-xl px-5 sm:px-8 flex items-center justify-between gap-3 transition-all duration-300 ${
-          scrolled
-            ? "border-white/20 bg-black/70 shadow-xl shadow-black/50 py-2 sm:py-2.5"
-            : "border-white/10 bg-white/[0.04] shadow-lg shadow-black/30 py-3 sm:py-3.5"
-        }`}>
+      <nav className="fixed top-4 left-0 right-0 z-50 px-3 sm:px-6">
+        {/* Sfondo costante: niente flip al scroll, quindi nessun "salto" di
+            opacita' / blur. Il blur e' sempre attivo, il contenuto scorre
+            sotto la barra restando leggibile. */}
+        <div className="max-w-7xl mx-auto rounded-2xl border border-white/10 bg-[#0b0b14]/80 backdrop-blur-xl shadow-lg shadow-black/30 px-5 sm:px-8 py-3 sm:py-3.5 flex items-center justify-between gap-3">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 group min-w-0">
             <Image
