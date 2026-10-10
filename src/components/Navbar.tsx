@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
@@ -21,6 +21,7 @@ import {
   Award
 } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
+import { navHref } from "@/lib/seo";
 
 interface UserData {
   name?: string;
@@ -47,7 +48,7 @@ interface NavLink {
 
 export default function Navbar() {
   const router = useRouter();
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const tNav = t.nav as Record<string, string>;
   const [user, setUser] = useState<UserData | null>(null);
   const [showMenu, setShowMenu] = useState(false);
@@ -235,7 +236,7 @@ export default function Navbar() {
       </Link>
 
       <Link 
-        href={user ? "/dashboard/cvs" : "/login"} 
+        href={navHref(lang, user ? "/dashboard/cvs" : "/login")} 
         onClick={() => setShowMenu(false)}
         className="w-full flex items-center gap-2 text-left px-4 py-2.5 text-sm text-zinc-300 hover:text-white hover:bg-white/5 transition-all"
       >
@@ -332,7 +333,7 @@ export default function Navbar() {
                               return (
                                 <Link
                                   key={child.label}
-                                  href={child.href}
+                                  href={navHref(lang, child.href)}
                                   onClick={() => setOpenDropdown(null)}
                                   className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-zinc-400 hover:text-white transition-all hover:bg-white/5"
                                 >
@@ -351,7 +352,7 @@ export default function Navbar() {
               return (
                 <Link
                   key={link.label}
-                  href={link.href}
+                  href={navHref(lang, link.href)}
                   className="relative flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold text-zinc-400 hover:text-white transition-all hover:bg-white/5 group"
                 >
                   {Icon && <Icon className="w-3.5 h-3.5 text-zinc-500 group-hover:text-fuchsia-400 transition-colors" />}
@@ -405,7 +406,7 @@ export default function Navbar() {
               </div>
             ) : (
               <div className="flex items-center gap-1.5 sm:gap-2">
-                <Link href="/register" className="btn-primary text-xs sm:text-sm text-white px-4 sm:px-5 py-2.5 rounded-full font-bold shadow-lg shadow-fuchsia-500/20 hover:shadow-fuchsia-500/30 transition-all scale-100 hover:scale-[1.02]">
+                <Link href={navHref(lang, "/register")} className="btn-primary text-xs sm:text-sm text-white px-4 sm:px-5 py-2.5 rounded-full font-bold shadow-lg shadow-fuchsia-500/20 hover:shadow-fuchsia-500/30 transition-all scale-100 hover:scale-[1.02]">
                   {tNav.register as string}
                 </Link>
               </div>
@@ -481,7 +482,7 @@ export default function Navbar() {
                                     return (
                                       <Link
                                         key={child.label}
-                                        href={child.href}
+                                        href={navHref(lang, child.href)}
                                         onClick={() => setIsMobileOpen(false)}
                                         className="flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 text-zinc-400 hover:text-white transition-all"
                                       >
@@ -500,7 +501,7 @@ export default function Navbar() {
                     return (
                       <Link
                         key={link.label}
-                        href={link.href}
+                        href={navHref(lang, link.href)}
                         onClick={() => setIsMobileOpen(false)}
                         className="flex items-center justify-between p-3 rounded-xl hover:bg-white/5 text-zinc-300 hover:text-white transition-all"
                       >
@@ -558,7 +559,7 @@ export default function Navbar() {
                 {!user && (
                   <div className="border-t border-white/5 pt-4 mt-2">
                     <Link
-                      href="/register"
+                      href={navHref(lang, "/register")}
                       onClick={() => setIsMobileOpen(false)}
                       className="flex items-center justify-center p-3 rounded-xl btn-primary text-sm font-bold text-white"
                     >

@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useState, useCallback, useEffect, ReactNode } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import { getTranslations, defaultLanguage, supportedLanguages } from "@/lib/i18n";
 
 export const LANG_COOKIE = "curriculuxe-lang";
@@ -101,13 +102,36 @@ function persistLanguage(newLang: string) {
   }
 }
 
-export function LanguageProvider({ children }: { children: ReactNode }) {
-  // Parte sempre dal default per restare allineato al render SSR,
-  // poi applica lingua salvata o rilevata (nessun mismatch di hydration).
-  const [lang, setLang] = useState<string>(defaultLanguage);
+/**
+ * Porta alla pagina equivalente nell'altra lingua: `/en/pricing` <-> `/pricing`.
+ * Serve perche' la lingua delle URL e' quella renderizzata dal server, quindi
+ * cambiare lingua senza spostarsi lascerebbe HTML e URL in disaccordo.
+ */
+export function swapLanguagePath(pathname: string, targetLang: string): string {
+  const withoutPrefix = pathname.replace(/^\/en(?=\/|$)/, "") || "/";
+  if (targetLang === "en") return withoutPrefix === "/" ? "/en" : `/en${withoutPrefix}`;
+  return withoutPrefix;
+}
+
+export function LanguageProvider({
+  children,
+  lang: fixedLang,
+}: {
+  children: ReactNode;
+  lang?: string;
+}) {
+  const pathname = usePathname();
+  const router = useRouter();
+  // Con `lang` la pagina vive sotto un URL localizzato (`/en/...`): la lingua
+  // arriva dal server, niente auto-detect, cosi' il crawler vede l'HTML giusto.
+  const [lang, setLang] = useState<string>(fixedLang || defaultLanguage);
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
+    if (fixedLang) {
+      setReady(true);
+      return;
+    }
     const saved = getSavedLanguage();
     const next = saved || detectLanguageFromBrowser();
     if (next !== defaultLanguage) setLang(next);
@@ -117,18 +141,25 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
       // ignore
     }
     setReady(true);
-  }, []);
+  }, [fixedLang]);
 
-  const changeLanguage = useCallback((newLang: string) => {
-    if (!isSupportedLanguage(newLang)) return;
-    setLang(newLang);
-    persistLanguage(newLang);
-    fetch("/api/auth/language", {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ language: newLang }),
-    }).catch(() => {});
-  }, []);
+  const changeLanguage = useCallback(
+    (newLang: string) => {
+      if (!isSupportedLanguage(newLang)) return;
+      persistLanguage(newLang);
+      if (fixedLang && newLang !== fixedLang) {
+        router.push(swapLanguagePath(pathname || "/", newLang));
+        return;
+      }
+      setLang(newLang);
+      fetch("/api/auth/language", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ language: newLang }),
+      }).catch(() => {});
+    },
+    [fixedLang, pathname, router]
+  );
 
   const t = getTranslations(lang);
 

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { motion } from "framer-motion";
 import Link from "next/link";
@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { Paperclip, ArrowUp, ChevronDown, X, FileText } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
+import { navHref } from "@/lib/seo";
 import { cvTemplates } from "@/lib/templates/cvTemplates";
 
 const highlights = [
@@ -18,7 +19,7 @@ const trustPoints = ["Gratis per iniziare", "Nessuna carta richiesta", "Export P
 
 export default function Hero() {
   const router = useRouter();
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const tHero = t.hero as Record<string, string>;
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [composerText, setComposerText] = useState("");
@@ -94,7 +95,7 @@ export default function Hero() {
             transition={{ duration: 0.6, delay: 0.16 }}
             className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 mb-6"
           >
-            <Link href="/register" className="btn-primary text-white px-6 sm:px-8 py-4 rounded-full font-semibold text-base sm:text-lg w-full sm:w-auto glow-border text-center">
+            <Link href={navHref(lang, "/register")} className="btn-primary text-white px-6 sm:px-8 py-4 rounded-full font-semibold text-base sm:text-lg w-full sm:w-auto glow-border text-center">
               {tHero.ctaCreate as string}
             </Link>
             <Link href="/analyze" className="btn-secondary text-white px-6 sm:px-8 py-4 rounded-full font-medium text-base sm:text-lg w-full sm:w-auto text-center bg-white/5 backdrop-blur">

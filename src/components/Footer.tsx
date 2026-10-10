@@ -4,9 +4,10 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { useLanguage } from "@/context/LanguageContext";
+import { navHref } from "@/lib/seo";
 
 export default function Footer() {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const tFooter = t.footer as Record<string, string>;
 
   const sections = [
@@ -90,7 +91,7 @@ export default function Footer() {
                     transition={{ duration: 0.2 }}
                   >
                     <Link
-                      href={link.href}
+                      href={navHref(lang, link.href)}
                       className="text-zinc-400 hover:text-fuchsia-400 text-sm transition-colors"
                     >
                       {link.label}

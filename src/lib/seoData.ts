@@ -1,8 +1,8 @@
 export const templates = [
-  { slug: "ats-clean", name: "ATS Clean", tag: "ATS-safe", desc: "Minimal, una colonna, passa tutti i parser ATS." },
-  { slug: "modern", name: "Modern Two-Column", tag: "Creativo", desc: "Bilanciato creatività/leggibilità, ideale tech." },
-  { slug: "executive", name: "Executive", tag: "ATS-safe", desc: "Elegante per senior/manager." },
-  { slug: "academic", name: "Academic", tag: "Accademico", desc: "Pubblicazioni e formazione in evidenza." },
+  { slug: "ats-clean", name: "ATS Clean", tag: "ATS-safe", desc: "Minimal, una colonna, passa tutti i parser ATS.", enTag: "ATS-safe", enDesc: "Minimal single-column layout that passes every ATS parser." },
+  { slug: "modern", name: "Modern Two-Column", tag: "Creativo", desc: "Bilanciato creatività/leggibilità, ideale tech.", enTag: "Creative", enDesc: "Balanced creativity and readability, ideal for tech roles." },
+  { slug: "executive", name: "Executive", tag: "ATS-safe", desc: "Elegante per senior/manager.", enTag: "ATS-safe", enDesc: "Elegant layout for senior and manager profiles." },
+  { slug: "academic", name: "Academic", tag: "Accademico", desc: "Pubblicazioni e formazione in evidenza.", enTag: "Academic", enDesc: "Highlights publications, research and education." },
 ];
 
 export const roadmaps = [

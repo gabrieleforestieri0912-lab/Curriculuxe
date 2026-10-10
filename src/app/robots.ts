@@ -1,18 +1,41 @@
 import type { MetadataRoute } from "next";
+import { absUrl } from "@/lib/seo";
 
 export default function robots(): MetadataRoute.Robots {
-  const baseUrl = process.env.NEXT_PUBLIC_URL || "https://curriculuxe.vercel.app";
-
   return {
     rules: [
       {
-        // Allow all crawlers, including AI/LLM crawlers (GPTBot, PerplexityBot,
-        // ClaudeBot, Google-Extended, etc.) so chatbots can discover the platform.
         userAgent: "*",
         allow: "/",
-        disallow: ["/dashboard/", "/api/", "/success"],
+        disallow: [
+          "/api/",
+          "/dashboard/",
+          "/analyze/",
+          "/success",
+          "/login",
+          "/en/login",
+        ],
+      },
+      {
+        userAgent: [
+          "GPTBot",
+          "CCBot",
+          "anthropic-ai",
+          "Bytespider",
+          "Amazonbot",
+          "FacebookBot",
+          "Meta-ExternalAgent",
+        ],
+        allow: "/",
+        disallow: ["/api/", "/dashboard/", "/analyze/", "/success", "/login"],
+      },
+      {
+        userAgent: ["Google-Extended", "PerplexityBot", "ClaudeBot", "Applebot-Extended"],
+        allow: "/",
+        disallow: ["/api/", "/dashboard/", "/analyze/", "/success"],
       },
     ],
-    sitemap: `${baseUrl}/sitemap.xml`,
+    sitemap: absUrl("/sitemap.xml"),
+    host: absUrl("/"),
   };
 }

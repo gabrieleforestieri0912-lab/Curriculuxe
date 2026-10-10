@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
@@ -9,6 +9,7 @@ import TemplatePreview from "@/components/TemplatePreview";
 import { exportToTxt, exportToDoc, exportToPdf } from "@/lib/exportUtils";
 import type { AnalysisResult } from "@/lib/supabase/types";
 import { useLanguage } from "@/context/LanguageContext";
+import { navHref } from "@/lib/seo";
 
 interface Result {
   score: number;
@@ -225,7 +226,7 @@ export default function Analyze({ initialResult = null, embedded = false }: Anal
               <span className="text-xl font-bold text-white">Curriculuxe</span>
             </Link>
             <div className="flex items-center gap-3">
-              <Link href="/register" className="btn-primary text-sm text-white px-5 py-2.5 rounded-full font-medium">
+              <Link href={navHref(lang, "/register")} className="btn-primary text-sm text-white px-5 py-2.5 rounded-full font-medium">
                 {tNav.register}
               </Link>
             </div>
@@ -265,7 +266,7 @@ export default function Analyze({ initialResult = null, embedded = false }: Anal
               <h2 className="text-2xl font-bold text-white mb-2">{tA.loginToUnlock}</h2>
               <p className="text-zinc-400 text-sm sm:text-base mb-7">{tA.subtitle}</p>
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                <Link href="/register" className="btn-primary px-8 py-3 rounded-full font-semibold text-white text-sm">
+                <Link href={navHref(lang, "/register")} className="btn-primary px-8 py-3 rounded-full font-semibold text-white text-sm">
                   {tNav.register}
                 </Link>
                 <Link href="/login" className="btn-secondary px-8 py-3 rounded-full font-medium text-white text-sm">
@@ -598,7 +599,7 @@ export default function Analyze({ initialResult = null, embedded = false }: Anal
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                           </svg>
                           <p className="text-white font-medium mb-3">{tA.loginToUnlock}</p>
-                          <Link href="/register" className="btn-primary px-4 py-2 rounded-lg text-sm font-semibold">
+                          <Link href={navHref(lang, "/register")} className="btn-primary px-4 py-2 rounded-lg text-sm font-semibold">
                             {tNav.register}
                           </Link>
                         </div>

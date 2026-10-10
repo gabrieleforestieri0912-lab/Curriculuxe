@@ -1,4 +1,4 @@
-export interface GuideSection {
+﻿export interface GuideSection {
   heading: string;
   paragraphs: string[];
 }
@@ -13,6 +13,8 @@ export interface Guide {
   checklist: string[];
   templateTitle: string;
   templateText: string;
+  publishedAt: string;
+  updatedAt: string;
 }
 
 export const guides: Guide[] = [
@@ -55,6 +57,8 @@ export const guides: Guide[] = [
     ],
     templateTitle: "Template: bullet ATS-ready",
     templateText: "[Azione forte] + [strumento/metodo] + [risultato misurabile]\nEsempio: Automatizzato il reporting settimanale in Python e SQL, riducendo da 6 a 1 le ore manuali.",
+    publishedAt: "2026-06-18",
+    updatedAt: "2026-10-01",
   },
   {
     slug: "tailoring-jd",
@@ -95,6 +99,8 @@ export const guides: Guide[] = [
     ],
     templateTitle: "Template: summary mirato",
     templateText: "[Ruolo] con [N] anni in [settore]: [skill 1] e [skill 2] applicate su [contesto], con [risultato misurabile]. Cerco [tipo di ruolo/azienda].",
+    publishedAt: "2026-07-22",
+    updatedAt: "2026-09-28",
   },
   {
     slug: "cover-letter-italia",
@@ -135,6 +141,8 @@ export const guides: Guide[] = [
     ],
     templateTitle: "Template: apertura cover letter",
     templateText: "Gentile team [Azienda],\nmi candido per [Ruolo]: in [N] anni in [settore] ho [risultato misurabile], competenza centrale per [requisito dell'offerta].",
+    publishedAt: "2026-08-30",
+    updatedAt: "2026-09-30",
   },
   {
     slug: "negoziazione-ral",
@@ -175,6 +183,8 @@ export const guides: Guide[] = [
     ],
     templateTitle: "Template: frase di apertura",
     templateText: "Grazie per l'offerta, sono molto motivato dal ruolo. Dai benchmark di mercato (Glassdoor, Levels.fyi) per [ruolo] a [città], un range equo per il mio profilo è [X-Y]k: possiamo ragionare su queste cifre?",
+    publishedAt: "2026-09-25",
+    updatedAt: "2026-10-06",
   },
 ];
 
