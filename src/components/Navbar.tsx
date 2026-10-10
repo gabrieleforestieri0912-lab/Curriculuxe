@@ -269,7 +269,7 @@ export default function Navbar() {
         {/* Sfondo costante: niente flip al scroll, quindi nessun "salto" di
             opacita' / blur. Il blur e' sempre attivo, il contenuto scorre
             sotto la barra restando leggibile. */}
-        <div className="max-w-7xl mx-auto rounded-2xl border border-white/10 bg-[#0b0b14]/80 backdrop-blur-xl shadow-lg shadow-black/30 px-5 sm:px-8 py-3 sm:py-3.5 flex items-center justify-between gap-3">
+        <div className="max-w-7xl mx-auto rounded-full border border-white/10 bg-[#0b0b14]/80 backdrop-blur-xl shadow-lg shadow-black/30 px-4 sm:px-7 py-3 sm:py-3.5 flex items-center justify-between gap-3">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 group min-w-0">
             <Image
@@ -286,7 +286,7 @@ export default function Navbar() {
           </Link>
 
           {/* Center links */}
-          <div className="hidden md:flex items-center gap-1.5 bg-white/5 border border-white/8 rounded-xl p-1.5 backdrop-blur-md">
+          <div className="hidden md:flex items-center gap-1.5 bg-white/5 border border-white/8 rounded-full p-1.5 backdrop-blur-md">
             {navLinks.map((link) => {
               const Icon = link.icon;
               if (link.children?.length) {
@@ -378,7 +378,7 @@ export default function Navbar() {
                 {user.credits !== undefined && (
                   <Link 
                     href="/dashboard"
-                    className="hidden sm:flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-white/5 border border-white/10 text-xs font-semibold text-zinc-300 hover:text-white hover:border-white/20 transition-all"
+                    className="hidden sm:flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/5 border border-white/10 text-xs font-semibold text-zinc-300 hover:text-white hover:border-white/20 transition-all"
                   >
                     <Sparkles className="w-3.5 h-3.5 text-fuchsia-400 animate-pulse" />
                     <span>{user.credits} {tNav.credits as string}</span>
@@ -418,7 +418,7 @@ export default function Navbar() {
               aria-expanded={isMobileOpen}
               aria-controls={isMobileOpen ? "mobile-menu" : undefined}
               aria-label={isMobileOpen ? "Chiudi menu" : "Apri menu"}
-              className="md:hidden p-2 rounded-xl bg-white/5 border border-white/8 text-zinc-400 hover:text-white transition-all"
+              className="md:hidden p-2 rounded-full bg-white/5 border border-white/8 text-zinc-400 hover:text-white transition-all"
             >
               {isMobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
@@ -434,7 +434,7 @@ export default function Navbar() {
                 initial={{ opacity: 0, y: -8, height: 0 }}
                 animate={{ opacity: 1, y: 0, height: "auto" }}
                 exit={{ opacity: 0, y: -8, height: 0 }}
-                className="rounded-2xl border border-white/10 bg-white/[0.04] backdrop-blur-xl shadow-lg shadow-black/30 overflow-hidden"
+                className="rounded-3xl border border-white/10 bg-white/[0.04] backdrop-blur-xl shadow-lg shadow-black/30 overflow-hidden"
               >
               <div className="px-6 py-6 space-y-4">
                 <div className="space-y-1">
