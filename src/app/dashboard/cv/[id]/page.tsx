@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { motion } from "framer-motion";
+import CvSideChat from "@/components/CvSideChat";
 
 interface CVData {
   _id?: string;
@@ -44,9 +45,6 @@ export default function CVPage() {
   const params = useParams();
   const [cv, setCv] = useState<CVData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [aiPrompt, setAiPrompt] = useState("");
-  const [aiLoading, setAiLoading] = useState(false);
-  const [aiResponse, setAiResponse] = useState<string | null>(null);
   const [targetCompany, setTargetCompany] = useState("");
   const [targetRole, setTargetRole] = useState("");
   const [jobDescription, setJobDescription] = useState("");
@@ -129,29 +127,6 @@ export default function CVPage() {
       }
     } catch {
       setVersionError("Errore di rete durante l'applicazione della versione");
-    }
-  };
-
-  const handleAIRevision = async () => {
-    if (!aiPrompt.trim()) return;
-    setAiLoading(true);
-    setAiResponse(null);
-
-    try {
-      const res = await fetch("/api/cv/revise", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ cv, prompt: aiPrompt }),
-      });
-
-      if (res.ok) {
-        const data = await res.json();
-        setAiResponse(data.suggestions);
-      }
-    } catch {
-      console.error("Error calling AI:");
-    } finally {
-      setAiLoading(false);
     }
   };
 
@@ -384,48 +359,13 @@ export default function CVPage() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.2 }}
-                  className="glass-card rounded-2xl p-6"
                 >
-                  <h3 className="text-lg font-semibold text-white mb-4">Revisione AI</h3>
-                  <p className="text-zinc-400 text-sm mb-4">
-                    Chiedi all&apos;AI di migliorare o modificare il tuo curriculum
-                  </p>
-                  <textarea
-                    value={aiPrompt}
-                    onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setAiPrompt(e.target.value)}
-                    placeholder="Es: Migliora la descrizione del profilo professionale, rendila più accattivante..."
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-indigo-500 focus:outline-none h-28 resize-none"
+                  <CvSideChat
+                    cvId={String(params.id)}
+                    onCvUpdated={(updated) =>
+                      setCv((current) => ({ ...(current || {}), ...(updated as unknown as CVData) }))
+                    }
                   />
-                  <button
-                    onClick={handleAIRevision}
-                    disabled={aiLoading || !aiPrompt.trim()}
-                    className="btn-primary w-full text-white py-3 rounded-full font-semibold text-sm mt-4 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                  >
-                    {aiLoading ? (
-                      <>
-                        <div className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full"></div>
-                        Generazione...
-                      </>
-                    ) : (
-                      <>
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                        </svg>
-                        Richiedi Revisione
-                      </>
-                    )}
-                  </button>
-
-                  {aiResponse && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="mt-4 p-4 bg-indigo-500/10 border border-indigo-500/20 rounded-xl"
-                    >
-                      <h4 className="text-indigo-300 font-medium text-sm mb-2">Suggerimenti AI</h4>
-                      <p className="text-white text-sm whitespace-pre-wrap">{aiResponse}</p>
-                    </motion.div>
-                  )}
                 </motion.div>
 
                 <motion.div
@@ -443,13 +383,13 @@ export default function CVPage() {
                       value={targetCompany}
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTargetCompany(e.target.value)}
                       placeholder="Azienda"
-                      className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-indigo-500 focus:outline-none"
+                      className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm "
                     />
                     <input
                       value={targetRole}
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTargetRole(e.target.value)}
                       placeholder="Ruolo"
-                      className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-indigo-500 focus:outline-none"
+                      className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm "
                     />
                   </div>
                   <div className="grid grid-cols-3 gap-2 mb-3">
@@ -476,7 +416,7 @@ export default function CVPage() {
                     value={jobDescription}
                     onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setJobDescription(e.target.value)}
                     placeholder="Incolla la job description: responsabilità, requisiti, tecnologie, seniority..."
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-indigo-500 focus:outline-none h-32 resize-none"
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm h-32 resize-none"
                   />
                   {versionError && <p className="text-red-400 text-sm mt-2">{versionError}</p>}
                   {applySuccess && <p className="text-emerald-400 text-sm mt-2">{applySuccess}</p>}

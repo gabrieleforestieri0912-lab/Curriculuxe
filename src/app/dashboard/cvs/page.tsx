@@ -194,7 +194,7 @@ export default function CVListPage() {
                           value={currentStatus}
                           onChange={(e: React.ChangeEvent<HTMLSelectElement>) => handleStatusChange(cv._id || cv.id as string, e.target.value)}
                           disabled={updatingId === (cv._id || cv.id)}
-                          className={`px-3 py-1.5 rounded-lg text-xs font-medium border bg-black/30 focus:outline-none focus:ring-1 focus:ring-indigo-500 cursor-pointer text-white`}
+                          className={`px-3 py-1.5 rounded-lg text-xs font-medium border bg-black/30 cursor-pointer text-white`}
                         >
                           {Object.entries(statusConfig).map(([key, cfg]) => (
                             <option key={key} value={key} className="bg-zinc-900 text-white">

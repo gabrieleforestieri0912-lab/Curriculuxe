@@ -336,7 +336,7 @@ export default function Analyze({ initialResult = null, embedded = false }: Anal
                         value={jobDescription}
                         onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setJobDescription(e.target.value)}
                         placeholder={String(tA.jobDescriptionPlaceholder)}
-                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-indigo-500 focus:outline-none h-32 resize-none"
+                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm h-32 resize-none"
                       />
                       <p className="text-left text-sm font-medium text-zinc-300 mb-2 mt-4">
                         {tA.market}

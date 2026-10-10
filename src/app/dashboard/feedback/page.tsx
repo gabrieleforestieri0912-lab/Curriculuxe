@@ -79,7 +79,7 @@ export default function FeedbackPage() {
                   <select
                     value={formData.type}
                     onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setFormData({ ...formData, type: e.target.value })}
-                    className="w-full bg-black/25 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                    className="w-full bg-black/25 border border-white/10 rounded-xl px-4 py-3 text-white "
                   >
                     <option value="feature">{tFeedback.feature}</option>
                     <option value="bug">{tFeedback.bug}</option>
@@ -98,7 +98,7 @@ export default function FeedbackPage() {
                     value={formData.message}
                     onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setFormData({ ...formData, message: e.target.value })}
                     placeholder={tFeedback.messagePlaceholder as string}
-                    className="w-full bg-black/25 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 resize-y"
+                    className="w-full bg-black/25 border border-white/10 rounded-xl px-4 py-3 text-white resize-y"
                   />
                 </div>
 

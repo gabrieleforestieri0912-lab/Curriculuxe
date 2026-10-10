@@ -182,7 +182,7 @@ export default function DiscoverPage() {
                   value={profile}
                   onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setProfile(e.target.value)}
                   placeholder={tDiscover.profilePlaceholder}
-                  className="w-full bg-black/25 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-fuchsia-500 focus:outline-none h-32 resize-none"
+                  className="w-full bg-black/25 border border-white/10 rounded-xl px-4 py-3 text-white text-sm h-32 resize-none"
                 />
                 <p className="text-xs text-zinc-500 mt-2">{sourceLabel}</p>
               </div>

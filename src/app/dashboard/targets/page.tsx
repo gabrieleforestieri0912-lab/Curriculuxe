@@ -195,13 +195,13 @@ export default function TargetsPage() {
                   value={search}
                   onChange={(e) => { setSearch(e.target.value); setCustomCompany(""); }}
                   placeholder={T("searchPlaceholder")}
-                  className="bg-black/25 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm outline-none focus:border-indigo-400 placeholder:text-zinc-600"
+                  className="bg-black/25 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm outline-none placeholder:text-zinc-600"
                 />
                 <input
                   value={customCompany}
                   onChange={(e) => { setCustomCompany(e.target.value); setSearch(""); }}
                   placeholder={T("customPlaceholder")}
-                  className="bg-black/25 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm outline-none focus:border-indigo-400 placeholder:text-zinc-600"
+                  className="bg-black/25 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm outline-none placeholder:text-zinc-600"
                 />
               </div>
               {!customCompany && (
@@ -223,7 +223,7 @@ export default function TargetsPage() {
                   value={role}
                   onChange={(e) => setRole(e.target.value)}
                   placeholder={T("rolePlaceholder")}
-                  className="flex-1 bg-black/25 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm outline-none focus:border-indigo-400 placeholder:text-zinc-600"
+                  className="flex-1 bg-black/25 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm outline-none placeholder:text-zinc-600"
                 />
                 <button
                   onClick={() => addTarget(pickedCompany || filtered[0] || "")}
@@ -393,7 +393,7 @@ function TargetDetail({ target, lang, T, answers, setAnswers, areaLabel, generat
                   onChange={(e) => setAnswers((a) => ({ ...a, [i]: e.target.value }))}
                   placeholder={T("answerPlaceholder")}
                   rows={3}
-                  className="w-full bg-black/25 border border-white/10 rounded-xl px-4 py-3 text-white text-sm outline-none focus:border-indigo-400 resize-none placeholder:text-zinc-600"
+                  className="w-full bg-black/25 border border-white/10 rounded-xl px-4 py-3 text-white text-sm outline-none resize-none placeholder:text-zinc-600"
                 />
               </div>
             ))}

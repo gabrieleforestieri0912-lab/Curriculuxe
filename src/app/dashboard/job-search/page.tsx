@@ -266,7 +266,7 @@ export default function JobSearchPage() {
                       value={negCompany}
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNegCompany(e.target.value)}
                       placeholder="Es. Facile.it"
-                      className="w-full bg-black/25 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-emerald-500"
+                      className="w-full bg-black/25 border border-white/10 rounded-xl px-4 py-3 text-white text-sm "
                     />
                   </div>
                   <div>
@@ -276,7 +276,7 @@ export default function JobSearchPage() {
                       value={negRole}
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNegRole(e.target.value)}
                       placeholder="Es. Senior Frontend Engineer"
-                      className="w-full bg-black/25 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-emerald-500"
+                      className="w-full bg-black/25 border border-white/10 rounded-xl px-4 py-3 text-white text-sm "
                     />
                   </div>
                 </div>
@@ -288,7 +288,7 @@ export default function JobSearchPage() {
                       value={negSalary}
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNegSalary(e.target.value)}
                       placeholder="Es. 55.000€ RAL + bonus"
-                      className="w-full bg-black/25 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-emerald-500"
+                      className="w-full bg-black/25 border border-white/10 rounded-xl px-4 py-3 text-white text-sm "
                     />
                   </div>
                   <div>
@@ -322,7 +322,7 @@ export default function JobSearchPage() {
                     value={negPoints}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNegPoints(e.target.value)}
                     placeholder="Es. RAL, stock options, ferie extra, budget formazione"
-                    className="w-full bg-black/25 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-emerald-500"
+                    className="w-full bg-black/25 border border-white/10 rounded-xl px-4 py-3 text-white text-sm "
                   />
                 </div>
 

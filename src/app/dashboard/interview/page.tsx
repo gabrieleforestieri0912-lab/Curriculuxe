@@ -154,7 +154,7 @@ export default function InterviewPage() {
                     value={role}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => setRole(e.target.value)}
                     placeholder={tInterview.rolePlaceholder}
-                    className="w-full bg-black/25 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-pink-500 focus:ring-1 focus:ring-pink-500"
+                    className="w-full bg-black/25 border border-white/10 rounded-xl px-4 py-3 text-white "
                   />
                 </div>
 
@@ -234,7 +234,7 @@ export default function InterviewPage() {
                   value={answer}
                   onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setAnswer(e.target.value)}
                   placeholder={tInterview.answerPlaceholder}
-                  className="w-full bg-black/25 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-pink-500 focus:ring-1 focus:ring-pink-500 resize-y mb-4"
+                  className="w-full bg-black/25 border border-white/10 rounded-xl px-4 py-3 text-white resize-y mb-4"
                 />
 
                 <div className="flex gap-3">

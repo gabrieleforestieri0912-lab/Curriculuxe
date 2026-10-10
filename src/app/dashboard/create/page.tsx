@@ -313,7 +313,7 @@ function CreateCVContent() {
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="glass-card rounded-2xl p-6 mb-8">
                 <h2 className="text-xl font-bold text-white mb-4">{tGen.describeProfile}</h2>
                 <textarea value={prompt} onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setPrompt(e.target.value)} placeholder={tGen.profilePlaceholder}
-                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-indigo-500 h-32 resize-none"
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white h-32 resize-none"
                 />
                 {error && (
                   <div className="text-red-400 text-sm mt-2">
@@ -418,7 +418,7 @@ function CreateCVContent() {
                             <label className="block text-sm font-medium text-zinc-300 mb-1.5">{label}</label>
                             <input type={field === "email" ? "email" : "text"} value={(formData.personalInfo as Record<string, string>)[field]}
                               onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateField("personalInfo", field, e.target.value)}
-                              className="w-full bg-black/25 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500"
+                              className="w-full bg-black/25 border border-white/10 rounded-xl px-4 py-3 text-white "
                             />
                           </div>
                         ))}
@@ -430,7 +430,7 @@ function CreateCVContent() {
                     <motion.div key="summary" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="glass-card rounded-2xl p-6">
                       <h2 className="text-xl font-bold text-white mb-4">{tCreate.summary}</h2>
                       <textarea value={formData.summary} onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => updateField("summary", null, e.target.value)}
-                        placeholder={tCreate.profileDesc} className="w-full bg-black/25 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500 h-32 resize-none"
+                        placeholder={tCreate.profileDesc} className="w-full bg-black/25 border border-white/10 rounded-xl px-4 py-3 text-white h-32 resize-none"
                       />
                     </motion.div>
                   )}
@@ -452,10 +452,10 @@ function CreateCVContent() {
                               <button onClick={() => removeExperience(i)} className="text-red-400 hover:text-red-300"><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg></button>
                             </div>
                             <div className="grid md:grid-cols-2 gap-3">
-                              <div><label className="block text-xs text-zinc-400 mb-1">{tCreate.company}</label><input value={exp.company} onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateExperience(i, "company", e.target.value)} className="w-full bg-black/25 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-indigo-500" /></div>
-                              <div><label className="block text-xs text-zinc-400 mb-1">{tCreate.role}</label><input value={exp.role} onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateExperience(i, "role", e.target.value)} className="w-full bg-black/25 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-indigo-500" /></div>
-                              <div><label className="block text-xs text-zinc-400 mb-1">{tCreate.period}</label><input value={exp.period} onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateExperience(i, "period", e.target.value)} placeholder="2021 - Presente" className="w-full bg-black/25 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-indigo-500" /></div>
-                              <div className="md:col-span-2"><label className="block text-xs text-zinc-400 mb-1">{tCreate.description}</label><textarea value={exp.description} onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => updateExperience(i, "description", e.target.value)} rows={2} className="w-full bg-black/25 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-indigo-500 resize-none" /></div>
+                              <div><label className="block text-xs text-zinc-400 mb-1">{tCreate.company}</label><input value={exp.company} onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateExperience(i, "company", e.target.value)} className="w-full bg-black/25 border border-white/10 rounded-lg px-3 py-2 text-white text-sm " /></div>
+                              <div><label className="block text-xs text-zinc-400 mb-1">{tCreate.role}</label><input value={exp.role} onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateExperience(i, "role", e.target.value)} className="w-full bg-black/25 border border-white/10 rounded-lg px-3 py-2 text-white text-sm " /></div>
+                              <div><label className="block text-xs text-zinc-400 mb-1">{tCreate.period}</label><input value={exp.period} onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateExperience(i, "period", e.target.value)} placeholder="2021 - Presente" className="w-full bg-black/25 border border-white/10 rounded-lg px-3 py-2 text-white text-sm " /></div>
+                              <div className="md:col-span-2"><label className="block text-xs text-zinc-400 mb-1">{tCreate.description}</label><textarea value={exp.description} onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => updateExperience(i, "description", e.target.value)} rows={2} className="w-full bg-black/25 border border-white/10 rounded-lg px-3 py-2 text-white text-sm resize-none" /></div>
                             </div>
                           </div>
                         ))}
@@ -480,9 +480,9 @@ function CreateCVContent() {
                               <button onClick={() => removeEducation(i)} className="text-red-400 hover:text-red-300"><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg></button>
                             </div>
                             <div className="grid md:grid-cols-3 gap-3">
-                              <div className="md:col-span-2"><label className="block text-xs text-zinc-400 mb-1">{tCreate.institution}</label><input value={edu.institution} onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateEducation(i, "institution", e.target.value)} className="w-full bg-black/25 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-indigo-500" /></div>
-                              <div><label className="block text-xs text-zinc-400 mb-1">{tCreate.degree}</label><input value={edu.degree} onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateEducation(i, "degree", e.target.value)} className="w-full bg-black/25 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-indigo-500" /></div>
-                              <div><label className="block text-xs text-zinc-400 mb-1">{tCreate.year}</label><input value={edu.year} onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateEducation(i, "year", e.target.value)} placeholder="2018" className="w-full bg-black/25 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-indigo-500" /></div>
+                              <div className="md:col-span-2"><label className="block text-xs text-zinc-400 mb-1">{tCreate.institution}</label><input value={edu.institution} onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateEducation(i, "institution", e.target.value)} className="w-full bg-black/25 border border-white/10 rounded-lg px-3 py-2 text-white text-sm " /></div>
+                              <div><label className="block text-xs text-zinc-400 mb-1">{tCreate.degree}</label><input value={edu.degree} onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateEducation(i, "degree", e.target.value)} className="w-full bg-black/25 border border-white/10 rounded-lg px-3 py-2 text-white text-sm " /></div>
+                              <div><label className="block text-xs text-zinc-400 mb-1">{tCreate.year}</label><input value={edu.year} onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateEducation(i, "year", e.target.value)} placeholder="2018" className="w-full bg-black/25 border border-white/10 rounded-lg px-3 py-2 text-white text-sm " /></div>
                             </div>
                           </div>
                         ))}
@@ -495,7 +495,7 @@ function CreateCVContent() {
                       <h2 className="text-xl font-bold text-white mb-4">{tCreate.skills}</h2>
                       <textarea value={formData.skills} onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => updateField("skills", null, e.target.value)}
                         placeholder={tCreate.skillsPlaceholder} rows={4}
-                        className="w-full bg-black/25 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500 resize-none"
+                        className="w-full bg-black/25 border border-white/10 rounded-xl px-4 py-3 text-white resize-none"
                       />
                     </motion.div>
                   )}
@@ -505,7 +505,7 @@ function CreateCVContent() {
                       <h2 className="text-xl font-bold text-white mb-4">{tCreate.languages}</h2>
                       <textarea value={formData.languages} onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => updateField("languages", null, e.target.value)}
                         placeholder={tCreate.languagesPlaceholder} rows={3}
-                        className="w-full bg-black/25 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500 resize-none"
+                        className="w-full bg-black/25 border border-white/10 rounded-xl px-4 py-3 text-white resize-none"
                       />
                     </motion.div>
                   )}
@@ -515,7 +515,7 @@ function CreateCVContent() {
                       <h2 className="text-xl font-bold text-white mb-4">{tCreate.certifications}</h2>
                       <textarea value={formData.certifications} onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => updateField("certifications", null, e.target.value)}
                         placeholder={tCreate.certPlaceholder} rows={3}
-                        className="w-full bg-black/25 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500 resize-none"
+                        className="w-full bg-black/25 border border-white/10 rounded-xl px-4 py-3 text-white resize-none"
                       />
                     </motion.div>
                   )}

@@ -685,7 +685,7 @@ function StepSkills({ ob, answers, setAnswers, selectedRole, customSkill, setCus
           onChange={(e) => setCustomSkill(e.target.value)}
           onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addCustomSkill(); } }}
           placeholder={ob.skillsAddedPlaceholder as string}
-          className="flex-1 bg-black/25 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm outline-none focus:border-indigo-400 placeholder:text-zinc-600"
+          className="flex-1 bg-black/25 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm outline-none placeholder:text-zinc-600"
         />
         <button onClick={addCustomSkill} className="btn-secondary px-4 py-2.5 rounded-xl text-sm font-semibold inline-flex items-center gap-1.5">
           <Plus className="w-4 h-4" />
@@ -746,7 +746,7 @@ function StepExperience({ ob, answers, setAnswers, yearsList, needsStudy, T }: {
             value={answers.study}
             onChange={(e) => setAnswers((a) => ({ ...a, study: e.target.value }))}
             placeholder={ob.studyPlaceholder as string}
-            className="w-full bg-black/25 border border-white/10 rounded-xl px-4 py-3 text-white text-sm outline-none focus:border-indigo-400 placeholder:text-zinc-600"
+            className="w-full bg-black/25 border border-white/10 rounded-xl px-4 py-3 text-white text-sm outline-none placeholder:text-zinc-600"
           />
         </div>
       )}
@@ -756,7 +756,7 @@ function StepExperience({ ob, answers, setAnswers, yearsList, needsStudy, T }: {
         onChange={(e) => setAnswers((a) => ({ ...a, story: e.target.value }))}
         placeholder={ob.storyPlaceholder as string}
         rows={4}
-        className="w-full bg-black/25 border border-white/10 rounded-xl px-4 py-3 text-white text-sm outline-none focus:border-indigo-400 resize-none placeholder:text-zinc-600"
+        className="w-full bg-black/25 border border-white/10 rounded-xl px-4 py-3 text-white text-sm outline-none resize-none placeholder:text-zinc-600"
       />
     </div>
   );
@@ -811,7 +811,7 @@ function StepConstraints({ ob, answers, setAnswers, markets, availabilities, T }
         value={answers.ral}
         onChange={(e) => setAnswers((a) => ({ ...a, ral: e.target.value }))}
         placeholder={ob.ralPlaceholder as string}
-        className="w-full sm:max-w-xs bg-black/25 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm outline-none focus:border-indigo-400 placeholder:text-zinc-600"
+        className="w-full sm:max-w-xs bg-black/25 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm outline-none placeholder:text-zinc-600"
       />
     </div>
   );

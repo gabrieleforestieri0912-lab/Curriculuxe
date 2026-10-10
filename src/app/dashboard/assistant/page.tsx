@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Send, Plus, Sparkles, RotateCcw, X, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useLanguage } from "@/context/LanguageContext";
+import { MINI_CHAT_NAME } from "@/lib/miniChat";
 
 interface Message {
   role: "user" | "assistant";
@@ -16,6 +17,9 @@ interface QuizData {
   title: string;
   questions: Array<{ q: string; options: string[]; answer: number; explain?: string }>;
 }
+
+/** Nome ufficiale della mini-chat dell'assistente (condiviso, vedi @/lib/miniChat). */
+export { MINI_CHAT_NAME };
 
 function boldize(text: string, keyPrefix: string) {
   const parts = text.split(/(\*\*[^*]+\*\*)/g);
@@ -208,6 +212,7 @@ export default function AssistantPage() {
   const [credits, setCredits] = useState<number | null>(null);
   const [noCredits, setNoCredits] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const chatName = (T("chatName") as string) || MINI_CHAT_NAME;
 
   useEffect(() => {
     try {
@@ -263,13 +268,15 @@ export default function AssistantPage() {
         } catch { /* ignore */ }
       }
     } catch (err) {
-      setMessages([...next, { role: "assistant" as const, content: `Atlas: ${(err as Error).message}` }]);
+      setMessages([...next, { role: "assistant" as const, content: `${chatName || MINI_CHAT_NAME}: ${(err as Error).message}` }]);
     } finally {
       setSending(false);
     }
   };
 
   const suggestions = (tA.suggestions as string[]) || [];
+  const miniChatLabel = (T("miniChat") as string) || "Mini-chat";
+  const miniChatStatus = (T("miniChatStatus") as string) || "";
 
   return (
     <div className="min-h-screen px-4 sm:px-6 py-28">
@@ -277,7 +284,7 @@ export default function AssistantPage() {
         <div className="text-center mb-6">
           <span className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-fuchsia-400 mb-3 px-3 py-1 rounded-full border border-fuchsia-500/30 bg-fuchsia-500/10">
             <Sparkles className="w-3.5 h-3.5" />
-            Atlas
+            {chatName}
           </span>
           <h1 className="text-3xl sm:text-4xl font-bold text-white mb-2">{T("title")}</h1>
           <p className="text-zinc-400 max-w-xl mx-auto text-sm sm:text-base">{T("subtitle")}</p>
@@ -286,11 +293,30 @@ export default function AssistantPage() {
               <span>{credits} crediti · {T("creditNote")}</span>
             )}
             {messages.length > 0 && (
-              <button onClick={() => setMessages([])} className="inline-flex items-center gap-1 hover:text-white transition-colors">
+              <button onClick={() => { setMessages([]); setNoCredits(false); }} className="inline-flex items-center gap-1 hover:text-white transition-colors">
                 <Plus className="w-3.5 h-3.5" />
                 {T("newChat")}
               </button>
             )}
+          </div>
+        </div>
+
+        {/* Mini-chat con nome: finestra compatta con header dedicato. */}
+        <div className="rounded-2xl border border-white/10 overflow-hidden bg-black/20 mb-4">
+          <div className="flex items-center gap-3 px-4 py-3 border-b border-white/10 bg-white/[0.03]">
+            <span className="relative flex w-9 h-9 items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 to-fuchsia-500 text-white shrink-0">
+              <Sparkles className="w-4 h-4" />
+              <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-400 border-2 border-[#0d0d12]" />
+            </span>
+            <div className="min-w-0 text-left">
+              <p className="text-sm font-bold text-white leading-tight">
+                {chatName}
+                <span className="ml-2 align-middle text-[10px] font-semibold uppercase tracking-wider text-fuchsia-300 bg-fuchsia-500/15 border border-fuchsia-500/30 rounded-full px-2 py-0.5">
+                  {miniChatLabel}
+                </span>
+              </p>
+              {miniChatStatus && <p className="text-[11px] text-emerald-300 leading-tight mt-0.5">{miniChatStatus}</p>}
+            </div>
           </div>
         </div>
 
@@ -359,6 +385,25 @@ export default function AssistantPage() {
             <Link href="/#pricing" className="font-semibold underline underline-offset-2 shrink-0">
               {T("noCreditsCta")}
             </Link>
+          </div>
+        )}
+
+        {/* Suggerimenti sempre visibili: anche a conversazione avviata,
+            come chip orizzontali sopra l'input della mini-chat. */}
+        {messages.length > 0 && suggestions.length > 0 && (
+          <div className="mt-4 flex gap-2 overflow-x-auto pb-1 -mx-1 px-1">
+            {suggestions.map((s) => (
+              <button
+                key={s}
+                type="button"
+                onClick={() => send(s)}
+                disabled={sending}
+                className="shrink-0 max-w-[260px] truncate rounded-full border border-white/10 bg-white/5 px-3.5 py-2 text-xs text-zinc-300 hover:border-fuchsia-500/40 hover:text-white hover:bg-white/10 transition-all disabled:opacity-40"
+                title={s}
+              >
+                {s}
+              </button>
+            ))}
           </div>
         )}
 

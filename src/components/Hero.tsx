@@ -128,7 +128,7 @@ export default function Hero() {
               onChange={(event: React.ChangeEvent<HTMLTextAreaElement>) => setComposerText(event.target.value)}
               placeholder={tHero.composerPlaceholder as string}
               rows={3}
-              className="w-full min-h-28 rounded-2xl bg-black/25 border border-transparent px-4 py-3 text-left text-white placeholder:text-zinc-500 outline-none focus:border-indigo-400/60 resize-none text-sm sm:text-base"
+              className="w-full min-h-28 rounded-2xl bg-black/25 border border-transparent px-4 py-3 text-left text-white placeholder:text-zinc-500 outline-none resize-none text-sm sm:text-base"
             />
 
             {attachedFiles.length > 0 && (
@@ -171,7 +171,7 @@ export default function Hero() {
                     setComposerMode(event.target.value as "analyze" | "generate" | "interview")
                   }
                   aria-label={tHero.composerMode as string}
-                  className="appearance-none rounded-full bg-white/5 border border-white/10 pl-3 pr-8 py-2 text-xs font-medium text-zinc-200 outline-none focus:border-indigo-400/60 cursor-pointer"
+                  className="appearance-none rounded-full bg-white/5 border border-white/10 pl-3 pr-8 py-2 text-xs font-medium text-zinc-200 outline-none cursor-pointer"
                 >
                   <option value="analyze" className="bg-zinc-900">{tHero.composerModeAnalyze as string}</option>
                   <option value="generate" className="bg-zinc-900">{tHero.composerModeGenerate as string}</option>
@@ -185,7 +185,7 @@ export default function Hero() {
                   value={composerTemplate}
                   onChange={(event: React.ChangeEvent<HTMLSelectElement>) => setComposerTemplate(event.target.value)}
                   aria-label={tHero.composerTemplate as string}
-                  className="appearance-none rounded-full bg-white/5 border border-white/10 pl-3 pr-8 py-2 text-xs font-medium text-zinc-200 outline-none focus:border-indigo-400/60 cursor-pointer max-w-[140px] sm:max-w-none"
+                  className="appearance-none rounded-full bg-white/5 border border-white/10 pl-3 pr-8 py-2 text-xs font-medium text-zinc-200 outline-none cursor-pointer max-w-[140px] sm:max-w-none"
                 >
                   {cvTemplates.map((tpl) => (
                     <option key={tpl.id} value={tpl.id} className="bg-zinc-900">

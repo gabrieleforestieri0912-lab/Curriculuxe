@@ -708,6 +708,9 @@ const it: Record<string, unknown> = {
   },
   assistant: {
     title: "Assistente AI",
+    chatName: "Atlas",
+    miniChat: "Mini-chat",
+    miniChatStatus: "Online · risponde in pochi secondi",
     subtitle: "Il tuo copilota carriera: conosce CV, analisi e piano, crea quiz per colloqui e ti guida verso l'azienda target.",
     placeholder: "Chiedi qualsiasi cosa sulla tua carriera...",
     send: "Invia",
@@ -1469,6 +1472,9 @@ const en: Record<string, unknown> = {
   },
   assistant: {
     title: "AI Assistant",
+    chatName: "Atlas",
+    miniChat: "Mini-chat",
+    miniChatStatus: "Online · replies in seconds",
     subtitle: "Your career copilot: knows your CVs, analyses and plan, builds interview quizzes and guides you to the target company.",
     placeholder: "Ask anything about your career...",
     send: "Send",

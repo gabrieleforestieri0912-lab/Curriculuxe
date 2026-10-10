@@ -5,8 +5,23 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useLanguage } from "@/context/LanguageContext";
-import { supabase } from "@/lib/supabase/client";
+import { getSupabaseBrowserClient } from "@/lib/supabase/browser";
 import AuthBackdrop from "@/components/AuthBackdrop";
+
+function friendlyGoogleError(message: string): string {
+  const m = message.toLowerCase();
+  if (m.includes("provider") && m.includes("not enabled"))
+    return "Registrazione con Google non attiva: abilita il provider Google su Supabase (Authentication → Providers).";
+  if (m.includes("redirect") || m.includes("redirect_uri") || m.includes("redirect uri"))
+    return "URL di ritorno non autorizzato: aggiungi l'URL del sito nei Redirect URL di Supabase e nella console Google.";
+  if (m.includes("popup closed") || m.includes("cancelled") || m.includes("access_denied"))
+    return "Accesso con Google annullato. Riprova.";
+  if (m.includes("missing code") || m.includes("missing_code") || m.includes("code verifier") || m.includes("pkce"))
+    return "Sessione di registrazione scaduta: riprova a premere «Continua con Google».";
+  if (m.includes("configurazione supabase mancante"))
+    return "Configurazione Supabase mancante sul sito. Riprova più tardi.";
+  return message || "Registrazione con Google non riuscita. Riprova.";
+}
 
 export default function Register() {
   const { t } = useLanguage();
@@ -38,18 +53,23 @@ export default function Register() {
     setError("");
     setGoogleLoading(true);
     try {
-      // Flusso OAuth diretto dal browser: il verifier PKCE resta nello
-      // stesso contesto (niente cookie intermedi lato server che causano
-      // mismatch al callback). Supabase reindirizza in automatico a Google.
+      // OAuth via browser client @supabase/ssr: il verifier PKCE finisce nei
+      // cookie così /api/auth/supabase-callback può scambiarlo lato server.
+      const supabase = getSupabaseBrowserClient();
       const callbackUrl = new URL("/api/auth/supabase-callback", window.location.origin);
       callbackUrl.searchParams.set("next", getNext());
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
-        options: { redirectTo: callbackUrl.toString() },
+        options: {
+          redirectTo: callbackUrl.toString(),
+          queryParams: { access_type: "offline", prompt: "consent" },
+        },
       });
       if (error) throw error;
+      // Redirect automatico a Google: se non parte, sblocca il bottone.
+      setTimeout(() => setGoogleLoading(false), 8000);
     } catch (err) {
-      setError((err as Error).message);
+      setError(friendlyGoogleError((err as Error).message));
       setGoogleLoading(false);
     }
   };
@@ -103,7 +123,12 @@ export default function Register() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     if (params.get("error") === "auth_failed") {
-      setError(tAuth.errorGeneric as string);
+      const reason = params.get("reason");
+      setError(
+        reason
+          ? friendlyGoogleError(decodeURIComponent(reason))
+          : (tAuth.errorGeneric as string)
+      );
       window.history.replaceState(null, "", window.location.pathname);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -160,7 +185,7 @@ export default function Register() {
                 required
                 aria-invalid={!!fieldErrors.name}
                 aria-describedby={fieldErrors.name ? "name-error" : undefined}
-                className={`w-full bg-white/5 border rounded-lg px-4 py-3 text-white focus:border-indigo-500 focus:ring-indigo-500/20 focus:ring-2 outline-none ${fieldErrors.name ? "border-red-500/60" : "border-white/10"}`}
+                className={`w-full bg-white/5 border rounded-lg px-4 py-3 text-white outline-none ${fieldErrors.name ? "border-red-500/60" : "border-white/10"}`}
                 placeholder="Mario Rossi"
               />
               {fieldErrors.name && (
@@ -184,7 +209,7 @@ export default function Register() {
                 required
                 aria-invalid={!!fieldErrors.email}
                 aria-describedby={fieldErrors.email ? "email-error" : undefined}
-                className={`w-full bg-white/5 border rounded-lg px-4 py-3 text-white focus:border-indigo-500 focus:ring-indigo-500/20 focus:ring-2 outline-none ${fieldErrors.email ? "border-red-500/60" : "border-white/10"}`}
+                className={`w-full bg-white/5 border rounded-lg px-4 py-3 text-white outline-none ${fieldErrors.email ? "border-red-500/60" : "border-white/10"}`}
                 placeholder="la.tua@email.com"
               />
               {fieldErrors.email && (
@@ -209,7 +234,7 @@ export default function Register() {
                   required
                   aria-invalid={!!fieldErrors.password}
                   aria-describedby={fieldErrors.password ? "password-error" : undefined}
-                  className={`w-full bg-white/5 border rounded-lg px-4 py-3 text-white focus:border-indigo-500 focus:ring-indigo-500/20 focus:ring-2 outline-none pr-12 ${fieldErrors.password ? "border-red-500/60" : "border-white/10"}`}
+                  className={`w-full bg-white/5 border rounded-lg px-4 py-3 text-white outline-none pr-12 ${fieldErrors.password ? "border-red-500/60" : "border-white/10"}`}
                   placeholder="********"
                 />
                 <button

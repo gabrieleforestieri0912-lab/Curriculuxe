@@ -242,8 +242,21 @@ body {
   background: transparent;
 }
 
-/* Accessibilità: focus visibile per navigazione da tastiera */
-:where(a, button, input, textarea, select, [tabindex]):focus-visible {
+/* Nessuno stile di focus su input/textarea/select in tutto il progetto:
+   niente outline, anelli o cambi di bordo al focus. */
+:where(input, textarea, select) {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+:where(input, textarea, select):focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Focus visibile solo per link/bottoni/navigazione tastiera
+   (gli input restano sempre senza stile di focus). */
+:where(a, button, [tabindex]):focus-visible {
   outline: 2px solid var(--accent-light);
   outline-offset: 2px;
   border-radius: 4px;

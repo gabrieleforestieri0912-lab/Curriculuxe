@@ -1,21 +1,30 @@
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
 
+/**
+ * Client Supabase condiviso (server + eventuali usi legacy nel browser).
+ * - Nel browser usa ESCLUSIVAMENTE la anon key (mai la service_role).
+ * - Sul server usa la service_role quando disponibile (bypassa RLS per le
+ *   query interne su `users`), altrimenti la anon key.
+ * Per l'OAuth Google usare getSupabaseBrowserClient() da ./browser.
+ */
 let client: SupabaseClient | null = null;
 
 export function getSupabaseClient(): SupabaseClient {
   if (client) return client;
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const isServer = typeof window === "undefined";
 
   if (!supabaseUrl) {
     throw new Error("Missing NEXT_PUBLIC_SUPABASE_URL");
   }
-
-  const key = serviceKey || supabaseKey || "";
+  // Sul server preferisci la service_role (query interne con RLS attiva),
+  // nel browser solo la anon key.
+  const key = (isServer && serviceKey ? serviceKey : supabaseAnonKey) || "";
   if (!key) {
-    throw new Error("Missing Supabase key (SUPABASE_SERVICE_ROLE_KEY or NEXT_PUBLIC_SUPABASE_ANON_KEY)");
+    throw new Error("Missing NEXT_PUBLIC_SUPABASE_ANON_KEY");
   }
 
   client = createClient(supabaseUrl, key);
