@@ -4,11 +4,12 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { ChevronDown } from "lucide-react";
+import { LayoutTemplate, Sparkles } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { navHref } from "@/lib/seo";
 import { cvTemplates } from "@/lib/templates/cvTemplates";
 import CvComposer from "@/components/CvComposer";
+import PillSelect from "@/components/PillSelect";
 
 const highlights = [
   { value: "91/100", label: "Score ATS medio", tone: "text-emerald-300" },
@@ -122,37 +123,25 @@ export default function Hero() {
               multiple
               maxFiles={3}
             >
-              <div className="relative">
-                <select
-                  value={composerMode}
-                  onChange={(event: React.ChangeEvent<HTMLSelectElement>) =>
-                    setComposerMode(event.target.value as "analyze" | "generate" | "interview")
-                  }
-                  aria-label={tHero.composerMode as string}
-                  className="appearance-none rounded-full bg-white/5 border border-white/10 pl-3 pr-8 py-2 text-xs font-medium text-zinc-200 outline-none cursor-pointer"
-                >
-                  <option value="analyze" className="bg-zinc-900">{tHero.composerModeAnalyze as string}</option>
-                  <option value="generate" className="bg-zinc-900">{tHero.composerModeGenerate as string}</option>
-                  <option value="interview" className="bg-zinc-900">{tHero.composerModeInterview as string}</option>
-                </select>
-                <ChevronDown className="w-3.5 h-3.5 text-zinc-500 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-              </div>
+              <PillSelect
+                value={composerMode}
+                onChange={(next) => setComposerMode(next as "analyze" | "generate" | "interview")}
+                label={tHero.composerMode as string}
+                icon={Sparkles}
+                options={[
+                  { value: "analyze", label: tHero.composerModeAnalyze as string },
+                  { value: "generate", label: tHero.composerModeGenerate as string },
+                  { value: "interview", label: tHero.composerModeInterview as string },
+                ]}
+              />
 
-              <div className="relative">
-                <select
-                  value={composerTemplate}
-                  onChange={(event: React.ChangeEvent<HTMLSelectElement>) => setComposerTemplate(event.target.value)}
-                  aria-label={tHero.composerTemplate as string}
-                  className="appearance-none rounded-full bg-white/5 border border-white/10 pl-3 pr-8 py-2 text-xs font-medium text-zinc-200 outline-none cursor-pointer max-w-[140px] sm:max-w-none"
-                >
-                  {cvTemplates.map((tpl) => (
-                    <option key={tpl.id} value={tpl.id} className="bg-zinc-900">
-                      {tpl.name}
-                    </option>
-                  ))}
-                </select>
-                <ChevronDown className="w-3.5 h-3.5 text-zinc-500 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-              </div>
+              <PillSelect
+                value={composerTemplate}
+                onChange={setComposerTemplate}
+                label={tHero.composerTemplate as string}
+                icon={LayoutTemplate}
+                options={cvTemplates.map((tpl) => ({ value: tpl.id, label: tpl.name }))}
+              />
             </CvComposer>
           </motion.div>
         </div>

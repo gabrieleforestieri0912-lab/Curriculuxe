@@ -4,10 +4,11 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown } from "lucide-react";
+import { Globe, LayoutTemplate } from "lucide-react";
 import { cvTemplates, getTemplateById } from "@/lib/templates/cvTemplates";
 import TemplatePreview from "@/components/TemplatePreview";
 import CvComposer from "@/components/CvComposer";
+import PillSelect from "@/components/PillSelect";
 import { exportToTxt, exportToDoc, exportToPdf } from "@/lib/exportUtils";
 import type { AnalysisResult } from "@/lib/supabase/types";
 import { useLanguage } from "@/context/LanguageContext";
@@ -260,39 +261,25 @@ export default function Analyze({ initialResult = null, embedded = false }: Anal
                   accept=".pdf,.docx,.txt"
                   submitDisabled={!file}
                 >
-                  <div className="relative">
-                    <select
-                      value={selectedTemplate}
-                      onChange={(event: React.ChangeEvent<HTMLSelectElement>) =>
-                        setSelectedTemplate(event.target.value)
-                      }
-                      aria-label={String(tA.template)}
-                      className="appearance-none rounded-full bg-white/5 border border-white/10 pl-3 pr-8 py-2 text-xs font-medium text-zinc-200 outline-none cursor-pointer max-w-[140px] sm:max-w-none"
-                    >
-                      {cvTemplates.map((tpl) => (
-                        <option key={tpl.id} value={tpl.id} className="bg-zinc-900">
-                          {tpl.name}
-                        </option>
-                      ))}
-                    </select>
-                    <ChevronDown className="w-3.5 h-3.5 text-zinc-500 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-                  </div>
+                  <PillSelect
+                    value={selectedTemplate}
+                    onChange={setSelectedTemplate}
+                    label={String(tA.template)}
+                    icon={LayoutTemplate}
+                    options={cvTemplates.map((tpl) => ({ value: tpl.id, label: tpl.name }))}
+                  />
 
-                  <div className="relative">
-                    <select
-                      value={targetMarket}
-                      onChange={(event: React.ChangeEvent<HTMLSelectElement>) =>
-                        setTargetMarket(event.target.value)
-                      }
-                      aria-label={String(tA.market)}
-                      className="appearance-none rounded-full bg-white/5 border border-white/10 pl-3 pr-8 py-2 text-xs font-medium text-zinc-200 outline-none cursor-pointer"
-                    >
-                      <option value="italia" className="bg-zinc-900">{String(tA.marketItalia)}</option>
-                      <option value="europa" className="bg-zinc-900">{String(tA.marketEuropa)}</option>
-                      <option value="usa" className="bg-zinc-900">{String(tA.marketUSA)}</option>
-                    </select>
-                    <ChevronDown className="w-3.5 h-3.5 text-zinc-500 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-                  </div>
+                  <PillSelect
+                    value={targetMarket}
+                    onChange={setTargetMarket}
+                    label={String(tA.market)}
+                    icon={Globe}
+                    options={[
+                      { value: "italia", label: String(tA.marketItalia) },
+                      { value: "europa", label: String(tA.marketEuropa) },
+                      { value: "usa", label: String(tA.marketUSA) },
+                    ]}
+                  />
                 </CvComposer>
 
                 {analysisError && (
