@@ -3,11 +3,12 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useRef, useState } from "react";
-import { Paperclip, ArrowUp, ChevronDown, X, FileText } from "lucide-react";
+import { useState } from "react";
+import { ChevronDown } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { navHref } from "@/lib/seo";
 import { cvTemplates } from "@/lib/templates/cvTemplates";
+import CvComposer from "@/components/CvComposer";
 
 const highlights = [
   { value: "91/100", label: "Score ATS medio", tone: "text-emerald-300" },
@@ -21,27 +22,12 @@ export default function Hero() {
   const router = useRouter();
   const { t, lang } = useLanguage();
   const tHero = t.hero as Record<string, string>;
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const [composerText, setComposerText] = useState("");
   const [composerMode, setComposerMode] = useState<"analyze" | "generate" | "interview">("analyze");
   const [composerTemplate, setComposerTemplate] = useState("moderno");
-  const [attachedFiles, setAttachedFiles] = useState<Array<{ name: string; size: number }>>([]);
+  const [attachedFiles, setAttachedFiles] = useState<File[]>([]);
 
-  const handleAttach = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(event.target.files || []).slice(0, 3);
-    if (files.length === 0) return;
-    setAttachedFiles((prev) =>
-      [...prev, ...files.map((f) => ({ name: f.name, size: f.size }))].slice(0, 3)
-    );
-    event.target.value = "";
-  };
-
-  const removeAttached = (name: string) => {
-    setAttachedFiles((prev) => prev.filter((f) => f.name !== name));
-  };
-
-  const handleComposerSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const handleComposerSubmit = () => {
     const text = composerText.trim();
     if (!text && attachedFiles.length === 0) return;
 
@@ -117,54 +103,25 @@ export default function Hero() {
             ))}
           </motion.ul>
 
-          <motion.form
-            onSubmit={handleComposerSubmit}
+          <motion.div
             initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.24 }}
-            className="glass-card rounded-3xl p-3 sm:p-4 mb-8 border border-white/10 max-w-4xl mx-auto text-left shadow-2xl shadow-black/40"
+            className="max-w-4xl mx-auto mb-8"
           >
-            <textarea
-              value={composerText}
-              onChange={(event: React.ChangeEvent<HTMLTextAreaElement>) => setComposerText(event.target.value)}
+            <CvComposer
+              text={composerText}
+              onTextChange={setComposerText}
+              files={attachedFiles}
+              onFilesChange={setAttachedFiles}
+              onSubmit={handleComposerSubmit}
               placeholder={tHero.composerPlaceholder as string}
-              rows={3}
-              className="w-full min-h-28 rounded-2xl bg-black/25 border border-transparent px-4 py-3 text-left text-white placeholder:text-zinc-500 outline-none resize-none text-sm sm:text-base"
-            />
-
-            {attachedFiles.length > 0 && (
-              <div className="flex flex-wrap gap-2 px-1 pt-2">
-                {attachedFiles.map((file) => (
-                  <span
-                    key={file.name}
-                    className="inline-flex items-center gap-1.5 max-w-full rounded-full bg-indigo-500/15 border border-indigo-500/30 pl-2.5 pr-1.5 py-1 text-xs text-indigo-200"
-                  >
-                    <FileText className="w-3.5 h-3.5 shrink-0" />
-                    <span className="truncate max-w-[160px] sm:max-w-[220px]">{file.name}</span>
-                    <span className="text-indigo-300/70">{Math.max(1, Math.round(file.size / 1024))} KB</span>
-                    <button
-                      type="button"
-                      onClick={() => removeAttached(file.name)}
-                      aria-label={`Rimuovi ${file.name}`}
-                      className="rounded-full p-0.5 hover:bg-white/10 transition-colors"
-                    >
-                      <X className="w-3.5 h-3.5" />
-                    </button>
-                  </span>
-                ))}
-              </div>
-            )}
-
-            <div className="flex items-center gap-2 px-1 pt-2.5 flex-wrap">
-              <button
-                type="button"
-                onClick={() => fileInputRef.current?.click()}
-                className="inline-flex items-center gap-1.5 rounded-full bg-white/5 border border-white/10 px-3 py-2 text-xs font-medium text-zinc-300 hover:text-white hover:border-white/25 transition-all"
-              >
-                <Paperclip className="w-4 h-4" />
-                <span className="hidden sm:inline">{tHero.composerAttach as string}</span>
-              </button>
-
+              attachLabel={tHero.composerAttach as string}
+              sendLabel={tHero.composerSend as string}
+              note={attachedFiles.length > 0 ? (tHero.composerAttachedNote as string) : undefined}
+              multiple
+              maxFiles={3}
+            >
               <div className="relative">
                 <select
                   value={composerMode}
@@ -196,33 +153,8 @@ export default function Hero() {
                 </select>
                 <ChevronDown className="w-3.5 h-3.5 text-zinc-500 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
               </div>
-
-              <div className="flex-1" />
-
-              <button
-                type="submit"
-                disabled={!composerText.trim() && attachedFiles.length === 0}
-                aria-label={tHero.composerSend as string}
-                className="flex items-center justify-center w-10 h-10 rounded-full btn-primary text-white glow-border transition-all hover:scale-105 disabled:opacity-40 disabled:hover:scale-100 disabled:cursor-not-allowed"
-              >
-                <ArrowUp className="w-5 h-5" />
-              </button>
-            </div>
-
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept=".pdf,.docx,.txt"
-              multiple
-              className="hidden"
-              onChange={handleAttach}
-            />
-            {attachedFiles.length > 0 && (
-              <p className="text-zinc-500 text-xs text-left mt-2 px-1">
-                {tHero.composerAttachedNote as string}
-              </p>
-            )}
-          </motion.form>
+            </CvComposer>
+          </motion.div>
         </div>
 
         {/* Striscia compatta di prova sociale — l'esempio reale completo è nella sezione demo qui sotto */}

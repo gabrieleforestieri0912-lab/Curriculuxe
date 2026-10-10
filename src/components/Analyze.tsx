@@ -1,11 +1,13 @@
 ﻿"use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
+import { ChevronDown } from "lucide-react";
 import { cvTemplates, getTemplateById } from "@/lib/templates/cvTemplates";
 import TemplatePreview from "@/components/TemplatePreview";
+import CvComposer from "@/components/CvComposer";
 import { exportToTxt, exportToDoc, exportToPdf } from "@/lib/exportUtils";
 import type { AnalysisResult } from "@/lib/supabase/types";
 import { useLanguage } from "@/context/LanguageContext";
@@ -45,7 +47,6 @@ export default function Analyze({ initialResult = null, embedded = false }: Anal
   const [file, setFile] = useState<File | null>(null);
   const [analyzing, setAnalyzing] = useState(false);
   const [result, setResult] = useState<Result | null>(initialResult);
-  const [isDragging, setIsDragging] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState("moderno");
   const [showTemplates, setShowTemplates] = useState(false);
@@ -56,6 +57,7 @@ export default function Analyze({ initialResult = null, embedded = false }: Anal
   const [user, setUser] = useState<Record<string, unknown> | null>(null);
   const { t, lang } = useLanguage();
   const tA = t.analyze as Record<string, string>;
+  const tHero = t.hero as Record<string, string>;
   const tNav = t.nav as Record<string, string>;
   const tInterview = t.interview as Record<string, string>;
   const titleWords = String(tA.title).split(" ");
@@ -105,50 +107,10 @@ export default function Analyze({ initialResult = null, embedded = false }: Anal
     }
   }, []);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = e.target.files?.[0];
-    if (selectedFile) {
-      setFile(selectedFile);
-      setResult(null);
-    }
+  const handleComposerFiles = (files: File[]) => {
+    setFile(files[0] ?? null);
+    setResult(null);
   };
-
-  const handleFileDrop = useCallback((e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragging(false);
-
-    const droppedFile = e.dataTransfer?.files?.[0];
-    if (droppedFile) {
-      const validTypes = ["application/pdf", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"];
-      const validExtensions = [".pdf", ".docx"];
-      const fileExtension = droppedFile.name.toLowerCase().slice(droppedFile.name.lastIndexOf("."));
-
-      if (validTypes.includes(droppedFile.type) || validExtensions.includes(fileExtension)) {
-        setFile(droppedFile);
-        setResult(null);
-      }
-    }
-  }, []);
-
-  const handleDragEnter = useCallback((e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragging(true);
-  }, []);
-
-  const handleDragLeave = useCallback((e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (e.target === e.currentTarget) {
-      setIsDragging(false);
-    }
-  }, []);
-
-  const handleDragOver = useCallback((e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-  }, []);
 
   const analyzeResume = async () => {
     if (!file) return;
@@ -283,96 +245,61 @@ export default function Analyze({ initialResult = null, embedded = false }: Anal
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.95 }}
                 transition={{ duration: 0.3 }}
-                onDragEnter={handleDragEnter}
-                onDragLeave={handleDragLeave}
-                onDragOver={handleDragOver}
-                onDrop={handleFileDrop}
-                className={`glass-card rounded-2xl p-5 sm:p-8 glow-border mb-10 sm:mb-12 transition-all ${isDragging ? "border-purple-400 bg-purple-500/10 scale-[1.02]" : ""
-                  }`}
+                className="max-w-4xl mx-auto mb-10 sm:mb-12"
               >
-                <div className="flex flex-col items-center justify-center gap-6">
-                  <motion.div
-                    whileHover={{ scale: 1.05 }}
-                    className={`w-16 h-16 sm:w-20 sm:h-20 rounded-full flex items-center justify-center transition-all ${isDragging ? "bg-purple-500/20" : "bg-white/5"
-                      }`}
-                  >
-                    {isDragging ? (
-                      <svg className="w-10 h-10 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                      </svg>
-                    ) : (
-                      <svg className="w-8 h-8 sm:w-10 sm:h-10 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                      </svg>
-                    )}
-                  </motion.div>
-
-                  <div className="text-center">
-                    <label className="cursor-pointer">
-                      <span className="text-white font-medium mb-2 block">
-                        {file ? file.name : String(tA.uploadArea)}
-                      </span>
-                      <span className="text-zinc-500 text-sm">
-                        {isDragging ? String(tA.analyzing) : String(tA.uploadFormats)}
-                      </span>
-                      <input
-                        type="file"
-                        accept=".pdf,.docx"
-                        onChange={handleFileChange}
-                        className="hidden"
-                      />
-                    </label>
+                <CvComposer
+                  text={jobDescription}
+                  onTextChange={setJobDescription}
+                  files={file ? [file] : []}
+                  onFilesChange={handleComposerFiles}
+                  onSubmit={analyzeResume}
+                  placeholder={String(tA.jobDescriptionPlaceholder)}
+                  attachLabel={String(tHero.composerAttach || tA.uploadFormats)}
+                  sendLabel={String(tA.analyzeButton)}
+                  note={file ? String(tA.uploadFormats) : String(tA.uploadArea)}
+                  accept=".pdf,.docx,.txt"
+                  submitDisabled={!file}
+                >
+                  <div className="relative">
+                    <select
+                      value={selectedTemplate}
+                      onChange={(event: React.ChangeEvent<HTMLSelectElement>) =>
+                        setSelectedTemplate(event.target.value)
+                      }
+                      aria-label={String(tA.template)}
+                      className="appearance-none rounded-full bg-white/5 border border-white/10 pl-3 pr-8 py-2 text-xs font-medium text-zinc-200 outline-none cursor-pointer max-w-[140px] sm:max-w-none"
+                    >
+                      {cvTemplates.map((tpl) => (
+                        <option key={tpl.id} value={tpl.id} className="bg-zinc-900">
+                          {tpl.name}
+                        </option>
+                      ))}
+                    </select>
+                    <ChevronDown className="w-3.5 h-3.5 text-zinc-500 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
                   </div>
 
-                  {file && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="w-full max-w-2xl space-y-4"
+                  <div className="relative">
+                    <select
+                      value={targetMarket}
+                      onChange={(event: React.ChangeEvent<HTMLSelectElement>) =>
+                        setTargetMarket(event.target.value)
+                      }
+                      aria-label={String(tA.market)}
+                      className="appearance-none rounded-full bg-white/5 border border-white/10 pl-3 pr-8 py-2 text-xs font-medium text-zinc-200 outline-none cursor-pointer"
                     >
-                      <label className="block text-left text-sm font-medium text-zinc-300 mb-2">
-                        {tA.jobDescription}
-                      </label>
-                      <textarea
-                        value={jobDescription}
-                        onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setJobDescription(e.target.value)}
-                        placeholder={String(tA.jobDescriptionPlaceholder)}
-                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm h-32 resize-none"
-                      />
-                      <p className="text-left text-sm font-medium text-zinc-300 mb-2 mt-4">
-                        {tA.market}
-                      </p>
-                      <div className="grid grid-cols-3 gap-2">
-                        {[
-                          { id: "italia", label: String(tA.marketItalia) },
-                          { id: "europa", label: String(tA.marketEuropa) },
-                          { id: "usa", label: String(tA.marketUSA) },
-                        ].map((market) => (
-                          <button
-                            key={market.id}
-                            type="button"
-                            onClick={() => setTargetMarket(market.id)}
-                            className={`rounded-xl px-3 py-2 text-sm transition-all ${targetMarket === market.id
-                                ? "bg-indigo-500/20 text-indigo-300 border border-indigo-500/30"
-                                : "bg-white/5 text-zinc-400 border border-white/10 hover:text-white"
-                              }`}
-                          >
-                            {market.label}
-                          </button>
-                        ))}
-                      </div>
-                      <button
-                        onClick={analyzeResume}
-                        className="btn-primary w-full sm:w-auto text-white px-6 sm:px-8 py-3 rounded-full font-semibold glow-border flex items-center justify-center gap-2 mx-auto"
-                      >
-                        {tA.analyzeButton}
-                      </button>
-                      {analysisError && (
-                        <p className="text-red-400 text-sm text-center">{analysisError}</p>
-                      )}
-                    </motion.div>
-                  )}
-                </div>
+                      <option value="italia" className="bg-zinc-900">{String(tA.marketItalia)}</option>
+                      <option value="europa" className="bg-zinc-900">{String(tA.marketEuropa)}</option>
+                      <option value="usa" className="bg-zinc-900">{String(tA.marketUSA)}</option>
+                    </select>
+                    <ChevronDown className="w-3.5 h-3.5 text-zinc-500 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  </div>
+                </CvComposer>
+
+                {analysisError && (
+                  <p role="alert" className="text-red-400 text-sm text-center mt-4">
+                    {analysisError}
+                  </p>
+                )}
               </motion.div>
             )}
 
