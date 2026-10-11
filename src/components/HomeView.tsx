@@ -64,10 +64,10 @@ export default function HomeView({ lang }: { lang: SiteLang }) {
         <LoopSection />
         <Features />
         <ProductShowcase />
+        <CompaniesSection />
         <Pricing />
         <FAQ />
         <CTA />
-        <CompaniesSection />
         <Footer />
       </div>
     </div>
