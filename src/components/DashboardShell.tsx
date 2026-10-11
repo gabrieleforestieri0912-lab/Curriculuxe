@@ -27,7 +27,7 @@ export default function DashboardShell({ children }: { children: React.ReactNode
         {/* Sidebar desktop */}
         <aside
           data-tour="sidebar"
-          className={`hidden lg:block w-64 shrink-0 rounded-2xl border border-white/10 bg-[#0b0b14]/80 backdrop-blur-xl p-4 mt-4 max-h-[calc(100vh-120px)] overflow-y-auto transition-all duration-300 ${
+          className={`hidden lg:block w-64 shrink-0 self-start sticky top-4 rounded-2xl border border-white/10 bg-[#0b0b14]/80 backdrop-blur-xl p-4 mt-4 max-h-[calc(100vh-2rem)] overflow-y-auto transition-all duration-300 ${
             sidebarCollapsed ? "lg:hidden" : ""
           }`}
         >
