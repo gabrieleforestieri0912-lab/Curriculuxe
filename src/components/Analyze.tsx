@@ -180,11 +180,12 @@ export default function Analyze({ initialResult = null, embedded = false }: Anal
           <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between gap-3">
             <Link href="/" className="flex items-center gap-2">
               <Image
-                src="/curriculuxe.png"
+                src="/curriculuxe-mark.svg"
                 alt="Logo Curriculuxe"
                 width={34}
                 height={34}
-                className="rounded-xl shrink-0"
+                className="shrink-0"
+                unoptimized
               />
               <span className="text-xl font-bold text-white">Curriculuxe</span>
             </Link>
