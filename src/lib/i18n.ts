@@ -98,6 +98,14 @@ const it: Record<string, unknown> = {
       { num: "3", title: "Risultati e Ottimizzazione", desc: "Ricevi score dettagliati, suggerimenti mirati e riscritture professionali per ogni punto debole." },
     ],
   },
+  liveMarket: {
+    badge: "Live market",
+    roles: "ruoli verificati · fonti employer dirette · ultimo controllo 18 set 2026",
+    cta: "Esplora il Career Market",
+    lastCheck: "18 set 2026",
+    disclaimer:
+      "Mai ranking sponsorizzati · Deduplica su azienda+titolo+location · Filtri condivisibili via link",
+  },
   scoreDemo: {
     scoreLabel: "Punteggio CV",
     atsLabel: "ATS",
@@ -861,6 +869,14 @@ const en: Record<string, unknown> = {
       { num: "2", title: "AI Analysis", desc: "Our AI analyzes every section, evaluates ATS compatibility, and compares with the target position." },
       { num: "3", title: "Results & Optimization", desc: "Get detailed scores, targeted suggestions, and professional rewrites for every weak point." },
     ],
+  },
+  liveMarket: {
+    badge: "Live market",
+    roles: "verified roles · direct employer feeds · last checked 18 Sep 2026",
+    cta: "Explore the Career Market",
+    lastCheck: "18 Sep 2026",
+    disclaimer:
+      "Never sponsored rankings · Deduped on company+title+location · Shareable filters via link",
   },
   scoreDemo: {
     scoreLabel: "CV Score",
