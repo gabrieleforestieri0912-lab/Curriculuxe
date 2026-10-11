@@ -1,6 +1,6 @@
-export const dynamic = "force-static";
+﻿export const dynamic = "force-static";
 
-import { guides } from "@/lib/guides";
+import { guides } from "@/content/guides";
 import { absUrl, supportEmail } from "@/lib/seo";
 
 export function GET() {

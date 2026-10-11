@@ -1,84 +1,69 @@
-import Link from "next/link";
-import { ArrowRight } from "lucide-react";
-import { guides } from "@/lib/guides";
+import type { Metadata } from "next";
 import ResourceShell from "@/components/ResourceShell";
+import ResourceHub from "@/components/resources/ResourceHub";
+import GuideExplorer from "@/components/resources/GuideExplorer";
+import { guides } from "@/content/guides";
 import { breadcrumbSchema, buildMetadata, collectionPageSchema, jsonLd } from "@/lib/seo";
 
-export const metadata = buildMetadata({
+export const metadata: Metadata = buildMetadata({
   lang: "it",
-  title: "Guide CV, cover letter e colloqui",
+  title: "Guide CV, ATS, cover letter e colloqui",
   description:
-    "Guide pratiche per scrivere CV efficaci, superare i filtri ATS, scrivere la cover letter e preparare i colloqui. Con checklist ed esempi reali.",
+    "Guide operative scritte per essere applicate: form per superare i filtri ATS, keyword, tailoring, cover letter, colloqui STAR e negoziazione della retribuzione.",
   path: "/guides",
   keywords: [
     "guide CV",
     "come scrivere un curriculum",
-    "superare l'ATS",
+    "superare un filtro ATS",
     "cover letter",
-    "preparazione colloqui",
-    "consigli curriculum",
+    "colloquio STAR",
+    "negoziare la retribuzione",
+    "consigli per il curriculum",
   ],
 });
 
 export default function GuidesPage() {
   return (
     <ResourceShell>
-      <div className="max-w-4xl mx-auto">
+      <ResourceHub
+        title="Guide"
+        highlight="operative"
+        description="Ogni guida ha una sezione per ogni punto che promette nel titolo, esempi prima e dopo, e una checklist da spuntare. Nessun consiglio generico: solo cose che puoi applicare subito al tuo CV."
+        meta={`${guides.length} guide · tempo di lettura calcolato sul contenuto reale di ciascun articolo`}
+        cta={{
+          label: "Analizza il tuo CV",
+          href: "/resume-score",
+          hint: "Verifica in seconds quali delle regole di queste guide il tuo CV rispetta già e quali no.",
+        }}
+        trail={[{ label: "Risorse", href: "/guides" }, { label: "Guide" }]}
+      >
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: jsonLd(
-              breadcrumbSchema("it", "/guides", [
-                { name: "Home", path: "/" },
-                { name: "Guide", path: "/guides" },
-              ])
-            ),
+            __html: jsonLd({
+              "@context": "https://schema.org",
+              "@graph": [
+                breadcrumbSchema("it", "/guides", [
+                  { name: "Risorse", path: "/guides" },
+                  { name: "Guide", path: "/guides" },
+                ]),
+                collectionPageSchema(
+                  "it",
+                  "/guides",
+                  "Guide CV, ATS, cover letter e colloqui",
+                  "Guide operative per scrivere un CV che supera i filtri automatici.",
+                  guides.map((guide) => ({
+                    name: guide.title,
+                    path: `/guides/${guide.slug}`,
+                  }))
+                ),
+              ],
+            }),
           }}
         />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: jsonLd(
-              collectionPageSchema(
-                "it",
-                "/guides",
-                "Guide CV, cover letter e colloqui",
-                "Guide pratiche per scrivere CV efficaci e superare i filtri ATS.",
-                guides.map((g) => ({ name: g.title, path: `/guides/${g.slug}` }))
-              )
-            ),
-          }}
-        />
-        <div className="text-center mb-12">
-          <span className="inline-block text-xs font-bold uppercase tracking-widest text-fuchsia-400 mb-3 px-3 py-1 rounded-full border border-fuchsia-500/30 bg-fuchsia-500/10">
-            Risorse
-          </span>
-          <h1 className="text-3xl sm:text-4xl font-bold text-white mb-4">
-            Guide <span className="text-gradient">pratiche</span>
-          </h1>
-          <p className="text-zinc-400 max-w-xl mx-auto">Long-form pratici, non fuffa — ognuno con checklist e template da copiare.</p>
-        </div>
-        <div className="space-y-4">
-          {guides.map((g, i) => (
-            <Link
-              key={g.slug}
-              href={`/guides/${g.slug}`}
-              className="group flex items-center gap-5 rounded-2xl border border-white/10 bg-white/[0.03] p-6 hover:border-fuchsia-500/30 hover:bg-white/[0.05] transition-all"
-            >
-              <span className="text-sm font-bold text-zinc-600 tabular-nums shrink-0">
-                {String(i + 1).padStart(2, "0")}
-              </span>
-              <div className="flex-1 min-w-0">
-                <h3 className="text-white font-bold group-hover:text-fuchsia-200 transition-colors">{g.title}</h3>
-                <p className="text-zinc-400 text-sm mt-1">{g.excerpt}</p>
-                <div className="text-xs text-zinc-600 mt-2">{g.readMin} min di lettura</div>
-              </div>
-              <ArrowRight className="w-5 h-5 text-zinc-600 group-hover:text-fuchsia-300 group-hover:translate-x-1 transition-all shrink-0" />
-            </Link>
-          ))}
-        </div>
-        <p className="text-sm text-zinc-500 mt-8 text-center">Vuoi un feedback sul tuo CV? <Link href="/resume-score" className="text-fuchsia-400 hover:text-fuchsia-300">Prova il Resume Score</Link>.</p>
-      </div>
+
+        <GuideExplorer />
+      </ResourceHub>
     </ResourceShell>
   );
 }

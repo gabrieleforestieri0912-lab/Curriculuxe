@@ -9,9 +9,7 @@ export const siteName = "Curriculuxe";
 export const supportEmail = "gabriele.forestieri0912@gmail.com";
 
 export const socialProfiles = {
-  twitter: "https://twitter.com/curriculuxe",
   github: "https://github.com/gabrieleforestieri0912-lab",
-  linkedin: "https://www.linkedin.com/company/curriculuxe",
 };
 
 export type SiteLang = "it" | "en";
@@ -63,13 +61,18 @@ export function localizedPath(lang: SiteLang, path = "/"): string {
 }
 
 export function alternatesFor(path: string) {
+  // Dichiarare hreflang verso una pagina che non esiste e' un errore che
+  // fa ignorare l'intero set di alternates: qui lo emettiamo solo quando
+  // la versione inglese e' reale.
   return {
     canonical: localizedPath("it", path),
-    languages: {
-      it: localizedPath("it", path),
-      en: localizedPath("en", path),
-      "x-default": localizedPath("it", path),
-    },
+    languages: hasEnglishVersion(path)
+      ? {
+          it: localizedPath("it", path),
+          en: localizedPath("en", path),
+          "x-default": localizedPath("it", path),
+        }
+      : { "x-default": localizedPath("it", path) },
   };
 }
 
@@ -158,7 +161,7 @@ export function organizationSchema() {
     foundingDate: "2025",
     areaServed: ["IT", "EU", "US", "GB"],
     knowsLanguage: ["it", "en"],
-    sameAs: [socialProfiles.twitter, socialProfiles.github, socialProfiles.linkedin],
+    sameAs: [socialProfiles.github],
     contactPoint: {
       "@type": "ContactPoint",
       contactType: "customer support",
@@ -267,7 +270,7 @@ export function jsonLd(data: unknown) {
 }
 
 /**
- * Pagine con una versione inglesevera. Gli altri contenuti (guide, Career
+ * Pagine con una versione inglese. Gli altri contenuti (guide, Career
  * Market, salari, roadmap, progetti) esistono solo in italiano: non li
  * duplico sotto /en per non creare pagine gemelle, quindi i link restano
  * sui URL italiani.
@@ -282,6 +285,12 @@ const englishPaths = new Set([
   "/register",
   "/login",
 ]);
+
+/** True solo se la pagina ha davvero una versione inglese sotto /en. */
+export function hasEnglishVersion(path: string): boolean {
+  const clean = path === "" ? "/" : path;
+  return englishPaths.has(clean);
+}
 
 export function navHref(lang: string | undefined, path: string): string {
   if (lang !== "en") return path;

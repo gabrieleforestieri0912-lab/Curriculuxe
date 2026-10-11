@@ -1,30 +1,39 @@
-import AboutContent from "@/app/(it)/about/content";
-import { breadcrumbSchema, buildMetadata, jsonLd } from "@/lib/seo";
+import type { Metadata } from "next";
+import AboutSections from "@/components/resources/AboutSections";
+import ResourceShell from "@/components/ResourceShell";
+import ResourceHub from "@/components/resources/ResourceHub";
+import { about } from "@/content/about";
+import { buildMetadata } from "@/lib/seo";
 
-export const metadata = buildMetadata({
+export const metadata: Metadata = buildMetadata({
   lang: "en",
-  title: "About Curriculuxe - The Job Search Copilot",
+  title: "About us - the job search copilot",
   description:
-    "Curriculuxe is an AI job search copilot: ATS resume scoring, evidence-based tailoring and interview preparation, without spam applications or auto-apply.",
-  path: "/about",
-  keywords: ["about Curriculuxe", "AI job search copilot", "resume tools company"],
+    "Curriculuxe keeps the evidence at every step: ATS scores with proof, tailoring with approval, no mass applying. How we handle your data and how we verify postings.",
+  path: "/en/about",
+  keywords: ["about Curriculuxe", "job search copilot", "CV data privacy"],
 });
 
 export default function EnglishAboutPage() {
   return (
-    <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: jsonLd(
-            breadcrumbSchema("en", "/about", [
-              { name: "Home", path: "/" },
-              { name: "About", path: "/about" },
-            ])
-          ),
+    <ResourceShell>
+      <ResourceHub
+        title="About"
+        highlight="us"
+        description={about.en.lead}
+        meta="Nothing is written without your approval, nothing is mass applied, nothing is invented"
+        cta={{
+          label: "Check your resume score",
+          href: "/en/resume-score",
+          hint: "The fastest way to see whether we do what we claim: read the evidence behind every penalty.",
         }}
-      />
-      <AboutContent />
-    </>
+        trail={[
+          { label: "Resources", href: "/en" },
+          { label: "About", href: "/en/about" },
+        ]}
+      >
+        <AboutSections lang="en" />
+      </ResourceHub>
+    </ResourceShell>
   );
 }

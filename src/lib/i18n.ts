@@ -1,4 +1,4 @@
-export const languages: Record<string, { label: string; flag: string }> = {
+﻿export const languages: Record<string, { label: string; flag: string }> = {
   it: { label: "Italiano", flag: "IT" },
   en: { label: "English", flag: "EN" },
 };
@@ -82,7 +82,7 @@ const it: Record<string, unknown> = {
     titleHighlight: "brillare",
     subtitle: "Strumenti intelligenti progettati per trasformare la tua candidatura in un successo.",
     items: [
-      { title: "Costruzione del CV", desc: "Crea curriculum professionali da zero o genera con AI. Scegli tra 16 template premium ottimizzati per ogni settore.", icon: "M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0112 15a9.065 9.065 0 00-6.23.693L5 14.5m14.8.8l1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0112 21c-2.773 0-5.491-.235-8.135-.687-1.718-.293-2.3-2.379-1.067-3.61L5 14.5", color: "#818cf8" },
+      { title: "Costruzione del CV", desc: "Crea curriculum professionali da zero o genera con AI. Scegli tra 15 template premium ottimizzati per ogni settore.", icon: "M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0112 15a9.065 9.065 0 00-6.23.693L5 14.5m14.8.8l1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0112 21c-2.773 0-5.491-.235-8.135-.687-1.718-.293-2.3-2.379-1.067-3.61L5 14.5", color: "#818cf8" },
       { title: "Ottimizzazione ATS", desc: "Analisi approfondita della compatibilità ATS con score dettagliato, keyword matching e suggerimenti per superare i filtri automatici.", icon: "M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z", color: "#a78bfa" },
       { title: "Personalizzazione per Offerte", desc: "Adatta il tuo CV a ogni singola offerta di lavoro. L'AI analizza la job description e ottimizza parole chiave e contenuti.", icon: "M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182", color: "#60a5fa" },
       { title: "Riscrittura Automatica", desc: "Trasforma i tuoi bullet point in risultati misurabili. L'AI riscrive ogni esperienza con formato STAR e metriche d'impatto.", icon: "M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z", color: "#e879f9" },
@@ -264,7 +264,7 @@ const it: Record<string, unknown> = {
     atsBadge: "ATS Compatibile",
     multiLangBadge: "Multi-lingua",
     seoBadge: "SEO Friendly",
-    statLine: "+5000 candidati assunti con il nostro curriculum negli ultimi 12 mesi",
+    statLine: "Annunci verificati con fonte e data di controllo: nessun posizionamento a pagamento",
   },
   pricing: {
     title: "Prezzi",
@@ -274,8 +274,8 @@ const it: Record<string, unknown> = {
     yearly: "Annuale",
     plans: [
       { name: "Free", price: "0", desc: "Per iniziare", features: ["Analisi base CV", "Score ATS", "1 template", "3 crediti AI di prova", "Export PDF", "1 CV attivo", "Supporto via email"], cta: "Inizia Gratis" },
-      { name: "Starter", price: "4.99", desc: "Per chi vuole usare l'AI", features: ["50 crediti AI al mese", "Analisi CV con AI", "Generazione CV con AI", "Riscrittura bullet point", "Simulazione colloqui", "Tutti i 16 template", "Export PDF/DOC/TXT"], priceYearly: "3.99", cta: "Sottoscrivi" },
-      { name: "Pro", price: "6.99", desc: "Per professionisti", features: ["500 crediti AI al mese", "Tutti i 16 template", "Career kit completo", "Export PDF/DOC/TXT", "Priorità supporto", "Versioni CV per offerta illimitate", "Riscrittura bullet con AI"], priceYearly: "4.99", cta: "Passa a Pro" },
+      { name: "Starter", price: "4.99", desc: "Per chi vuole usare l'AI", features: ["50 crediti AI al mese", "Analisi CV con AI", "Generazione CV con AI", "Riscrittura bullet point", "Simulazione colloqui", "Tutti i 15 template", "Export PDF/DOC/TXT"], priceYearly: "3.99", cta: "Sottoscrivi" },
+      { name: "Pro", price: "6.99", desc: "Per professionisti", features: ["500 crediti AI al mese", "Tutti i 15 template", "Career kit completo", "Export PDF/DOC/TXT", "Priorità supporto", "Versioni CV per offerta illimitate", "Riscrittura bullet con AI"], priceYearly: "4.99", cta: "Passa a Pro" },
       { name: "Enterprise", price: "9.99", desc: "Per team e aziende", features: ["2000 crediti AI al mese", "Tutto del piano Pro", "API access", "CV illimitati per team", "Admin dashboard", "Supporto dedicato", "Integrazione ATS aziendale"], priceYearly: "6.99", cta: "Contatta Vendite" },
     ],
     trust: ["Pagamento sicuro", "Attivazione immediata", "Cancella quando vuoi", "Supporto in italiano"],
@@ -621,11 +621,11 @@ const it: Record<string, unknown> = {
     title: "Chi siamo",
     body: "Curriculuxe è un job-search copilot AI per l'Italia e l'Europa. Niente invio massivo di candidature, niente invenzioni di esperienza: preview, approvazione, salvataggio. Il Loop Discover, Assess, Tailor, Prepare, Track guida ogni opportunità come workspace persistente.",
     contact: "Contatto:",
-    note: "Ispirato al modello ResuMax/Atlas, adattato al mercato italiano con 16 template ATS e negoziazione RAL.",
+    note: "Prodotto operativo in Italia ed Europa. Nessun invio massivo di candidature, nessuna esperienza inventata: ogni modifica al CV passa dalla tua approvazione.",
   },
   templates: {
     title: "Template CV ATS-friendly",
-    subtitle: "16 modelli curati — ogni template passa i filtri ATS (sezioni standard, contatti leggibili, keyword ≥55%).",
+    subtitle: "15 modelli curati — ogni template passa i filtri ATS (sezioni standard, contatti leggibili, keyword ≥55%).",
     useTemplate: "Usa questo template →",
     viewAllPrefix: "Vuoi vedere tutti i 16? Vai in",
     viewAllCta: "Crea CV",
@@ -1036,7 +1036,7 @@ const en: Record<string, unknown> = {
     atsBadge: "ATS Compatible",
     multiLangBadge: "Multi-language",
     seoBadge: "SEO Friendly",
-    statLine: "+5,000 candidates hired with our CVs in the last 12 months",
+    statLine: "Verified postings with source and check date: no paid placement",
   },
   pricing: {
     title: "Pricing",
@@ -1046,8 +1046,8 @@ const en: Record<string, unknown> = {
     yearly: "Yearly",
     plans: [
       { name: "Free", price: "0", desc: "To get started", features: ["Basic CV analysis", "ATS Score", "1 template", "3 trial AI credits", "PDF export", "1 active CV", "Email support"], cta: "Start Free" },
-      { name: "Starter", price: "4.99", desc: "For AI beginners", features: ["50 AI credits per month", "AI CV analysis", "AI CV generation", "Bullet point rewriting", "Interview simulation", "All 16 templates", "PDF/DOC/TXT export"], priceYearly: "3.99", cta: "Subscribe" },
-      { name: "Pro", price: "6.99", desc: "For professionals", features: ["500 AI credits per month", "All 16 templates", "Full career kit", "PDF/DOC/TXT export", "Priority support", "Unlimited CV versions per offer", "AI bullet rewriting"], priceYearly: "4.99", cta: "Go Pro" },
+      { name: "Starter", price: "4.99", desc: "For AI beginners", features: ["50 AI credits per month", "AI CV analysis", "AI CV generation", "Bullet point rewriting", "Interview simulation", "All 15 templates", "PDF/DOC/TXT export"], priceYearly: "3.99", cta: "Subscribe" },
+      { name: "Pro", price: "6.99", desc: "For professionals", features: ["500 AI credits per month", "All 15 templates", "Full career kit", "PDF/DOC/TXT export", "Priority support", "Unlimited CV versions per offer", "AI bullet rewriting"], priceYearly: "4.99", cta: "Go Pro" },
       { name: "Enterprise", price: "9.99", desc: "For teams & companies", features: ["2000 AI credits per month", "Everything in Pro", "API access", "Unlimited team CVs", "Admin dashboard", "Dedicated support", "Corporate ATS integration"], priceYearly: "6.99", cta: "Contact Sales" },
     ],
     trust: ["Secure payment", "Instant activation", "Cancel anytime", "Italian support"],
@@ -1393,7 +1393,7 @@ const en: Record<string, unknown> = {
     title: "About us",
     body: "Curriculuxe is an AI job-search copilot for Italy and Europe. No mass applying, no invented experience: preview, approval, save. The Discover, Assess, Tailor, Prepare, Track loop guides every opportunity as a persistent workspace.",
     contact: "Contact:",
-    note: "Inspired by the ResuMax/Atlas model, adapted to the Italian market with 16 ATS templates and salary negotiation.",
+    note: "Product operating in Italy and Europe. No mass applications, no invented experience: every change to your CV goes through your approval.",
   },
   templates: {
     title: "ATS-friendly CV templates",

@@ -1,7 +1,9 @@
-import type { MetadataRoute } from "next";
-import { guides } from "@/lib/guides";
+﻿import type { MetadataRoute } from "next";
+import { guides } from "@/content/guides";
+import { roadmaps } from "@/content/roadmaps";
+import { projects } from "@/content/projects";
 import { jobCatalog } from "@/lib/jobs";
-import { absUrl } from "@/lib/seo";
+import { absUrl, hasEnglishVersion } from "@/lib/seo";
 
 const lastModified = new Date("2026-10-08");
 
@@ -27,6 +29,7 @@ const staticRoutes: Entry[] = [
   { path: "/salaries", priority: 0.7, changeFrequency: "monthly" },
   { path: "/register", priority: 0.7, changeFrequency: "monthly" },
   { path: "/about", priority: 0.5, changeFrequency: "monthly" },
+  { path: "/contatti", priority: 0.4, changeFrequency: "yearly" },
   { path: "/privacy", priority: 0.3, changeFrequency: "yearly" },
   { path: "/terms", priority: 0.3, changeFrequency: "yearly" },
 ];
@@ -45,13 +48,15 @@ const englishRoutes: Entry[] = [
 function withHreflang(path: string, lang: "it" | "en") {
   const clean = path === "" ? "/" : path;
   const enPath = clean === "/" ? "/en" : `/en${clean}`;
-  return {
-    languages: {
-      it: absUrl(clean),
-      en: absUrl(enPath),
-      "x-default": absUrl(clean),
-    },
-  };
+  return hasEnglishVersion(clean)
+    ? {
+        languages: {
+          it: absUrl(clean),
+          en: absUrl(enPath),
+          "x-default": absUrl(clean),
+        },
+      }
+    : { languages: { "x-default": absUrl(clean) } };
 }
 
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -83,6 +88,24 @@ export default function sitemap(): MetadataRoute.Sitemap {
     entries.push({
       url: absUrl(`/guides/${guide.slug}`),
       lastModified: new Date(guide.updatedAt),
+      changeFrequency: "monthly",
+      priority: 0.7,
+    });
+  }
+
+  for (const roadmap of roadmaps) {
+    entries.push({
+      url: absUrl(`/roadmaps/${roadmap.slug}`),
+      lastModified: lastModified,
+      changeFrequency: "monthly",
+      priority: 0.8,
+    });
+  }
+
+  for (const project of projects) {
+    entries.push({
+      url: absUrl(`/projects/${project.slug}`),
+      lastModified: lastModified,
       changeFrequency: "monthly",
       priority: 0.7,
     });

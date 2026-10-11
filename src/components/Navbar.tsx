@@ -18,7 +18,10 @@ import {
   FileText,
   ChevronDown,
   Briefcase,
-  Award
+  Award,
+  Map,
+  Banknote,
+  GitCompare
 } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { navHref } from "@/lib/seo";
@@ -34,6 +37,7 @@ interface UserData {
 
 interface NavChild {
   label: string;
+  description?: string;
   href: string;
   icon?: React.ComponentType<{ className?: string }>;
 }
@@ -185,12 +189,12 @@ export default function Navbar() {
       label: (tNav.resources as string) || "Risorse",
       href: "/guides",
       children: [
-        { label: "Guide", href: "/guides", icon: FileText },
-        { label: "Roadmap", href: "/roadmaps", icon: FileText },
-        { label: "Progetti", href: "/projects", icon: LayoutDashboard },
-        { label: "Salaries", href: "/salaries", icon: FileText },
-        { label: "Compare", href: "/compare", icon: FileText },
-        { label: "About", href: "/about", icon: FileText },
+        { label: "Guide", description: "CV, ATS, cover letter, colloqui e negoziazione", href: "/guides", icon: FileText },
+        { label: "Roadmap di carriera", description: "Tappe e criteri di verifica per ruolo", href: "/roadmaps", icon: Map },
+        { label: "Progetti da portfolio", description: "Cosa costruire per dimostrare una skill", href: "/projects", icon: LayoutDashboard },
+        { label: "Stipendi tech", description: "Fasce dagli annunci verificati, con fonte e n", href: "/salaries", icon: Banknote },
+        { label: "Confronto", description: "Cosa facciamo, cosa no, e cosa fanno i builder generici", href: "/compare", icon: GitCompare },
+        { label: "Chi siamo", description: "Missione, principi, privacy e contatti", href: "/about", icon: FileText },
       ],
     },
     { label: tNav.pricing as string, href: "/pricing" },
@@ -327,7 +331,13 @@ export default function Navbar() {
                           transition={{ duration: 0.15 }}
                           className="absolute left-1/2 -translate-x-1/2 top-full pt-2 z-50"
                         >
-                          <div className="min-w-[220px] rounded-2xl border border-white/10 bg-[#18181b]/95 backdrop-blur-xl shadow-lg shadow-black/30 p-2">
+                          <div
+                            className={`rounded-2xl border border-white/10 bg-[#18181b]/95 backdrop-blur-xl shadow-lg shadow-black/30 p-2 ${
+                              link.children.some((child) => child.description)
+                                ? "min-w-[320px]"
+                                : "min-w-[220px]"
+                            }`}
+                          >
                             {link.children.map((child) => {
                               const ChildIcon = child.icon;
                               return (
@@ -335,10 +345,19 @@ export default function Navbar() {
                                   key={child.label}
                                   href={navHref(lang, child.href)}
                                   onClick={() => setOpenDropdown(null)}
-                                  className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-zinc-400 hover:text-white transition-all hover:bg-white/5"
+                                  className="flex items-start gap-2.5 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-zinc-400 hover:text-white transition-all hover:bg-white/5"
                                 >
-                                  {ChildIcon && <ChildIcon className="w-4 h-4 text-zinc-500" />}
-                                  {child.label}
+                                  {ChildIcon && (
+                                    <ChildIcon className="w-4 h-4 text-zinc-500 mt-0.5 shrink-0" />
+                                  )}
+                                  <span className="min-w-0">
+                                    <span className="block">{child.label}</span>
+                                    {child.description && (
+                                      <span className="block text-[11px] font-normal text-zinc-500 leading-snug mt-0.5">
+                                        {child.description}
+                                      </span>
+                                    )}
+                                  </span>
                                 </Link>
                               );
                             })}
