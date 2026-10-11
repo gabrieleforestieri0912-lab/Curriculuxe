@@ -84,7 +84,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
 
         <ResourceBreadcrumb
           trail={[
-            { label: "Risorse", href: "/projects" },
+            { label: "Home", href: "/" },
             { label: "Progetti da portfolio", href: "/projects" },
             { label: project.title },
           ]}

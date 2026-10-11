@@ -24,7 +24,7 @@ export const faqIt: FAQItem[] = [
   },
   {
     q: "I template sono davvero sicuri per gli ATS?",
-    a: "Sì: i 16 template usano layout a colonna singola, font standard e sezioni etichettate che i parser leggono senza errori. Puoi esportare in PDF, DOC o TXT e verificare lo score prima dell'invio.",
+    a: "Sì: i 15 template usano layout a colonna singola, font standard e sezioni etichettate che i parser leggono senza errori. Puoi esportare in PDF, DOC o TXT e verificare lo score prima dell'invio.",
     category: "product",
   },
   {
@@ -44,7 +44,7 @@ export const faqIt: FAQItem[] = [
   },
   {
     q: "I dati del mio CV dove vanno a finire?",
-    a: "I tuoi dati sono salvati su database europeo (Supabase) e il testo inviato all'AI serve solo a produrre il risultato richiesto: non viene venduto né usato per addestrare modelli pubblici. Puoi chiedere accesso o cancellazione completa scrivendo a gabriele.forestieri0912@gmail.com.",
+    a: "I tuoi dati sono salvati su database europeo (Supabase) e il testo inviato all'AI serve solo a produrre il risultato richiesto: non viene venduto né usato per addestrare modelli pubblici. Puoi chiedere accesso o cancellazione completa dalla pagina contatti.",
     category: "ai",
   },
   {
@@ -77,7 +77,7 @@ export const faqEn: FAQItem[] = [
   },
   {
     q: "Are the templates really ATS-safe?",
-    a: "Yes: all 16 templates use single-column layouts, standard fonts and labeled sections that parsers read without errors. You can export to PDF, DOC or TXT and check the score before sending.",
+    a: "Yes: all 15 templates use single-column layouts, standard fonts and labeled sections that parsers read without errors. You can export to PDF, DOC or TXT and check the score before sending.",
     category: "product",
   },
   {
@@ -97,7 +97,7 @@ export const faqEn: FAQItem[] = [
   },
   {
     q: "Where does my CV data go?",
-    a: "Your data is stored on a European database (Supabase) and text sent to the AI is used only to produce the requested result: it is never sold nor used to train public models. You can request access or full deletion at gabriele.forestieri0912@gmail.com.",
+    a: "Your data is stored on a European database (Supabase) and text sent to the AI is used only to produce the requested result: it is never sold nor used to train public models. You can request access or full deletion from the contact page.",
     category: "ai",
   },
   {

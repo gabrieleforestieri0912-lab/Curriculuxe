@@ -1,7 +1,7 @@
 ﻿export const dynamic = "force-static";
 
 import { guides } from "@/content/guides";
-import { absUrl, supportEmail } from "@/lib/seo";
+import { absUrl } from "@/lib/seo";
 
 export function GET() {
   const content = `# Curriculuxe
@@ -66,10 +66,10 @@ ${guides.map((g) => `- [${g.title}](${absUrl(`/guides/${g.slug}`)})`).join("\n")
 
 ## MCP (Model Context Protocol)
 Endpoint: ${absUrl("/api/mcp")} (Streamable HTTP, auth via browser OAuth)
-Tool read-only su Free (search_jobs, view_career_context) e write su Pro/Premium (tailor, cover letter, pipeline). Nessun invio massivo di candidature.
+Tool read-only su Free (search_jobs, view_career_context) e write su Starter/Pro/Enterprise (tailor, cover letter, pipeline). Nessun invio massivo di candidature.
 
 ## Contatti
-- Email: ${supportEmail}
+- Pagina contatti: ${absUrl("/contatti")}
 `;
   return new Response(content, {
     headers: {

@@ -6,8 +6,6 @@ export const siteUrl = (
 
 export const siteName = "Curriculuxe";
 
-export const supportEmail = "gabriele.forestieri0912@gmail.com";
-
 export const socialProfiles = {
   github: "https://github.com/gabrieleforestieri0912-lab",
 };
@@ -157,18 +155,12 @@ export function organizationSchema() {
     image: absUrl("/curriculuxe.png"),
     description:
       "Curriculuxe e' la piattaforma AI per creare, ottimizzare e analizzare curriculum professionali: score ATS, generazione CV con AI e preparazione ai colloqui.",
-    email: supportEmail,
     foundingDate: "2025",
     areaServed: ["IT", "EU", "US", "GB"],
     knowsLanguage: ["it", "en"],
+    // I contatti passano dalla pagina /contatti: nessuna email personale
+    // esposta nei dati strutturati.
     sameAs: [socialProfiles.github],
-    contactPoint: {
-      "@type": "ContactPoint",
-      contactType: "customer support",
-      email: supportEmail,
-      availableLanguage: ["Italian", "English"],
-      areaServed: ["IT", "EU"],
-    },
   };
 }
 

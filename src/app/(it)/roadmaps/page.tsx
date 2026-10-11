@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import ResourceShell from "@/components/ResourceShell";
 import ResourceHub from "@/components/resources/ResourceHub";
 import RoadmapExplorer from "@/components/resources/RoadmapExplorer";
@@ -35,7 +35,7 @@ export default function RoadmapsPage() {
           href: "/resume-score",
           hint: "Vedi quali skill di queste roadmap hai gia' nel CV e quali ti mancano.",
         }}
-        trail={[{ label: "Risorse", href: "/roadmaps" }, { label: "Roadmap di carriera" }]}
+        trail={[{ label: "Home", href: "/" }, { label: "Roadmap di carriera" }]}
       >
         <script
           type="application/ld+json"

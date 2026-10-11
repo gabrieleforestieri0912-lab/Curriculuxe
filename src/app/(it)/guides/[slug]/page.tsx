@@ -104,7 +104,7 @@ export default async function GuidePage({ params }: { params: Promise<{ slug: st
 
         <ResourceBreadcrumb
           trail={[
-            { label: "Risorse", href: "/guides" },
+            { label: "Home", href: "/" },
             { label: "Guide", href: "/guides" },
             { label: guide.title },
           ]}

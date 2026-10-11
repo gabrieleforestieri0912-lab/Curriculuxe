@@ -259,8 +259,9 @@ const it: Record<string, unknown> = {
     },
   },
   companies: {
-    title: "Usato dai migliori",
-    subtitle: "Professionisti e aziende di tutto il mondo si affidano ad Curriculuxe",
+    title: "Le aziende con annunci verificati",
+    subtitle: "Queste aziende hanno offerte pubblicate sul Career Market, ognuna con fonte e data di controllo",
+    cta: "Apri il Career Market",
     atsBadge: "ATS Compatibile",
     multiLangBadge: "Multi-lingua",
     seoBadge: "SEO Friendly",
@@ -1031,8 +1032,9 @@ const en: Record<string, unknown> = {
     },
   },
   companies: {
-    title: "Used by the best",
-    subtitle: "Professionals and companies worldwide trust Curriculuxe",
+    title: "Companies with verified postings",
+    subtitle: "These companies have offers published in the Career Market, each with source and check date",
+    cta: "Open the Career Market",
     atsBadge: "ATS Compatible",
     multiLangBadge: "Multi-language",
     seoBadge: "SEO Friendly",

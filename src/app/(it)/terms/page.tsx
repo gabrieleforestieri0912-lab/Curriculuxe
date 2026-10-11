@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import { buildMetadata } from "@/lib/seo";
 
 export const metadata = buildMetadata({
@@ -10,7 +10,7 @@ export const metadata = buildMetadata({
   keywords: ["termini di servizio Curriculuxe", "condizioni d'uso"],
 });
 
-const CONTACT_EMAIL = "gabriele.forestieri0912@gmail.com";
+
 
 export default function TermsPage() {
   return (
@@ -79,9 +79,7 @@ export default function TermsPage() {
               <li>Vietati: invio massivo automatizzato di candidature (spam-apply), scraping, reverse engineering, aggiramento di limiti tecnici o dei crediti, compromissione della sicurezza del Servizio.</li>
               <li>Possiamo sospendere o chiudere account in caso di violazioni, abusi o mancati pagamenti, con preavviso ove possibile.</li>
               <li>Puoi chiedere in qualsiasi momento la cancellazione dell&apos;account e dei dati associati scrivendo a{" "}
-                <a href={`mailto:${CONTACT_EMAIL}`} className="text-indigo-300 hover:text-indigo-200">
-                  {CONTACT_EMAIL}
-                </a>
+                <Link href="/contatti" className="text-indigo-300 hover:text-indigo-200">pagina contatti</Link>
                 .
               </li>
             </ul>
@@ -136,9 +134,7 @@ export default function TermsPage() {
               Questi Termini sono regolati dalla legge italiana. Per controversie con
               i consumatori è competente il foro del consumatore. Per assistenza o
               segnalazioni scrivi a{" "}
-              <a href={`mailto:${CONTACT_EMAIL}`} className="text-indigo-300 hover:text-indigo-200">
-                {CONTACT_EMAIL}
-              </a>
+              <Link href="/contatti" className="text-indigo-300 hover:text-indigo-200">pagina contatti</Link>
               . L&apos;informativa sul trattamento dei dati è nella{" "}
               <Link href="/privacy" className="text-indigo-300 hover:text-indigo-200">
                 Privacy Policy
@@ -169,9 +165,7 @@ export default function TermsPage() {
               le email di servizio su Resend. Conserviamo i dati finché
               l&apos;account è attivo; puoi chiedere accesso, rettifica o
               cancellazione scrivendo a{" "}
-              <a href={`mailto:${CONTACT_EMAIL}`} className="text-indigo-300 hover:text-indigo-200">
-                {CONTACT_EMAIL}
-              </a>
+              <Link href="/contatti" className="text-indigo-300 hover:text-indigo-200">pagina contatti</Link>
               . L&apos;informativa completa è nella{" "}
               <Link href="/privacy" className="text-indigo-300 hover:text-indigo-200">
                 Privacy Policy

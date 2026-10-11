@@ -1,28 +1,24 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useMemo } from "react";
+import Link from "next/link";
 import { useLanguage } from "@/context/LanguageContext";
-import CompanyLogo from "./CompanyLogos";
+import { navHref } from "@/lib/seo";
+import { jobCatalog } from "@/lib/jobs";
 
-const companyNames: string[] = [
-  "Google",
-  "Apple",
-  "Microsoft",
-  "Amazon",
-  "Meta",
-  "Salesforce",
-  "Spotify",
-  "Airbnb",
-  "GitHub",
-  "LinkedIn",
-  "Slack",
-  "Discord",
-  "Shopify",
-];
-
+/**
+ * Le aziende mostrate sono esattamente quelle con almeno un annuncio nel
+ * Career Market: niente loghi di terze parti, niente claim di utilizzo.
+ */
 export default function CompaniesSection() {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const tCompanies = t.companies as Record<string, string>;
+
+  const companies = useMemo(
+    () => [...new Set(jobCatalog.map((job) => job.company))],
+    []
+  );
 
   return (
     <section className="py-16 sm:py-20 overflow-hidden">
@@ -39,6 +35,12 @@ export default function CompaniesSection() {
         <p className="text-zinc-400 max-w-xl mx-auto">
           {tCompanies.subtitle as string}
         </p>
+        <Link
+          href={navHref(lang, "/career-market")}
+          className="mt-4 inline-block text-sm font-semibold text-fuchsia-400 hover:text-fuchsia-300 transition-colors"
+        >
+          {tCompanies.cta as string} →
+        </Link>
       </motion.div>
 
       <div
@@ -48,10 +50,16 @@ export default function CompaniesSection() {
           WebkitMaskImage: "linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%)",
         } as React.CSSProperties}
       >
-        <div className="marquee-track" style={{ "--marquee-duration": "45s" } as React.CSSProperties}>
-          {[...companyNames, ...companyNames].map((name, i) => (
-            <div key={i} className="flex items-center px-14 sm:px-16 py-4">
-              <CompanyLogo name={name} />
+        <div className="marquee-track" style={{ "--marquee-duration": "55s" } as React.CSSProperties}>
+          {[...companies, ...companies].map((name, i) => (
+            <div key={`${name}-${i}`} className="flex items-center shrink-0 px-10 sm:px-12 py-4">
+              <span className="text-lg sm:text-xl font-bold text-zinc-500 hover:text-zinc-200 transition-colors whitespace-nowrap">
+                {name}
+              </span>
+              <span
+                aria-hidden="true"
+                className="ml-10 sm:ml-12 w-1.5 h-1.5 rounded-full bg-fuchsia-500/50 shrink-0"
+              />
             </div>
           ))}
         </div>
@@ -64,9 +72,9 @@ export default function CompaniesSection() {
         transition={{ delay: 0.3 }}
         className="mt-8 text-center px-6"
       >
-          <p className="text-zinc-500 text-sm">
-            {tCompanies.statLine as string}
-          </p>
+        <p className="text-zinc-500 text-sm">
+          {tCompanies.statLine as string}
+        </p>
         <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-10 mt-4">
           {[tCompanies.atsBadge, tCompanies.multiLangBadge, tCompanies.seoBadge].map((label) => (
             <div key={label} className="flex items-center gap-2">

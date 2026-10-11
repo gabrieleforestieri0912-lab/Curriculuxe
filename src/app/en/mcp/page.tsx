@@ -6,7 +6,7 @@ export const metadata = buildMetadata({
   lang: "en",
   title: "Connect AI - MCP Server for ChatGPT and Claude",
   description:
-    "Connect Curriculuxe to ChatGPT or Claude through MCP (Streamable HTTP). Free read access, Pro write access with explicit approval before every change.",
+    "Connect Curriculuxe to ChatGPT or Claude through MCP (Streamable HTTP). Free read access, write access on paid plans with explicit approval before every change.",
   path: "/mcp",
   keywords: [
     "MCP server",
@@ -93,7 +93,7 @@ export default function EnglishMcpPage() {
               <tr>
                 <th className="text-left p-3">Tool</th>
                 <th className="p-3">Free</th>
-                <th className="p-3">Pro/Premium</th>
+                <th className="p-3">Paid plans</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-white/5 text-zinc-300">

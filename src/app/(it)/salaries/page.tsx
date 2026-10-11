@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import ResourceShell from "@/components/ResourceShell";
 import ResourceHub from "@/components/resources/ResourceHub";
 import SalaryExplorer from "@/components/resources/SalaryExplorer";
@@ -42,7 +42,7 @@ export default function SalariesPage() {
           href: "/guides/negoziazione-ral",
           hint: "Le fasce servono a dare una cifra di partenza. Qui trovi quando chiedere e come.",
         }}
-        trail={[{ label: "Risorse", href: "/salaries" }, { label: "Stipendi tech" }]}
+        trail={[{ label: "Home", href: "/" }, { label: "Stipendi tech" }]}
       >
         <script
           type="application/ld+json"

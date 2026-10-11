@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import ResourceShell from "@/components/ResourceShell";
 import ResourceHub from "@/components/resources/ResourceHub";
 import ProjectExplorer from "@/components/resources/ProjectExplorer";
@@ -33,7 +33,7 @@ export default function ProjectsPage() {
           href: "/resume-score",
           hint: "Trova la skill che ti manca, poi torna qui e scegli il progetto che la dimostra.",
         }}
-        trail={[{ label: "Risorse", href: "/projects" }, { label: "Progetti da portfolio" }]}
+        trail={[{ label: "Home", href: "/" }, { label: "Progetti da portfolio" }]}
       >
         <script
           type="application/ld+json"

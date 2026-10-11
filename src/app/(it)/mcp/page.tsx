@@ -6,7 +6,7 @@ export const metadata = buildMetadata({
   lang: "it",
   title: "Connect AI - Server MCP per ChatGPT e Claude",
   description:
-    "Collega Curriculuxe a ChatGPT e Claude tramite MCP (Streamable HTTP). Lettura gratuita, scrittura per Pro/Premium con approvazione esplicita.",
+    "Collega Curriculuxe a ChatGPT e Claude tramite MCP (Streamable HTTP). Lettura gratuita, scrittura sui piani a pagamento con approvazione esplicita.",
   path: "/mcp",
   keywords: [
     "server MCP",
@@ -57,12 +57,10 @@ export default function McpPage() {
 
         <div className="mt-8 rounded-2xl border border-white/10 overflow-hidden">
           <table className="w-full text-sm">
-            <thead className="bg-white/5 text-zinc-400"><tr><th className="text-left p-3">Tool</th><th className="p-3">Free</th><th className="p-3">Pro/Premium</th></tr></thead>
+            <thead className="bg-white/5 text-zinc-400"><tr><th className="text-left p-3">Tool</th><th className="p-3">Free</th><th className="p-3">Piani a pagamento</th></tr></thead>
             <tbody className="divide-y divide-white/5 text-zinc-300">
-              <tr><td className="p-3">search_jobs</td><td className="p-3 text-center">✓ lettura</td><td className="p-3 text-center">✓</td></tr>
-              <tr><td className="p-3">view_career_context (redacted)</td><td className="p-3 text-center">✓</td><td className="p-3 text-center">✓</td></tr>
-              <tr><td className="p-3">check_plan_usage</td><td className="p-3 text-center">✓</td><td className="p-3 text-center">✓</td></tr>
-              <tr><td className="p-3">match_jobs_personalized / tailor / cover letter</td><td className="p-3 text-center text-zinc-600">upsell</td><td className="p-3 text-center text-emerald-300">✓ write</td></tr>
+              <tr><td className="p-3">search_jobs, view_career_context, check_plan_usage</td><td className="p-3 text-center">✓ lettura</td><td className="p-3 text-center">✓</td></tr>
+              <tr><td className="p-3">match_jobs_personalized, tailor, cover letter</td><td className="p-3 text-center text-zinc-600">upsell</td><td className="p-3 text-center text-emerald-300">✓ write</td></tr>
             </tbody>
           </table>
         </div>

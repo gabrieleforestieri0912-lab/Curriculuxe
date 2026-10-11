@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import { buildMetadata } from "@/lib/seo";
 
 export const metadata = buildMetadata({
@@ -10,7 +10,7 @@ export const metadata = buildMetadata({
   keywords: ["privacy policy Curriculuxe", "GDPR", "informativa privacy"],
 });
 
-const CONTACT_EMAIL = "gabriele.forestieri0912@gmail.com";
+
 
 export default function PrivacyPage() {
   return (
@@ -33,9 +33,7 @@ export default function PrivacyPage() {
               Il titolare del trattamento dei dati è il team di Curriculuxe. Per
               qualsiasi richiesta relativa alla privacy (accesso, rettifica,
               cancellazione, opposizione) puoi scrivere a{" "}
-              <a href={`mailto:${CONTACT_EMAIL}`} className="text-indigo-300 hover:text-indigo-200">
-                {CONTACT_EMAIL}
-              </a>
+              <Link href="/contatti" className="text-indigo-300 hover:text-indigo-200">pagina contatti</Link>
               . Rispondiamo di norma entro 30 giorni.
             </p>
           </section>
@@ -141,9 +139,7 @@ export default function PrivacyPage() {
               necessario alle finalità descritte o agli obblighi di legge (es. dati
               fiscali legati ai pagamenti). Puoi chiedere in qualsiasi momento la
               cancellazione dell&apos;account e dei dati associati scrivendo a{" "}
-              <a href={`mailto:${CONTACT_EMAIL}`} className="text-indigo-300 hover:text-indigo-200">
-                {CONTACT_EMAIL}
-              </a>
+              <Link href="/contatti" className="text-indigo-300 hover:text-indigo-200">pagina contatti</Link>
               .
             </p>
           </section>
@@ -154,9 +150,7 @@ export default function PrivacyPage() {
               Hai diritto di accedere, rettificare, cancellare i tuoi dati, limitarne
               od opporti al trattamento, richiederne la portabilità e revocare il
               consenso ove prestato. Puoi esercitarli scrivendo a{" "}
-              <a href={`mailto:${CONTACT_EMAIL}`} className="text-indigo-300 hover:text-indigo-200">
-                {CONTACT_EMAIL}
-              </a>
+              <Link href="/contatti" className="text-indigo-300 hover:text-indigo-200">pagina contatti</Link>
               . Hai inoltre diritto di proporre reclamo al Garante per la protezione
               dei dati personali (www.garanteprivacy.it).
             </p>

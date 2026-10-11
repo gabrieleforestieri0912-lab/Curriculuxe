@@ -105,7 +105,7 @@ export default async function RoadmapPage({ params }: { params: Promise<{ slug: 
 
         <ResourceBreadcrumb
           trail={[
-            { label: "Risorse", href: "/roadmaps" },
+            { label: "Home", href: "/" },
             { label: "Roadmap di carriera", href: "/roadmaps" },
             { label: roadmap.title },
           ]}

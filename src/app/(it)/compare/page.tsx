@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import Link from "next/link";
 import { Check, Minus, HelpCircle } from "lucide-react";
 import ResourceShell from "@/components/ResourceShell";
@@ -74,7 +74,7 @@ export default function ComparePage() {
           href: "/resume-score",
           hint: "Il confronto si verifica in un minuto: carica il CV e guarda l'evidenza di ogni penalita'.",
         }}
-        trail={[{ label: "Risorse", href: "/compare" }, { label: "Confronto" }]}
+        trail={[{ label: "Home", href: "/" }, { label: "Confronto" }]}
       >
         <script
           type="application/ld+json"

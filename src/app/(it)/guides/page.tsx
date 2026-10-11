@@ -1,8 +1,8 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import ResourceShell from "@/components/ResourceShell";
 import ResourceHub from "@/components/resources/ResourceHub";
 import GuideExplorer from "@/components/resources/GuideExplorer";
-import { guides } from "@/content/guides";
+import { guides, guideCategoryLabels } from "@/content/guides";
 import { breadcrumbSchema, buildMetadata, collectionPageSchema, jsonLd } from "@/lib/seo";
 
 export const metadata: Metadata = buildMetadata({
@@ -22,7 +22,16 @@ export const metadata: Metadata = buildMetadata({
   ],
 });
 
-export default function GuidesPage() {
+export default async function GuidesPage({
+  searchParams,
+}: {
+  searchParams?: Promise<{ category?: string }>;
+}) {
+  const params = (await searchParams) ?? {};
+  const initialCategory =
+    typeof params.category === "string" && params.category in guideCategoryLabels
+      ? (params.category as keyof typeof guideCategoryLabels)
+      : "";
   return (
     <ResourceShell>
       <ResourceHub
@@ -33,9 +42,9 @@ export default function GuidesPage() {
         cta={{
           label: "Analizza il tuo CV",
           href: "/resume-score",
-          hint: "Verifica in seconds quali delle regole di queste guide il tuo CV rispetta già e quali no.",
+          hint: "Verifica in pochi secondi quali regole di queste guide il tuo CV rispetta gia' e quali no.",
         }}
-        trail={[{ label: "Risorse", href: "/guides" }, { label: "Guide" }]}
+        trail={[{ label: "Home", href: "/" }, { label: "Guide" }]}
       >
         <script
           type="application/ld+json"
@@ -62,7 +71,7 @@ export default function GuidesPage() {
           }}
         />
 
-        <GuideExplorer />
+        <GuideExplorer initialCategory={initialCategory} />
       </ResourceHub>
     </ResourceShell>
   );

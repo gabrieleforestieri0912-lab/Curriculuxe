@@ -12,9 +12,9 @@ const categoryOptions = (Object.keys(guideCategoryLabels) as GuideCategory[]).ma
   label: guideCategoryLabels[key],
 }));
 
-export default function GuideExplorer() {
+export default function GuideExplorer({ initialCategory = "" }: { initialCategory?: string }) {
   const [query, setQuery] = useState("");
-  const [category, setCategory] = useState("");
+  const [category, setCategory] = useState(initialCategory);
 
   const filtered = useMemo(() => {
     const needle = query.trim().toLowerCase();

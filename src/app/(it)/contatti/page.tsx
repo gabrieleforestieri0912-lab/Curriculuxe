@@ -19,7 +19,7 @@ export default function ContattiPage() {
       <div className="max-w-3xl mx-auto">
         <ResourceBreadcrumb
           trail={[
-            { label: "Risorse", href: "/about" },
+            { label: "Home", href: "/" },
             { label: "Chi siamo", href: "/about" },
             { label: "Contatti" },
           ]}

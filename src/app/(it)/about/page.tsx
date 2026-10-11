@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import ResourceShell from "@/components/ResourceShell";
 import ResourceHub from "@/components/resources/ResourceHub";
 import AboutSections from "@/components/resources/AboutSections";
@@ -33,7 +33,7 @@ export default function AboutPage() {
           href: "/resume-score",
           hint: "Il modo piu' rapido per capire se facciamo quello che diciamo: guarda l'evidenza di ogni penalita'.",
         }}
-        trail={[{ label: "Risorse", href: "/about" }, { label: "Chi siamo" }]}
+        trail={[{ label: "Home", href: "/" }, { label: "Chi siamo" }]}
       >
         <script
           type="application/ld+json"

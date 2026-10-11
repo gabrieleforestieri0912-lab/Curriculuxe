@@ -86,7 +86,7 @@ export default function Pricing() {
     }
 
     if (plan === "Enterprise") {
-      window.location.href = "mailto:gabriele.forestieri0912@gmail.com?subject=Piano Enterprise Curriculuxe";
+      router.push("/contatti");
       return;
     }
 

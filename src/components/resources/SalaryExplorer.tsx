@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import type { DerivedSalaryBand } from "@/content/salaries";
-import { formatBandValue, getRoleGroups, marketLabels } from "@/content/salaries";
+import { formatBandValue, getRoleGroups, marketLabels, seniorityLabels } from "@/content/salaries";
 import ResourceFilters from "./ResourceFilters";
 
 /**
@@ -88,8 +88,12 @@ export default function SalaryExplorer({ bands }: { bands: DerivedSalaryBand[] }
                   <div>
                     <h2 className="text-white font-bold text-lg">{band.roleGroup}</h2>
                     <p className="text-sm text-zinc-500 mt-0.5">
-                      {marketLabels[band.market]} · {band.seniority} ·{" "}
-                      {band.locations.slice(0, 3).join(", ")}
+                      {marketLabels[band.market]} ·{" "}
+                      {band.seniority
+                        .split(", ")
+                        .map((level) => seniorityLabels[level] ?? level)
+                        .join(", ")}{" "}
+                      · {band.locations.slice(0, 3).join(", ")}
                       {band.locations.length > 3 ? ` +${band.locations.length - 3}` : ""}
                     </p>
                   </div>

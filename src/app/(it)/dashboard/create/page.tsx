@@ -275,7 +275,7 @@ function CreateCVContent() {
                   <h2 className="text-2xl font-bold text-white mb-3">{tCreate.title} <span className="text-gradient text-fuchsia-400">{tCreate.titleHighlight}</span></h2>
                   <p className="text-zinc-400 leading-relaxed">{tCreate.subtitleManual || "Compila manualmente ogni sezione del tuo curriculum con l'aiuto della nostra interfaccia guidata."}</p>
                   <div className="mt-6 flex flex-wrap gap-2">
-                    {["Compilazione guidata", "16 template", "Sezioni personalizzabili"].map((tag) => (
+                    {["Compilazione guidata", "15 template", "Sezioni personalizzabili"].map((tag) => (
                       <span key={tag} className="px-3 py-1 rounded-full bg-fuchsia-500/10 text-fuchsia-300 text-xs border border-fuchsia-500/20">{tag}</span>
                     ))}
                   </div>
