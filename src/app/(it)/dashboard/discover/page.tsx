@@ -83,7 +83,17 @@ export default function DiscoverPage() {
   const router = useRouter();
 
   const [profile, setProfile] = useState("");
-  const [market, setMarket] = useState("");
+  // Mercato iniziale dalle impostazioni (se l'utente l'ha scelto).
+  const [market, setMarket] = useState(() => {
+    try {
+      const raw = localStorage.getItem("curriculuxe:job-prefs");
+      if (!raw) return "";
+      const parsed = JSON.parse(raw) as { market?: unknown };
+      return typeof parsed.market === "string" ? parsed.market : "";
+    } catch {
+      return "";
+    }
+  });
   const [digest, setDigest] = useState<ScoredJob[] | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -119,7 +129,13 @@ export default function DiscoverPage() {
   );
 
   useEffect(() => {
-    loadDigest("", "");
+    try {
+      const raw = localStorage.getItem("curriculuxe:job-prefs");
+      const initialMarket = raw ? (JSON.parse(raw) as { market?: unknown }).market : "";
+      loadDigest("", typeof initialMarket === "string" ? initialMarket : "");
+    } catch {
+      loadDigest("", "");
+    }
   }, [loadDigest]);
 
   const handleRefresh = () => {

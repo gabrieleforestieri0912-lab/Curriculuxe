@@ -225,6 +225,17 @@ body {
   }
 }
 
+/* Preferenza "Riduci animazioni" dalle impostazioni: stesso effetto della
+   media query di sistema, ma scelto dall'utente. */
+.reduce-motion *,
+.reduce-motion *::before,
+.reduce-motion *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+
 .skeleton-line {
   position: relative;
   overflow: hidden;

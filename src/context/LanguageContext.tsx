@@ -128,6 +128,14 @@ export function LanguageProvider({
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
+    try {
+      // Applica la preferenza "Riduci animazioni" salvata nelle impostazioni.
+      if (localStorage.getItem("curriculuxe:reduce-motion") === "1") {
+        document.documentElement.classList.add("reduce-motion");
+      }
+    } catch (_e) {
+      // ignore
+    }
     if (fixedLang) {
       setReady(true);
       return;

@@ -41,3 +41,37 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ user: null }, { status: 401 });
   }
 }
+
+export async function PATCH(request: NextRequest) {
+  try {
+    const userCookie = request.cookies.get("user");
+
+    if (!userCookie || !userCookie.value) {
+      return NextResponse.json({ error: "Non autenticato" }, { status: 401 });
+    }
+
+    const cookieUser = verifyUserToken(userCookie.value);
+    if (!cookieUser) {
+      return NextResponse.json({ error: "Token non valido" }, { status: 401 });
+    }
+
+    const { name } = (await request.json()) as { name?: unknown };
+    const cleanName = typeof name === "string" ? name.trim().slice(0, 80) : "";
+
+    if (!cleanName) {
+      return NextResponse.json({ error: "Nome non valido" }, { status: 400 });
+    }
+
+    const { error } = await supabase
+      .from("users")
+      .update({ name: cleanName })
+      .eq("id", cookieUser.id);
+
+    if (error) throw error;
+
+    return NextResponse.json({ name: cleanName }, { status: 200 });
+  } catch (error) {
+    console.error("Error updating profile:", error);
+    return NextResponse.json({ error: "Errore aggiornamento profilo" }, { status: 500 });
+  }
+}
