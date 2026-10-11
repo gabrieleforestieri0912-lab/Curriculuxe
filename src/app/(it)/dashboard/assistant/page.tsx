@@ -275,56 +275,27 @@ export default function AssistantPage() {
   };
 
   const suggestions = (tA.suggestions as string[]) || [];
-  const miniChatLabel = (T("miniChat") as string) || "Mini-chat";
-  const miniChatStatus = (T("miniChatStatus") as string) || "";
+  const hasConversation = messages.length > 0 || sending;
 
   return (
     <div className="pb-10">
-      <div className="max-w-3xl mx-auto flex flex-col" style={{ minHeight: "calc(100vh - 14rem)" }}>
-        <div className="text-center mb-6">
-          <span className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-fuchsia-400 mb-3 px-3 py-1 rounded-full border border-fuchsia-500/30 bg-fuchsia-500/10">
-            <Sparkles className="w-3.5 h-3.5" />
-            {chatName}
-          </span>
-          <h1 className="text-3xl sm:text-4xl font-bold text-white mb-2">{T("title")}</h1>
-          <p className="text-zinc-400 max-w-xl mx-auto text-sm sm:text-base">{T("subtitle")}</p>
-          <div className="mt-3 flex items-center justify-center gap-3 text-xs text-zinc-500">
-            {credits !== null && (
-              <span>{credits} crediti · {T("creditNote")}</span>
-            )}
-            {messages.length > 0 && (
-              <button onClick={() => { setMessages([]); setNoCredits(false); }} className="inline-flex items-center gap-1 hover:text-white transition-colors">
-                <Plus className="w-3.5 h-3.5" />
-                {T("newChat")}
-              </button>
-            )}
-          </div>
-        </div>
-
-        {/* Mini-chat con nome: finestra compatta con header dedicato. */}
-        <div className="rounded-2xl border border-white/10 overflow-hidden bg-black/20 mb-4">
-          <div className="flex items-center gap-3 px-4 py-3 border-b border-white/10 bg-white/[0.03]">
-            <span className="relative flex w-9 h-9 items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 to-fuchsia-500 text-white shrink-0">
-              <Sparkles className="w-4 h-4" />
-              <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-400 border-2 border-[#0d0d12]" />
+      <div className="max-w-3xl mx-auto flex flex-col" style={{ minHeight: "calc(100vh - 12rem)" }}>
+        {!hasConversation ? (
+          /* Stato vuoto: benvenuto + suggerimenti. Sparisce al primo messaggio. */
+          <div className="flex-1 flex flex-col items-center justify-center text-center py-10">
+            <span className="relative flex w-14 h-14 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-500 to-fuchsia-500 text-white shrink-0 mb-5">
+              <Sparkles className="w-7 h-7" />
+              <span className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-emerald-400 border-[3px] border-[#0b0b14]" />
             </span>
-            <div className="min-w-0 text-left">
-              <p className="text-sm font-bold text-white leading-tight">
-                {chatName}
-                <span className="ml-2 align-middle text-[10px] font-semibold uppercase tracking-wider text-fuchsia-300 bg-fuchsia-500/15 border border-fuchsia-500/30 rounded-full px-2 py-0.5">
-                  {miniChatLabel}
-                </span>
-              </p>
-              {miniChatStatus && <p className="text-[11px] text-emerald-300 leading-tight mt-0.5">{miniChatStatus}</p>}
-            </div>
-          </div>
-        </div>
-
-        {messages.length === 0 && !sending && (
-          <div className="text-center mb-6">
-            <p className="text-lg font-semibold text-white mb-1">{T("emptyTitle")}</p>
-            <p className="text-sm text-zinc-500 mb-4">{T("emptyDesc")}</p>
-            <div className="grid sm:grid-cols-2 gap-2.5 text-left">
+            <p className="text-xs font-bold uppercase tracking-widest text-fuchsia-400 mb-2">
+              {chatName}
+            </p>
+            <h1 className="text-3xl sm:text-4xl font-bold text-white mb-2">{T("emptyTitle")}</h1>
+            <p className="text-zinc-400 max-w-xl mx-auto text-sm sm:text-base mb-2">{T("subtitle")}</p>
+            {credits !== null && (
+              <p className="text-xs text-zinc-500 mb-6">{credits} crediti · {T("creditNote")}</p>
+            )}
+            <div className="grid sm:grid-cols-2 gap-2.5 text-left w-full">
               {suggestions.map((s) => (
                 <button
                   key={s}
@@ -336,50 +307,79 @@ export default function AssistantPage() {
               ))}
             </div>
           </div>
+        ) : (
+          /* Conversazione: barra slim + messaggi + input fisso in basso. */
+          <>
+            <div className="flex items-center gap-3 px-4 py-3 rounded-2xl border border-white/10 bg-black/20 backdrop-blur-xl mb-4">
+              <span className="relative flex w-9 h-9 items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 to-fuchsia-500 text-white shrink-0">
+                <Sparkles className="w-4 h-4" />
+                <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-400 border-2 border-[#0d0d12]" />
+              </span>
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-bold text-white leading-tight truncate">{chatName}</p>
+                <p className="text-[11px] text-zinc-500 leading-tight mt-0.5 truncate">
+                  {credits !== null ? `${credits} crediti · ${T("creditNote")}` : T("subtitle")}
+                </p>
+              </div>
+              <button
+                onClick={() => { setMessages([]); setNoCredits(false); }}
+                className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-zinc-300 hover:text-white hover:border-white/25 transition-colors shrink-0"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                {T("newChat")}
+              </button>
+            </div>
+
+            <div ref={scrollRef} className="flex-1 space-y-4 overflow-y-auto pr-1 pb-2" style={{ maxHeight: "calc(100vh - 24rem)", minHeight: "12rem" }}>
+              <AnimatePresence initial={false}>
+                {messages.map((m, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}
+                  >
+                    {m.role === "user" ? (
+                      <div className="max-w-[85%] rounded-2xl rounded-br-md px-4 py-3 bg-indigo-500/20 border border-indigo-500/30 text-white text-sm">
+                        <p className="text-sm leading-relaxed">{m.content}</p>
+                      </div>
+                    ) : (
+                      <div className="max-w-[95%] flex gap-2.5">
+                        <span className="flex w-7 h-7 items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 to-fuchsia-500 text-white shrink-0 mt-1">
+                          <Sparkles className="w-3.5 h-3.5" />
+                        </span>
+                        <div className="glass-card border border-white/10 rounded-2xl rounded-tl-md px-4 py-3 min-w-0">
+                          {parseQuizBlocks(m.content).map((part, j) =>
+                            part.type === "quiz" ? (
+                              <QuizBlock key={j} quiz={part.quiz} t={tA} />
+                            ) : (
+                              <RichText key={j} text={part.text} />
+                            )
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+              {sending && (
+                <div className="flex justify-start">
+                  <div className="flex gap-2.5">
+                    <span className="flex w-7 h-7 items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 to-fuchsia-500 text-white shrink-0 mt-1">
+                      <Sparkles className="w-3.5 h-3.5" />
+                    </span>
+                    <div className="glass-card border border-white/10 rounded-2xl rounded-tl-md px-4 py-3 flex items-center gap-2 text-sm text-zinc-400">
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      {T("thinking")}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </>
         )}
 
-        <div ref={scrollRef} className="flex-1 space-y-4 overflow-y-auto max-h-[52vh] pr-1">
-          <AnimatePresence initial={false}>
-            {messages.map((m, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}
-              >
-                <div
-                  className={`max-w-[88%] rounded-2xl px-4 py-3 ${
-                    m.role === "user"
-                      ? "bg-indigo-500/20 border border-indigo-500/30 text-white text-sm"
-                      : "glass-card border border-white/10 w-full"
-                  }`}
-                >
-                  {m.role === "assistant" ? (
-                    parseQuizBlocks(m.content).map((part, j) =>
-                      part.type === "quiz" ? (
-                        <QuizBlock key={j} quiz={part.quiz} t={tA} />
-                      ) : (
-                        <RichText key={j} text={part.text} />
-                      )
-                    )
-                  ) : (
-                    <p className="text-sm leading-relaxed">{m.content}</p>
-                  )}
-                </div>
-              </motion.div>
-            ))}
-          </AnimatePresence>
-          {sending && (
-            <div className="flex justify-start">
-              <div className="glass-card border border-white/10 rounded-2xl px-4 py-3 flex items-center gap-2 text-sm text-zinc-400">
-                <Loader2 className="w-4 h-4 animate-spin" />
-                {T("thinking")}
-              </div>
-            </div>
-          )}
-        </div>
-
-        {noCredits && (
+        {noCredits && hasConversation && (
           <div className="mt-4 rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-200 flex items-center justify-between gap-3">
             <span>{T("noCredits")}</span>
             <Link href="/#pricing" className="font-semibold underline underline-offset-2 shrink-0">
@@ -388,28 +388,11 @@ export default function AssistantPage() {
           </div>
         )}
 
-        {/* Suggerimenti sempre visibili: anche a conversazione avviata,
-            come chip orizzontali sopra l'input della mini-chat. */}
-        {messages.length > 0 && suggestions.length > 0 && (
-          <div className="mt-4 flex gap-2 overflow-x-auto pb-1 -mx-1 px-1">
-            {suggestions.map((s) => (
-              <button
-                key={s}
-                type="button"
-                onClick={() => send(s)}
-                disabled={sending}
-                className="shrink-0 max-w-[260px] truncate rounded-full border border-white/10 bg-white/5 px-3.5 py-2 text-xs text-zinc-300 hover:border-fuchsia-500/40 hover:text-white hover:bg-white/10 transition-all disabled:opacity-40"
-                title={s}
-              >
-                {s}
-              </button>
-            ))}
-          </div>
-        )}
-
+        {/* Input: in conversazione resta visibile in basso; a chat vuota
+            l'invio parte comunque da qui sotto i suggerimenti. */}
         <form
           onSubmit={(e) => { e.preventDefault(); send(); }}
-          className="mt-4 flex items-end gap-2 rounded-2xl border border-white/10 bg-white/[0.04] p-2 pl-4 backdrop-blur-xl"
+          className="mt-4 flex items-end gap-2 rounded-2xl border border-white/10 bg-white/[0.04] p-2 pl-4 backdrop-blur-xl focus-within:border-fuchsia-500/40 transition-colors"
         >
           <textarea
             value={input}
