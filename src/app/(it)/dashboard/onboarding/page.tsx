@@ -60,32 +60,32 @@ const PHASE_STYLES = [
     glow: "shadow-[0_2px_12px_rgba(232,121,249,0.45)]",
   },
   {
-    badge: "from-indigo-500 to-blue-600",
+    badge: "from-violet-500 to-purple-600",
+    card: "border-violet-500/30",
+    text: "text-violet-300",
+    bar: "from-violet-300 via-violet-500 to-purple-600",
+    glow: "shadow-[0_2px_12px_rgba(167,139,250,0.45)]",
+  },
+  {
+    badge: "from-purple-500 to-fuchsia-600",
+    card: "border-purple-500/30",
+    text: "text-purple-300",
+    bar: "from-purple-300 via-purple-500 to-fuchsia-600",
+    glow: "shadow-[0_2px_12px_rgba(192,132,252,0.45)]",
+  },
+  {
+    badge: "from-indigo-500 to-violet-600",
     card: "border-indigo-500/30",
     text: "text-indigo-300",
-    bar: "from-indigo-300 via-indigo-500 to-blue-600",
+    bar: "from-indigo-300 via-indigo-500 to-violet-600",
     glow: "shadow-[0_2px_12px_rgba(129,140,248,0.45)]",
   },
   {
-    badge: "from-emerald-500 to-teal-600",
-    card: "border-emerald-500/30",
-    text: "text-emerald-300",
-    bar: "from-emerald-300 via-emerald-500 to-teal-600",
-    glow: "shadow-[0_2px_12px_rgba(52,211,153,0.45)]",
-  },
-  {
-    badge: "from-amber-500 to-orange-600",
-    card: "border-amber-500/30",
-    text: "text-amber-300",
-    bar: "from-amber-300 via-amber-500 to-orange-600",
-    glow: "shadow-[0_2px_12px_rgba(251,191,36,0.45)]",
-  },
-  {
-    badge: "from-sky-500 to-cyan-600",
-    card: "border-sky-500/30",
-    text: "text-sky-300",
-    bar: "from-sky-300 via-sky-500 to-cyan-600",
-    glow: "shadow-[0_2px_12px_rgba(56,189,248,0.45)]",
+    badge: "from-pink-500 to-fuchsia-600",
+    card: "border-pink-500/30",
+    text: "text-pink-300",
+    bar: "from-pink-300 via-pink-500 to-fuchsia-600",
+    glow: "shadow-[0_2px_12px_rgba(244,114,182,0.45)]",
   },
 ];
 
@@ -123,6 +123,24 @@ export default function OnboardingPage() {
   const [customSkill, setCustomSkill] = useState("");
   const [error, setError] = useState("");
   const [generating, setGenerating] = useState(false);
+  const [genProgress, setGenProgress] = useState(0);
+  const [genStepIndex, setGenStepIndex] = useState(0);
+  const genSteps = (ob.generatingSteps as string[]) || [];
+
+  // Avanzamento simulato mentre l'AI lavora: la barra tende al 90% e i
+  // passi si accendono in sequenza, così si vede cosa sta succedendo.
+  useEffect(() => {
+    if (!generating) return;
+    setGenProgress(0);
+    setGenStepIndex(0);
+    const startedAt = Date.now();
+    const id = window.setInterval(() => {
+      const elapsed = (Date.now() - startedAt) / 1000;
+      setGenProgress((prev) => Math.min(90, prev + (90 - prev) * 0.05 + 0.5));
+      setGenStepIndex(Math.min(Math.max(genSteps.length - 1, 0), Math.floor(elapsed / 5)));
+    }, 250);
+    return () => window.clearInterval(id);
+  }, [generating, genSteps.length]);
   const [plan, setPlan] = useState<OnboardingPlan | null>(null);
   const [noCredits, setNoCredits] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
@@ -260,6 +278,13 @@ export default function OnboardingPage() {
       setPlan(data.plan as OnboardingPlan);
       setNoCredits(!!data.noCredits);
       await persist(true, data.plan as OnboardingPlan, answers);
+      // Il tour della dashboard parte solo da qui: l'utente ha appena
+      // scelto le opzioni e l'AI ha creato il piano.
+      try {
+        sessionStorage.setItem("curriculuxe:tour-after-plan", "1");
+      } catch {
+        // storage non disponibile: niente tour automatico
+      }
     } catch (err) {
       setError((err as Error).message || T("errorServer"));
     } finally {
@@ -278,18 +303,76 @@ export default function OnboardingPage() {
   };
 
   if (generating) {
+    const rounded = Math.round(genProgress);
     return (
       <div className="min-h-screen flex items-center justify-center px-6">
-        <div className="text-center max-w-md">
-          <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-            className="w-16 h-16 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-indigo-500 to-fuchsia-500 flex items-center justify-center"
-          >
-            <Sparkles className="w-8 h-8 text-white" />
-          </motion.div>
-          <h2 className="text-2xl font-bold text-white mb-2">{T("generating")}</h2>
-          <p className="text-zinc-400">{T("generatingDesc")}</p>
+        <div className="w-full max-w-md">
+          <div className="text-center mb-8">
+            <div className="relative w-16 h-16 mx-auto mb-6">
+              <span
+                aria-hidden="true"
+                className="absolute inset-0 rounded-2xl bg-fuchsia-500/40 animate-ping [animation-duration:1.8s]"
+              />
+              <div className="relative w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-fuchsia-500 flex items-center justify-center glow-border">
+                <Sparkles className="w-8 h-8 text-white" />
+              </div>
+            </div>
+            <h2 className="text-2xl font-bold text-white mb-2">{T("generating")}</h2>
+            <p className="text-zinc-400">{T("generatingDesc")}</p>
+          </div>
+
+          <div className="glass-card rounded-2xl p-6 border border-white/10">
+            <div className="flex items-center justify-between text-sm mb-2">
+              <span className="text-zinc-300 font-medium" aria-live="polite">
+                {genSteps[Math.min(genStepIndex, genSteps.length - 1)]}
+              </span>
+              <span className="text-white font-bold tabular-nums">{rounded}%</span>
+            </div>
+            <div
+              className="h-3 rounded-full bg-black/50 border border-white/10 overflow-hidden shadow-[inset_0_2px_6px_rgba(0,0,0,0.7)]"
+              role="progressbar"
+              aria-valuenow={rounded}
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-label={T("generating")}
+            >
+              <div
+                className="h-full rounded-full bg-gradient-to-r from-indigo-400 via-fuchsia-500 to-fuchsia-400 transition-[width] duration-300 shadow-[0_2px_12px_rgba(232,121,249,0.45)]"
+                style={{ width: `${rounded}%` }}
+              />
+            </div>
+            <ul className="mt-5 space-y-2.5">
+              {genSteps.map((label, index) => {
+                const done = index < genStepIndex;
+                const active = index === genStepIndex;
+                return (
+                  <li key={label} className="flex items-center gap-3 text-sm">
+                    <span
+                      aria-hidden="true"
+                      className={`w-5 h-5 rounded-full flex items-center justify-center shrink-0 transition-colors ${
+                        done
+                          ? "bg-emerald-500/20 border border-emerald-500/40"
+                          : active
+                            ? "bg-fuchsia-500/20 border border-fuchsia-500/40"
+                            : "bg-white/5 border border-white/10"
+                      }`}
+                    >
+                      {done ? (
+                        <Check className="w-3 h-3 text-emerald-300" />
+                      ) : active ? (
+                        <span className="w-1.5 h-1.5 rounded-full bg-fuchsia-400 animate-pulse" />
+                      ) : (
+                        <span className="w-1.5 h-1.5 rounded-full bg-zinc-600" />
+                      )}
+                    </span>
+                    <span className={done ? "text-zinc-500" : active ? "text-white font-medium" : "text-zinc-500"}>
+                      {label}
+                    </span>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
         </div>
       </div>
     );
@@ -401,20 +484,20 @@ export default function OnboardingPage() {
             <section className="grid sm:grid-cols-2 gap-6">
               <div className="glass-card rounded-2xl p-6 border border-white/10">
                 <h2 className="flex items-center gap-2 font-bold text-white mb-3">
-                  <FileText className="w-5 h-5 text-sky-400" />
+                  <FileText className="w-5 h-5 text-violet-300" />
                   {T("planCvTips")}
                 </h2>
                 <ul className="space-y-2 text-sm text-zinc-300">
-                  {(plan.cvTips || []).map((tip) => <li key={tip} className="flex gap-2"><span className="text-sky-400">•</span>{tip}</li>)}
+                  {(plan.cvTips || []).map((tip) => <li key={tip} className="flex gap-2"><span className="text-violet-400">•</span>{tip}</li>)}
                 </ul>
               </div>
               <div className="glass-card rounded-2xl p-6 border border-white/10">
                 <h2 className="flex items-center gap-2 font-bold text-white mb-3">
-                  <MessagesSquare className="w-5 h-5 text-amber-400" />
+                  <MessagesSquare className="w-5 h-5 text-fuchsia-300" />
                   {T("planInterview")}
                 </h2>
                 <ul className="space-y-2 text-sm text-zinc-300">
-                  {(plan.interviewPrep || []).map((tip) => <li key={tip} className="flex gap-2"><span className="text-amber-400">•</span>{tip}</li>)}
+                  {(plan.interviewPrep || []).map((tip) => <li key={tip} className="flex gap-2"><span className="text-fuchsia-400">•</span>{tip}</li>)}
                 </ul>
               </div>
             </section>

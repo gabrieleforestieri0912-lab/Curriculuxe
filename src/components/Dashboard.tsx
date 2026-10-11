@@ -116,20 +116,20 @@ export default function Dashboard() {
     });
   }, []);
 
-  // Tour guidato: si apre una volta per sessione all'accesso alla dashboard.
+  // Tour guidato: si apre solo quando l'utente arriva dal wizard con un
+  // piano appena creato dall'AI (flag messo da /dashboard/onboarding).
+  // Niente auto-apertura generica: il tour ha senso dopo le scelte iniziali.
   useEffect(() => {
     if (loading) return;
-    const t = window.setTimeout(() => {
-      try {
-        if (!sessionStorage.getItem("curriculuxe_tour_seen")) {
-          sessionStorage.setItem("curriculuxe_tour_seen", "1");
-          setTourOpen(true);
-        }
-      } catch {
-        // storage non disponibile: non aprire il tour
+    try {
+      if (sessionStorage.getItem("curriculuxe:tour-after-plan")) {
+        sessionStorage.removeItem("curriculuxe:tour-after-plan");
+        const t = window.setTimeout(() => setTourOpen(true), 600);
+        return () => window.clearTimeout(t);
       }
-    }, 600);
-    return () => window.clearTimeout(t);
+    } catch {
+      // storage non disponibile: non aprire il tour
+    }
   }, [loading]);
 
   const handleBuyCredits = async () => {

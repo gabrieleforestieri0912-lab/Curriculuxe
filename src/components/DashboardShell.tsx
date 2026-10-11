@@ -1,0 +1,78 @@
+"use client";
+
+import { useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { X } from "lucide-react";
+import DashboardHeader from "@/components/DashboardHeader";
+import DashboardSidebar from "@/components/DashboardSidebar";
+
+/**
+ * Guscio di tutte le pagine /dashboard/*: stesso sfondo della landing,
+ * header fisso, sidebar su desktop e drawer su mobile. Le pagine figlie
+ * mantengono il loro padding superiore (pt-28) e si appoggiano al rientro
+ * sinistro su schermi larghi.
+ */
+export default function DashboardShell({ children }: { children: React.ReactNode }) {
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  return (
+    <div className="page-bg relative min-h-screen flex flex-col">
+      <DashboardHeader
+        sidebarCollapsed={sidebarCollapsed}
+        onToggleSidebar={() => setMobileOpen((open) => !open)}
+        onToggleCollapse={() => setSidebarCollapsed((collapsed) => !collapsed)}
+      />
+
+      {/* Sidebar desktop */}
+      <aside
+        data-tour="sidebar"
+        className={`hidden lg:block fixed left-4 top-24 bottom-4 z-40 w-64 rounded-2xl border border-white/10 bg-[#0b0b14]/80 backdrop-blur-xl p-4 overflow-y-auto transition-all duration-300 ${
+          sidebarCollapsed ? "lg:hidden" : ""
+        }`}
+      >
+        <DashboardSidebar />
+      </aside>
+
+      {/* Drawer mobile */}
+      <AnimatePresence>
+        {mobileOpen && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              onClick={() => setMobileOpen(false)}
+              className="fixed inset-0 z-[60] bg-black/70 backdrop-blur-sm lg:hidden"
+              aria-hidden="true"
+            />
+            <motion.aside
+              initial={{ x: "-100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "-100%" }}
+              transition={{ type: "tween", duration: 0.25, ease: "easeOut" }}
+              className="fixed left-0 top-0 bottom-0 z-[70] w-72 max-w-[85vw] border-r border-white/10 bg-[#0b0b14] p-4 pt-5 overflow-y-auto lg:hidden"
+            >
+              <div className="flex items-center justify-between mb-4">
+                <span className="text-sm font-bold text-white">Curriculuxe</span>
+                <button
+                  onClick={() => setMobileOpen(false)}
+                  aria-label="Chiudi menu"
+                  className="p-2 rounded-xl bg-white/5 border border-white/10 text-zinc-400 hover:text-white transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+              <DashboardSidebar onNavigate={() => setMobileOpen(false)} />
+            </motion.aside>
+          </>
+        )}
+      </AnimatePresence>
+
+      <main className={`flex-1 w-full transition-all duration-300 ${sidebarCollapsed ? "" : "lg:pl-72"}`}>
+        {children}
+      </main>
+    </div>
+  );
+}
