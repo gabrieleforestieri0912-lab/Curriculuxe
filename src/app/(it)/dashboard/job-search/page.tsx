@@ -109,7 +109,7 @@ export default function JobSearchPage() {
 
   return (
     <section className="relative min-h-screen overflow-hidden">
-      <div className="relative z-10 pt-28 pb-16 px-4 sm:px-6">
+      <div className="relative z-10 pb-10">
         <div className="max-w-4xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}

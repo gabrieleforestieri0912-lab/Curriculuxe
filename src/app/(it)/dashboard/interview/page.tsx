@@ -126,7 +126,7 @@ export default function InterviewPage() {
 
   return (
     <section className="relative min-h-screen overflow-hidden">
-      <div className="relative z-10 pt-28 pb-16 px-6">
+      <div className="relative z-10 pb-10">
         <div className="max-w-3xl mx-auto">
           {!started ? (
             <motion.div

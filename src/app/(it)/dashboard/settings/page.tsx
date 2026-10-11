@@ -18,7 +18,7 @@ export default function SettingsPage() {
 
   return (
     <section className="relative min-h-screen overflow-hidden">
-      <div className="pt-28 pb-16 px-6">
+      <div className="pb-10">
         <div className="max-w-2xl mx-auto">
           <motion.h1
             initial={{ opacity: 0, y: 20 }}

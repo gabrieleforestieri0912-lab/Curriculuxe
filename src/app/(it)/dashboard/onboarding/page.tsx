@@ -305,7 +305,7 @@ export default function OnboardingPage() {
   if (generating) {
     const rounded = Math.round(genProgress);
     return (
-      <div className="min-h-screen flex items-center justify-center px-6">
+      <div className="min-h-[60vh] flex items-center justify-center">
         <div className="w-full max-w-md">
           <div className="text-center mb-8">
             <div className="relative w-16 h-16 mx-auto mb-6">
@@ -380,7 +380,7 @@ export default function OnboardingPage() {
 
   if (plan) {
     return (
-      <div className="min-h-screen px-4 sm:px-6 py-28">
+      <div className="pb-10">
         <div className="max-w-3xl mx-auto">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-10">
             <span className="inline-block text-xs font-bold uppercase tracking-widest text-fuchsia-400 mb-3 px-3 py-1 rounded-full border border-fuchsia-500/30 bg-fuchsia-500/10">
@@ -541,7 +541,7 @@ export default function OnboardingPage() {
   const stepKind = STEPS[step];
 
   return (
-    <div className="min-h-screen px-4 sm:px-6 py-28">
+    <div className="pb-10">
       <div className="max-w-3xl mx-auto">
         <div className="text-center mb-8">
           <span className="inline-block text-xs font-bold uppercase tracking-widest text-fuchsia-400 mb-3 px-3 py-1 rounded-full border border-fuchsia-500/30 bg-fuchsia-500/10">

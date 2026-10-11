@@ -279,7 +279,7 @@ export default function AssistantPage() {
   const miniChatStatus = (T("miniChatStatus") as string) || "";
 
   return (
-    <div className="min-h-screen px-4 sm:px-6 py-28">
+    <div className="pb-10">
       <div className="max-w-3xl mx-auto flex flex-col" style={{ minHeight: "calc(100vh - 14rem)" }}>
         <div className="text-center mb-6">
           <span className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-fuchsia-400 mb-3 px-3 py-1 rounded-full border border-fuchsia-500/30 bg-fuchsia-500/10">

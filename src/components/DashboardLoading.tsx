@@ -32,7 +32,7 @@ export default function DashboardLoading() {
 
             {/* Content skeleton */}
             <main className="flex-1 min-w-0">
-              <div className="pt-28 pb-16 px-6">
+              <div className="pb-10">
                 <div className="max-w-6xl mx-auto">
                   <div className="space-y-3 mb-10">
                     <div className="skeleton-line h-9 w-64" />

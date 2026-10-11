@@ -178,7 +178,7 @@ export default function Dashboard() {
   return (
     <section className="relative min-h-screen overflow-hidden">
 
-      <div className="relative z-10 pt-28 pb-16 px-4 sm:px-6">
+      <div className="relative z-10 pb-10">
         <div className="max-w-7xl mx-auto">
           <main className="space-y-6">
             <motion.div

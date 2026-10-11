@@ -237,7 +237,7 @@ export default function CVPage() {
 
   return (
     <section className="relative min-h-screen overflow-hidden">
-      <div className="pt-28 sm:pt-32 pb-12 sm:pb-16 px-4 sm:px-6">
+      <div className="pb-10">
         <div className="max-w-6xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}

@@ -157,7 +157,7 @@ export default function DiscoverPage() {
 
   return (
     <section className="relative min-h-screen overflow-hidden">
-      <div className="relative z-10 pt-28 pb-16 px-4 sm:px-6">
+      <div className="relative z-10 pb-10">
         <div className="max-w-5xl mx-auto">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
             <span className="inline-block text-xs font-bold uppercase tracking-widest text-fuchsia-400 mb-3 px-3 py-1 rounded-full border border-fuchsia-500/30 bg-fuchsia-500/10">

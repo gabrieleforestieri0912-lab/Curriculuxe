@@ -107,7 +107,7 @@ export default function CVListPage() {
 
   return (
     <div className="min-h-screen">
-      <div className="pt-28 pb-16 px-4 sm:px-6">
+      <div className="pb-10">
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}

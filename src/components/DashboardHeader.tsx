@@ -236,8 +236,8 @@ export default function DashboardHeader({
 
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 z-50 px-4 sm:px-6">
-        <div className="max-w-7xl mx-auto mt-3 rounded-2xl border border-white/10 bg-[#0d0d12]/80 backdrop-blur-xl shadow-lg shadow-black/30 px-4 sm:px-5 py-3 flex items-center justify-between gap-3">
+      <header className="px-4 sm:px-6 pt-4">
+        <div className="rounded-2xl border border-white/10 bg-[#0d0d12]/80 backdrop-blur-xl shadow-lg shadow-black/30 px-4 sm:px-5 py-3 flex items-center justify-between gap-3">
           {/* Sinistra: toggle sidebar + logo + titolo */}
           <div className="flex items-center gap-3 min-w-0">
             <button

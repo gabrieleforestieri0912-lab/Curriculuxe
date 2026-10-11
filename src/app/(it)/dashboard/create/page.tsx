@@ -217,7 +217,7 @@ function CreateCVContent() {
         </motion.div>
       )}
 
-      <div className="relative z-10 pt-28 pb-16 px-4 sm:px-6">
+      <div className="relative z-10 pb-10">
         <div className="max-w-5xl mx-auto">
           {mode && (
             <button onClick={() => setMode(null)} className="mb-6 inline-flex items-center gap-2 text-sm text-zinc-400 hover:text-white transition-colors">

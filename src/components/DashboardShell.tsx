@@ -8,9 +8,8 @@ import DashboardSidebar from "@/components/DashboardSidebar";
 
 /**
  * Guscio di tutte le pagine /dashboard/*: stesso sfondo della landing,
- * header fisso, sidebar su desktop e drawer su mobile. Le pagine figlie
- * mantengono il loro padding superiore (pt-28) e si appoggiano al rientro
- * sinistro su schermi larghi.
+ * header e sidebar statici nel flusso (niente fixed). Le pagine figlie
+ * usano padding superiore ridotto. Su mobile la sidebar diventa drawer.
  */
 export default function DashboardShell({ children }: { children: React.ReactNode }) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -24,15 +23,19 @@ export default function DashboardShell({ children }: { children: React.ReactNode
         onToggleCollapse={() => setSidebarCollapsed((collapsed) => !collapsed)}
       />
 
-      {/* Sidebar desktop */}
-      <aside
-        data-tour="sidebar"
-        className={`hidden lg:block fixed left-4 top-24 bottom-4 z-40 w-64 rounded-2xl border border-white/10 bg-[#0b0b14]/80 backdrop-blur-xl p-4 overflow-y-auto transition-all duration-300 ${
-          sidebarCollapsed ? "lg:hidden" : ""
-        }`}
-      >
-        <DashboardSidebar />
-      </aside>
+      <div className="flex-1 w-full flex items-start gap-4 px-4 sm:px-6 pb-10">
+        {/* Sidebar desktop */}
+        <aside
+          data-tour="sidebar"
+          className={`hidden lg:block w-64 shrink-0 rounded-2xl border border-white/10 bg-[#0b0b14]/80 backdrop-blur-xl p-4 mt-4 max-h-[calc(100vh-120px)] overflow-y-auto transition-all duration-300 ${
+            sidebarCollapsed ? "lg:hidden" : ""
+          }`}
+        >
+          <DashboardSidebar />
+        </aside>
+
+        <main className="flex-1 min-w-0 pt-4">{children}</main>
+      </div>
 
       {/* Drawer mobile */}
       <AnimatePresence>
@@ -69,10 +72,6 @@ export default function DashboardShell({ children }: { children: React.ReactNode
           </>
         )}
       </AnimatePresence>
-
-      <main className={`flex-1 w-full transition-all duration-300 ${sidebarCollapsed ? "" : "lg:pl-72"}`}>
-        {children}
-      </main>
     </div>
   );
 }

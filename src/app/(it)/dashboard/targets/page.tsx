@@ -167,7 +167,7 @@ export default function TargetsPage() {
   }
 
   return (
-    <div className="min-h-screen px-4 sm:px-6 py-28">
+    <div className="pb-10">
       <div className="max-w-5xl mx-auto">
         {!selected ? (
           <>
