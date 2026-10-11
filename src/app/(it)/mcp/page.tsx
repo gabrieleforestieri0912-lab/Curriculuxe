@@ -1,5 +1,5 @@
 import Link from "next/link";
-import ResourceShell from "@/components/ResourceShell";
+import ShellSwitch from "@/components/ShellSwitch";
 import { breadcrumbSchema, buildMetadata, jsonLd, siteUrl } from "@/lib/seo";
 
 export const metadata = buildMetadata({
@@ -20,7 +20,7 @@ export const metadata = buildMetadata({
 export default function McpPage() {
   const baseUrl = siteUrl;
   return (
-    <ResourceShell>
+    <ShellSwitch>
       <div className="max-w-4xl mx-auto">
         <script
           type="application/ld+json"
@@ -86,6 +86,6 @@ export default function McpPage() {
           ))}
         </div>
       </div>
-    </ResourceShell>
+    </ShellSwitch>
   );
 }

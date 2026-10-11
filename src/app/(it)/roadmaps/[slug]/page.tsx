@@ -6,7 +6,7 @@ import { getRoadmap, roadmaps } from "@/content/roadmaps";
 import { getGuide } from "@/content/guides";
 import { getProject } from "@/content/projects";
 import { jobCatalog, formatSalary } from "@/lib/jobs";
-import ResourceShell from "@/components/ResourceShell";
+import ShellSwitch from "@/components/ShellSwitch";
 import ResourceBreadcrumb from "@/components/resources/ResourceBreadcrumb";
 import RoadmapStops from "@/components/resources/RoadmapStops";
 import { absUrl, breadcrumbSchema, buildMetadata, jsonLd, siteUrl } from "@/lib/seo";
@@ -69,7 +69,7 @@ export default async function RoadmapPage({ params }: { params: Promise<{ slug: 
   const roadmapUrl = absUrl(`/roadmaps/${roadmap.slug}`);
 
   return (
-    <ResourceShell>
+    <ShellSwitch>
       <div className="max-w-4xl mx-auto">
         <script
           type="application/ld+json"
@@ -297,6 +297,6 @@ export default async function RoadmapPage({ params }: { params: Promise<{ slug: 
           risultato: dipendono da cosa sai gia&apos; e da quanto tempo ci dedichi.
         </p>
       </div>
-    </ResourceShell>
+    </ShellSwitch>
   );
 }

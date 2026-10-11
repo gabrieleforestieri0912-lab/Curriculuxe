@@ -1,5 +1,5 @@
-﻿import type { Metadata } from "next";
-import ResourceShell from "@/components/ResourceShell";
+import type { Metadata } from "next";
+import ShellSwitch from "@/components/ShellSwitch";
 import ResourceHub from "@/components/resources/ResourceHub";
 import RoadmapExplorer from "@/components/resources/RoadmapExplorer";
 import { roadmaps } from "@/content/roadmaps";
@@ -24,7 +24,7 @@ export const metadata: Metadata = buildMetadata({
 
 export default function RoadmapsPage() {
   return (
-    <ResourceShell>
+    <ShellSwitch>
       <ResourceHub
         title="Roadmap"
         highlight="di carriera"
@@ -64,6 +64,6 @@ export default function RoadmapsPage() {
 
         <RoadmapExplorer />
       </ResourceHub>
-    </ResourceShell>
+    </ShellSwitch>
   );
 }

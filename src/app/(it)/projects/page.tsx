@@ -1,5 +1,5 @@
-﻿import type { Metadata } from "next";
-import ResourceShell from "@/components/ResourceShell";
+import type { Metadata } from "next";
+import ShellSwitch from "@/components/ShellSwitch";
 import ResourceHub from "@/components/resources/ResourceHub";
 import ProjectExplorer from "@/components/resources/ProjectExplorer";
 import { projects } from "@/content/projects";
@@ -22,7 +22,7 @@ export const metadata: Metadata = buildMetadata({
 
 export default function ProjectsPage() {
   return (
-    <ResourceShell>
+    <ShellSwitch>
       <ResourceHub
         title="Progetti"
         highlight="da portfolio"
@@ -62,6 +62,6 @@ export default function ProjectsPage() {
 
         <ProjectExplorer />
       </ResourceHub>
-    </ResourceShell>
+    </ShellSwitch>
   );
 }

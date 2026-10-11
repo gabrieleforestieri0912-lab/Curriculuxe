@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { jobCatalog, formatSalary } from "@/lib/jobs";
-import ResourceShell from "@/components/ResourceShell";
+import ShellSwitch from "@/components/ShellSwitch";
 import { absUrl, breadcrumbSchema, buildMetadata, jsonLd } from "@/lib/seo";
 
 export const metadata = buildMetadata({
@@ -41,7 +41,7 @@ export default function CareerMarketPage({
   });
 
   return (
-    <ResourceShell>
+    <ShellSwitch>
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-wrap items-end justify-between gap-4 mb-6">
           <div>
@@ -146,6 +146,6 @@ export default function CareerMarketPage({
           }}
         />
       </div>
-    </ResourceShell>
+    </ShellSwitch>
   );
 }

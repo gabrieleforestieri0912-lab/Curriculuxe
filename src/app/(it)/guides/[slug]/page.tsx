@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowRight, CalendarDays, Clock, ExternalLink } from "lucide-react";
 import { guides, getGuide, guideCategoryLabels, guideReadMinutes } from "@/content/guides";
-import ResourceShell from "@/components/ResourceShell";
+import ShellSwitch from "@/components/ShellSwitch";
 import ResourceBreadcrumb from "@/components/resources/ResourceBreadcrumb";
 import CopyBox from "@/components/resources/CopyBox";
 import ChecklistProgress from "@/components/resources/ChecklistProgress";
@@ -61,7 +61,7 @@ export default async function GuidePage({ params }: { params: Promise<{ slug: st
   );
 
   return (
-    <ResourceShell>
+    <ShellSwitch>
       <div className="max-w-7xl mx-auto">
         <script
           type="application/ld+json"
@@ -385,6 +385,6 @@ export default async function GuidePage({ params }: { params: Promise<{ slug: st
           </aside>
         </div>
       </div>
-    </ResourceShell>
+    </ShellSwitch>
   );
 }

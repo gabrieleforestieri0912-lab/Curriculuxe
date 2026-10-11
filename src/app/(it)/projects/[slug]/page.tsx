@@ -5,7 +5,7 @@ import { AlertTriangle, CheckCircle2, Clock3, Layers, Target } from "lucide-reac
 import { getProject, projects, projectPlanLabels } from "@/content/projects";
 import { getRoadmap } from "@/content/roadmaps";
 import { getGuide } from "@/content/guides";
-import ResourceShell from "@/components/ResourceShell";
+import ShellSwitch from "@/components/ShellSwitch";
 import ResourceBreadcrumb from "@/components/resources/ResourceBreadcrumb";
 import ProjectMilestones from "@/components/resources/ProjectMilestones";
 import { absUrl, breadcrumbSchema, buildMetadata, jsonLd } from "@/lib/seo";
@@ -51,7 +51,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
   const projectUrl = absUrl(`/projects/${project.slug}`);
 
   return (
-    <ResourceShell>
+    <ShellSwitch>
       <div className="max-w-4xl mx-auto">
         <script
           type="application/ld+json"
@@ -244,6 +244,6 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
           del progetto e&apos; inclusa dal piano {projectPlanLabels[project.minPlan]}.
         </p>
       </div>
-    </ResourceShell>
+    </ShellSwitch>
   );
 }

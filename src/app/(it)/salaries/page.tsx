@@ -1,5 +1,5 @@
-﻿import type { Metadata } from "next";
-import ResourceShell from "@/components/ResourceShell";
+import type { Metadata } from "next";
+import ShellSwitch from "@/components/ShellSwitch";
 import ResourceHub from "@/components/resources/ResourceHub";
 import SalaryExplorer from "@/components/resources/SalaryExplorer";
 import { buildSalaryBands, formatBandValue } from "@/content/salaries";
@@ -31,7 +31,7 @@ export default function SalariesPage() {
   const highestBand = bands.reduce((top, band) => (band.max > top.max ? band : top), bands[0]);
 
   return (
-    <ResourceShell>
+    <ShellSwitch>
       <ResourceHub
         title="Stipendi"
         highlight="tech"
@@ -107,6 +107,6 @@ export default function SalariesPage() {
           . Nessuna di queste informazioni e&apos; consulenza fiscale o retributiva.
         </p>
       </ResourceHub>
-    </ResourceShell>
+    </ShellSwitch>
   );
 }

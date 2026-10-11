@@ -1,5 +1,5 @@
-﻿import type { Metadata } from "next";
-import ResourceShell from "@/components/ResourceShell";
+import type { Metadata } from "next";
+import ShellSwitch from "@/components/ShellSwitch";
 import ResourceHub from "@/components/resources/ResourceHub";
 import GuideExplorer from "@/components/resources/GuideExplorer";
 import { guides, guideCategoryLabels } from "@/content/guides";
@@ -33,7 +33,7 @@ export default async function GuidesPage({
       ? (params.category as keyof typeof guideCategoryLabels)
       : "";
   return (
-    <ResourceShell>
+    <ShellSwitch>
       <ResourceHub
         title="Guide"
         highlight="operative"
@@ -73,6 +73,6 @@ export default async function GuidesPage({
 
         <GuideExplorer initialCategory={initialCategory} />
       </ResourceHub>
-    </ResourceShell>
+    </ShellSwitch>
   );
 }

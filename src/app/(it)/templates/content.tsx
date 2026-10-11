@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { templates } from "@/lib/seoData";
 import { useLanguage } from "@/context/LanguageContext";
-import ResourceShell from "@/components/ResourceShell";
+import ShellSwitch from "@/components/ShellSwitch";
 
 export default function TemplatesContent() {
   const { t, lang } = useLanguage();
@@ -11,7 +11,7 @@ export default function TemplatesContent() {
   const isEn = lang === "en";
 
   return (
-    <ResourceShell>
+    <ShellSwitch>
       <div className="max-w-6xl mx-auto">
         <h1 className="text-3xl font-bold text-white">{tTemplates.title}</h1>
         <p className="text-zinc-400 mt-2">{tTemplates.subtitle}</p>
@@ -27,6 +27,6 @@ export default function TemplatesContent() {
         </div>
         <p className="text-xs text-zinc-600 mt-8">{tTemplates.viewAllPrefix} <Link href="/dashboard/create" className="text-zinc-400 underline">{tTemplates.viewAllCta}</Link> {tTemplates.viewAllSuffix}</p>
       </div>
-    </ResourceShell>
+    </ShellSwitch>
   );
 }

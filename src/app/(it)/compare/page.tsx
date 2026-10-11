@@ -1,7 +1,7 @@
-﻿import type { Metadata } from "next";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { Check, Minus, HelpCircle } from "lucide-react";
-import ResourceShell from "@/components/ResourceShell";
+import ShellSwitch from "@/components/ShellSwitch";
 import ResourceHub from "@/components/resources/ResourceHub";
 import {
   compareCategoryLabels,
@@ -64,7 +64,7 @@ export default function ComparePage() {
   >;
 
   return (
-    <ResourceShell>
+    <ShellSwitch>
       <ResourceHub
         title="Confronto"
         description="Cosa facciamo, cosa non facciamo, e cosa fanno i generatori di CV con intelligenza artificiale. Dove non abbiamo dati verificabili lo scriviamo, invece di riempiere la casella."
@@ -246,6 +246,6 @@ export default function ComparePage() {
           </div>
         </div>
       </ResourceHub>
-    </ResourceShell>
+    </ShellSwitch>
   );
 }
