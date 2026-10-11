@@ -61,12 +61,11 @@ export default function Footer() {
           >
             <div className="flex items-center gap-2 mb-4">
               <Image
-                src="/curriculuxe-mark.svg"
+                src="/curriculuxe.png"
                 alt="Logo Curriculuxe"
                 width={34}
                 height={34}
-                className="shrink-0"
-                unoptimized
+                className="rounded-xl shrink-0"
               />
               <span className="text-xl font-bold text-white tracking-wide">Curriculuxe</span>
             </div>

@@ -147,11 +147,11 @@ export function organizationSchema() {
     url: siteUrl,
     logo: {
       "@type": "ImageObject",
-      url: absUrl("/icon.png"),
+      url: absUrl("/curriculuxe.png"),
       width: 512,
       height: 512,
     },
-    image: absUrl("/icon.png"),
+    image: absUrl("/curriculuxe.png"),
     description:
       "Curriculuxe e' la piattaforma AI per creare, ottimizzare e analizzare curriculum professionali: score ATS, generazione CV con AI e preparazione ai colloqui.",
     email: supportEmail,

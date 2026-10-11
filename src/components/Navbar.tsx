@@ -273,12 +273,11 @@ export default function Navbar() {
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 group min-w-0">
             <Image
-              src="/curriculuxe-mark.svg"
+              src="/curriculuxe.png"
               alt="Logo Curriculuxe"
               width={40}
               height={40}
-              className="shrink-0"
-              unoptimized
+              className="rounded-xl shrink-0 shadow-md shadow-fuchsia-500/20"
               priority
             />
             <span className="text-xl sm:text-2xl font-bold text-white tracking-wide transition-all group-hover:text-fuchsia-400">

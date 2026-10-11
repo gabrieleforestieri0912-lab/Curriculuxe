@@ -52,12 +52,9 @@ export const metadata: Metadata = {
     languages: { it: "/", en: "/en", "x-default": "/" },
   },
   icons: {
-    icon: [
-      { url: "/icon.png", type: "image/png", sizes: "512x512" },
-      { url: "/icon.svg", type: "image/svg+xml" },
-    ],
-    apple: [{ url: "/icon.png", sizes: "180x180", type: "image/png" }],
-    shortcut: "/icon.png",
+    icon: [{ url: "/curriculuxe.png", type: "image/png", sizes: "512x512" }],
+    apple: [{ url: "/curriculuxe.png", sizes: "180x180", type: "image/png" }],
+    shortcut: "/curriculuxe.png",
   },
   manifest: "/manifest.webmanifest",
   openGraph: {
