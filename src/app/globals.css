@@ -164,9 +164,17 @@ body {
 .marquee-viewport {
   position: relative;
   overflow: hidden;
+  /* Nessuna scrollbar: lo scorrimento e' sempre automatico, l'utente
+     non deve poterlo sostituire con il drag. */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
   /* Dissolvenza ai bordi: fa leggere la lista come "infinita" invece che tagliata. */
   -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 5%, #000 95%, transparent 100%);
   mask-image: linear-gradient(90deg, transparent 0, #000 5%, #000 95%, transparent 100%);
+}
+
+.marquee-viewport::-webkit-scrollbar {
+  display: none;
 }
 
 .marquee-track {
@@ -203,16 +211,17 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  /* Niente moto: la lista resta comunque raggiungibile con lo scroll orizzontale. */
-  .marquee-track,
+  /* Tailwind inietta un override globale `* { animation-duration: .001ms !important }`
+     che congela il marquee al primo frame. Lo scorrimento e' funzionalita' del
+     ticker, non decorazione, quindi va riattivato con !important: batte la
+     regola universale perche' ha specificita' di classe. */
+  .marquee-track {
+    animation: marquee-scroll var(--marquee-duration, 38s) linear infinite !important;
+  }
+
+  /* Resta invece fermo il movimento ornamentale delle card. */
   .marquee-track > * {
     animation: none;
-  }
-  .marquee-viewport {
-    overflow-x: auto;
-    -webkit-mask-image: none;
-    mask-image: none;
-    scrollbar-width: thin;
   }
 }
 
